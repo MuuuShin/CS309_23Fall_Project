@@ -4,9 +4,10 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/cs309a
-    username: postgres
-    password: 123456
-    # change to your own database username and password
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    # replace ${DB_USERNAME} and ${DB_PASSWORD} with your own username and password
+    # or set environment variables
   jpa:
     hibernate:
       ddl-auto: update

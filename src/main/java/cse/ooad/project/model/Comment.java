@@ -1,56 +1,71 @@
 package cse.ooad.project.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
+import jakarta.persistence.*;
+import lombok.Getter;
 
-import javax.persistence.*;
-import java.sql.Timestamp;
+import java.sql.Date;
 import java.util.Objects;
 
+@Getter
 @Entity
-@Table(name = "comment")
-@Data
+@Table(name = "comments", schema = "public", catalog = "cs309a")
 public class Comment {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Id
   @Column(name = "comment_id")
   private Long commentId;
-
-  @Column(name = "edited")
-  private boolean edited;
-
-  @Column(name = "post_id")
-  private Long postId;
-
-  @ManyToOne
-  @JsonIgnore
-  @JoinColumn(name = "post_id", insertable = false, updatable = false)
-  private Answer answer;
+  @Basic
+  @Column(name = "title")
+  private String title;
+  @Basic
   @Column(name = "body")
   private String body;
-
-  @Column(name = "creation_date")
-  private Timestamp creationDate;
-
-  @Column(name = "score")
-  private int score;
-
-  @Column(name = "content_license")
-  private String contentLicense;
-
+  @Basic
   @Column(name = "account_id")
   private Long accountId;
+  @Basic
+  @Column(name = "post_id")
+  private Long postId;
+  @Basic
+  @Column(name = "creation_date")
+  private Date creationDate;
+
+
+
+  public void setCommentId(Long commentId) {
+    this.commentId = commentId;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public void setBody(String body) {
+    this.body = body;
+  }
+
+  public void setAccountId(Long accountId) {
+    this.accountId = accountId;
+  }
+
+  public void setPostId(Long postId) {
+    this.postId = postId;
+  }
+
+  public void setCreationDate(Date creationDate) {
+    this.creationDate = creationDate;
+  }
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Comment comment = (Comment) o;
-    return commentId == comment.commentId && edited == comment.edited && postId == comment.postId && score == comment.score && accountId == comment.accountId && Objects.equals(body, comment.body) && Objects.equals(creationDate, comment.creationDate) && Objects.equals(contentLicense, comment.contentLicense);
+    return commentId == comment.commentId && Objects.equals(title, comment.title) && Objects.equals(body, comment.body) && Objects.equals(accountId, comment.accountId) && Objects.equals(postId, comment.postId) && Objects.equals(creationDate, comment.creationDate);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(commentId, edited, postId, body, creationDate, score, contentLicense, accountId);
+    return Objects.hash(commentId, title, body, accountId, postId, creationDate);
   }
 }

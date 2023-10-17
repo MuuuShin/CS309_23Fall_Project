@@ -36,6 +36,9 @@ public class Group {
   @Basic
   @Column(name = "leader")
   private String leader;
+  @Basic
+  @Column(name = "room_id")
+  private Long roomId;
 
   @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(
@@ -43,6 +46,9 @@ public class Group {
           joinColumns = @JoinColumn(name = "group_id"),
           inverseJoinColumns = @JoinColumn(name = "room_id"))
   private List<Room> roomList;
+
+  @OneToOne(mappedBy = "group")
+  private Room room;
 
   public void setGroupId(Long groupId) {
     this.groupId = groupId;

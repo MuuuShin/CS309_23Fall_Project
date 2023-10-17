@@ -30,6 +30,9 @@ public class Room {
   @Basic
   @Column(name = "floor_id")
   private Long floorId;
+  @Basic
+  @Column(name = "group_id")
+  private Long groupId;
 
   @JsonIgnore
   @ManyToMany(mappedBy = "roomList", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -39,6 +42,10 @@ public class Room {
   @ManyToOne
   @JoinColumn(name = "floor_id", insertable = false, updatable = false)
   private Floor floor;
+
+  @OneToOne
+  @JoinColumn(name = "group_id")
+  private Group group;
 
   public void setRoomId(Long roomId) {
     this.roomId = roomId;

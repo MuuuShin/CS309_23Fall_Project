@@ -16,6 +16,9 @@ public class Teacher {
   @Basic
   @Column(name = "name")
   private String name;
+  @Basic
+  @Column(name = "permission")
+  private String permission;
 
   public void setTeacherId(Long teacherId) {
     this.teacherId = teacherId;

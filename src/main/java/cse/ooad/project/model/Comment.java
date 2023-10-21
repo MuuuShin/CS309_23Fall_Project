@@ -7,6 +7,22 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Objects;
 
+/**
+ * {@link  Comment}用于表示评论信息的实体类，包括评论的基本信息和属性。<br>
+ * 属性列表：
+ * <ul>
+ *   <li>commentId: 评论ID，唯一标识评论。</li>
+ *   <li>title: 评论标题。</li>
+ *   <li>body: 评论内容。</li>
+ *   <li>accountId: 评论发表者的帐户ID。</li>
+ *   <li>postId: 评论所属的帖子ID。</li>
+ *   <li>creationTime: 评论创建时间。</li>
+ * </ul>
+ * 评论的嵌套方式：<br>
+ * 每个房间拥有一条元评论，元评论的postId为0，accountId为房间的ID。<br>
+ * 对这个房间发起的评论视为对元评论的回复，其postId为元评论的commentId，accountId为发起评论的用户ID。<br>
+ * 若对评论发起的评论，其postId为被回复的评论的commentId，accountId为发起评论的用户ID。<br>
+ */
 @Getter
 @Entity
 @Table(name = "comments", schema = "public", catalog = "cs309a")

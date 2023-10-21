@@ -6,6 +6,23 @@ import lombok.Getter;
 import java.sql.Timestamp;
 import java.util.Objects;
 
+/**
+ * {@link Timeline} 用于表示时间线信息的实体类，包括时间线的基本信息和属性。这个类用来标明不同type的学生选房的四个阶段时间段。<br>
+ * 属性列表：
+ * <ul>
+ *   <li>timelineId: 时间线ID，唯一标识时间线。</li>
+ *   <li>type: 时间线类型，这个类型应该与学生type对应。</li>
+ *   <li>beginTime1: 时间线开始时间1。</li>
+ *   <li>endTime1: 时间线结束时间1。</li>
+ *   <li>beginTime2: 时间线开始时间2。</li>
+ *   <li>endTime2: 时间线结束时间2。</li>
+ *   <li>beginTime3: 时间线开始时间3。</li>
+ *   <li>endTime3: 时间线结束时间3。</li>
+ *   <li>beginTime4: 时间线开始时间4。</li>
+ *   <li>endTime4: 时间线结束时间4。</li>
+ * </ul>
+ *
+ */
 @Getter
 @Entity
 @Table(name = "timelines", schema = "public", catalog = "cs309a")

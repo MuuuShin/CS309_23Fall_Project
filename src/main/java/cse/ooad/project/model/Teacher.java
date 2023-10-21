@@ -5,6 +5,17 @@ import lombok.Getter;
 
 import java.util.Objects;
 
+/**
+ * {@link Teacher} 用于表示教师信息的实体类，包括教师的基本信息和属性。<br>
+ * 属性列表：
+ * <ul>
+ *   <li>teacherId: 教师ID，唯一标识教师。</li>
+ *   <li>name: 教师姓名。</li>
+ *   <li>permission: 教师权限，暂定分为拥有全部权限和只能增查权限两种。</li>
+ *   <li>account: 教师账号。</li>
+ *   <li>password: 教师密码，密码应该至少经过sha或hash加密。</li>
+ * </ul>
+ */
 @Getter
 @Entity
 @Table(name = "teachers", schema = "public", catalog = "cs309a")

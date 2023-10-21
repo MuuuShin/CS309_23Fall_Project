@@ -7,6 +7,22 @@ import lombok.Data;
 import java.sql.Time;
 import java.util.Objects;
 
+/**
+ * {@link  Student}用于表示学生信息的实体类，包括学生的基本信息和属性。<br>
+ * <ul>
+ *   <li>studentId: 学生ID，唯一标识学生。</li>
+ *   <li>name: 学生姓名。</li>
+ *   <li>intro: 学生介绍,可供学生自行修改。</li>
+ *   <li>gender: 学生性别。</li>
+ *   <li>groupId: 队伍ID。</li>
+ *   <li>type: 学生类型(如是研究生还是博士生)。</li>
+ *   <li>awakeTime: 学生醒来时间。</li>
+ *   <li>sleepTime: 学生睡觉时间。</li>
+ *   <li>account: 学生账户。</li>
+ *   <li>password: 学生密码，密码应该至少经过sha或hash加密。</li>
+ *   <li>[映射]group: 学生所在队伍。</li>
+ * </ul>
+ */
 @Data
 @Entity
 @Table(name = "students", schema = "public", catalog = "cs309a")

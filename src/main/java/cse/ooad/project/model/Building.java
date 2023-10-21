@@ -7,8 +7,18 @@ import lombok.Getter;
 import java.util.List;
 import java.util.Objects;
 
-
-
+/**
+ * {@link  Building}用于表示楼栋信息的实体类，包括楼栋的基本信息和属性。<br>
+ * 属性列表：
+ * <ul>
+ *   <li>buildingId: 楼栋ID，唯一标识建筑。</li>
+ *   <li>name: 楼栋名称。</li>
+ *   <li>intro: 楼栋介绍，此字段暂无实际意义，保留字段。</li>
+ *   <li>regionId: 所属区域的ID。</li>
+ *   <li>[映射]region: 所属区域。</li>
+ *   <li>[映射]floorList: 楼层列表。</li>
+ * </ul>
+ */
 @Getter
 @Entity
 @Table(name = "buildings", schema = "public", catalog = "cs309a")

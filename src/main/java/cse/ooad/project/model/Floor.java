@@ -7,6 +7,18 @@ import lombok.Getter;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * {@link  Floor}用于表示楼层信息的实体类，包括楼层的基本信息和属性。<br>
+ * 属性列表：
+ * <ul>
+ *   <li>floorId: 楼层ID，唯一标识楼层。</li>
+ *   <li>name: 楼层名称。</li>
+ *   <li>intro: 楼层介绍，此字段暂无实际意义，保留字段。</li>
+ *   <li>buildingId: 所属建筑的ID。</li>
+ *   <li>[映射]building: 所属建筑。</li>
+ *   <li>[映射]roomList: 房间列表。</li>
+ * </ul>
+ */
 @Getter
 @Entity
 @Table(name = "floors", schema = "public", catalog = "cs309a")

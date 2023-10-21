@@ -87,7 +87,7 @@ public class Timeline {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Timeline timeline = (Timeline) o;
-        return timelineId == timeline.timelineId && Objects.equals(type, timeline.type) && Objects.equals(beginTime1, timeline.beginTime1) && Objects.equals(endTime1, timeline.endTime1) && Objects.equals(beginTime2, timeline.beginTime2) && Objects.equals(endTime2, timeline.endTime2) && Objects.equals(beginTime3, timeline.beginTime3) && Objects.equals(endTime3, timeline.endTime3) && Objects.equals(beginTime4, timeline.beginTime4) && Objects.equals(endTime4, timeline.endTime4);
+        return Objects.equals(timelineId, timeline.timelineId) && Objects.equals(type, timeline.type) && Objects.equals(beginTime1, timeline.beginTime1) && Objects.equals(endTime1, timeline.endTime1) && Objects.equals(beginTime2, timeline.beginTime2) && Objects.equals(endTime2, timeline.endTime2) && Objects.equals(beginTime3, timeline.beginTime3) && Objects.equals(endTime3, timeline.endTime3) && Objects.equals(beginTime4, timeline.beginTime4) && Objects.equals(endTime4, timeline.endTime4);
     }
 
     @Override

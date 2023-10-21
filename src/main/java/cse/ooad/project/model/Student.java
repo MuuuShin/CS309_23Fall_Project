@@ -54,7 +54,7 @@ public class Student {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Student student = (Student) o;
-        return studentId == student.studentId && Objects.equals(name, student.name) && Objects.equals(intro, student.intro) && Objects.equals(gender, student.gender) && Objects.equals(groupId, student.groupId) && Objects.equals(type, student.type) && Objects.equals(awakeTime, student.awakeTime) && Objects.equals(sleepTime, student.sleepTime) && Objects.equals(account, student.account) && Objects.equals(password, student.password);
+        return Objects.equals(studentId, student.studentId) && Objects.equals(name, student.name) && Objects.equals(intro, student.intro) && Objects.equals(gender, student.gender) && Objects.equals(groupId, student.groupId) && Objects.equals(type, student.type) && Objects.equals(awakeTime, student.awakeTime) && Objects.equals(sleepTime, student.sleepTime) && Objects.equals(account, student.account) && Objects.equals(password, student.password);
     }
 
     @Override

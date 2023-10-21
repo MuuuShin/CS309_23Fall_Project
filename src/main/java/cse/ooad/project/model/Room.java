@@ -30,13 +30,10 @@ public class Room {
   @Basic
   @Column(name = "floor_id")
   private Long floorId;
-  @Basic
-  @Column(name = "group_id")
-  private Long groupId;
 
   @JsonIgnore
-  @ManyToMany(mappedBy = "roomList", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  private List<Group> groupList;
+  @ManyToMany(mappedBy = "roomStarList", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private List<Group> groupStarList;
 
   @JsonIgnore
   @ManyToOne
@@ -76,7 +73,7 @@ public class Room {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Room room = (Room) o;
-    return roomId == room.roomId && Objects.equals(name, room.name) && Objects.equals(type, room.type) && Objects.equals(intro, room.intro) && Objects.equals(status, room.status) && Objects.equals(floorId, room.floorId);
+    return Objects.equals(roomId, room.roomId) && Objects.equals(name, room.name) && Objects.equals(type, room.type) && Objects.equals(intro, room.intro) && Objects.equals(status, room.status) && Objects.equals(floorId, room.floorId);
   }
 
   @Override

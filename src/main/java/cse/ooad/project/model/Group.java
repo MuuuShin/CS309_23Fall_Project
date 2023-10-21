@@ -43,10 +43,10 @@ public class Group {
   @JsonIgnore
   @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(
-          name = "group_likes",
+          name = "group_stars",
           joinColumns = @JoinColumn(name = "group_id"),
           inverseJoinColumns = @JoinColumn(name = "room_id"))
-  private List<Room> roomList;
+  private List<Room> roomStarList;
 
   @JsonIgnore
   @OneToOne
@@ -90,11 +90,11 @@ public class Group {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Group group = (Group) o;
-    return groupId == group.groupId && Objects.equals(name, group.name) && Objects.equals(member1Id, group.member1Id) && Objects.equals(member2Id, group.member2Id) && Objects.equals(member3Id, group.member3Id) && Objects.equals(member4Id, group.member4Id) && Objects.equals(status, group.status) && Objects.equals(leader, group.leader);
+    return Objects.equals(groupId, group.groupId) && Objects.equals(name, group.name) && Objects.equals(member1Id, group.member1Id) && Objects.equals(member2Id, group.member2Id) && Objects.equals(member3Id, group.member3Id) && Objects.equals(member4Id, group.member4Id) && Objects.equals(status, group.status) && Objects.equals(leader, group.leader) && Objects.equals(roomId, group.roomId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(groupId, name, member1Id, member2Id, member3Id, member4Id, status, leader);
+    return Objects.hash(groupId, name, member1Id, member2Id, member3Id, member4Id, status, leader, roomId);
   }
 }

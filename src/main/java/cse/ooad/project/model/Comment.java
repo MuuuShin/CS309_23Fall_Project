@@ -62,7 +62,7 @@ public class Comment {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Comment comment = (Comment) o;
-    return commentId == comment.commentId && Objects.equals(title, comment.title) && Objects.equals(body, comment.body) && Objects.equals(accountId, comment.accountId) && Objects.equals(postId, comment.postId) && Objects.equals(creationTime, comment.creationTime);
+    return Objects.equals(commentId, comment.commentId) && Objects.equals(title, comment.title) && Objects.equals(body, comment.body) && Objects.equals(accountId, comment.accountId) && Objects.equals(postId, comment.postId) && Objects.equals(creationTime, comment.creationTime);
   }
 
   @Override

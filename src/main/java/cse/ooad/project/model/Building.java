@@ -57,7 +57,7 @@ public class Building {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Building building = (Building) o;
-    return buildingId == building.buildingId && Objects.equals(name, building.name) && Objects.equals(intro, building.intro) && Objects.equals(regionId, building.regionId);
+    return Objects.equals(buildingId, building.buildingId) && Objects.equals(name, building.name) && Objects.equals(intro, building.intro) && Objects.equals(regionId, building.regionId);
   }
 
   @Override

@@ -55,7 +55,7 @@ public class Floor {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Floor floor = (Floor) o;
-    return floorId == floor.floorId && Objects.equals(name, floor.name) && Objects.equals(intro, floor.intro) && Objects.equals(buildingId, floor.buildingId);
+    return Objects.equals(floorId, floor.floorId) && Objects.equals(name, floor.name) && Objects.equals(intro, floor.intro) && Objects.equals(buildingId, floor.buildingId);
   }
 
   @Override

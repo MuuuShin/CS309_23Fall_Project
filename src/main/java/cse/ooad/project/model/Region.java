@@ -43,7 +43,7 @@ public class Region {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Region region = (Region) o;
-    return regionId == region.regionId && Objects.equals(name, region.name) && Objects.equals(intro, region.intro);
+    return Objects.equals(regionId, region.regionId) && Objects.equals(name, region.name) && Objects.equals(intro, region.intro);
   }
 
   @Override

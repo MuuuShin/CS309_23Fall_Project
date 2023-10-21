@@ -43,8 +43,8 @@ public class Room {
   @JoinColumn(name = "floor_id", insertable = false, updatable = false)
   private Floor floor;
 
-  @OneToOne
-  @JoinColumn(name = "group_id")
+  @JsonIgnore
+  @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private Group group;
 
   public void setRoomId(Long roomId) {

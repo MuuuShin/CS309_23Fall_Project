@@ -31,7 +31,7 @@ public class Floor {
   private Building building;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "floor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<Room> roomList;
 
   public void setFloorId(Long floorId) {

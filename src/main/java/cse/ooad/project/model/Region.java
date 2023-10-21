@@ -23,7 +23,7 @@ public class Region {
   private String intro;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "region", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<Building> buildingList;
 
   public void setRegionId(Long regionId) {

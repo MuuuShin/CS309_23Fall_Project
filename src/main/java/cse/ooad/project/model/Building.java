@@ -7,6 +7,8 @@ import lombok.Getter;
 import java.util.List;
 import java.util.Objects;
 
+
+
 @Getter
 @Entity
 @Table(name = "buildings", schema = "public", catalog = "cs309a")
@@ -31,8 +33,8 @@ public class Building {
   private Region region;
 
   @JsonIgnore
-  @OneToMany(mappedBy = "floor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-  private List<Building> floorList;
+  @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  private List<Floor> floorList;
 
   public void setBuildingId(Long buildingId) {
     this.buildingId = buildingId;

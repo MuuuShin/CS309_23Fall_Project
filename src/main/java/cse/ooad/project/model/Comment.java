@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @Getter
@@ -28,7 +29,7 @@ public class Comment {
   private Long postId;
   @Basic
   @Column(name = "creation_date")
-  private Date creationDate;
+  private Timestamp creationTime;
 
 
 
@@ -52,8 +53,8 @@ public class Comment {
     this.postId = postId;
   }
 
-  public void setCreationDate(Date creationDate) {
-    this.creationDate = creationDate;
+  public void setCreationTime(Timestamp creationTime) {
+    this.creationTime = creationTime;
   }
 
   @Override
@@ -61,11 +62,11 @@ public class Comment {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Comment comment = (Comment) o;
-    return commentId == comment.commentId && Objects.equals(title, comment.title) && Objects.equals(body, comment.body) && Objects.equals(accountId, comment.accountId) && Objects.equals(postId, comment.postId) && Objects.equals(creationDate, comment.creationDate);
+    return commentId == comment.commentId && Objects.equals(title, comment.title) && Objects.equals(body, comment.body) && Objects.equals(accountId, comment.accountId) && Objects.equals(postId, comment.postId) && Objects.equals(creationTime, comment.creationTime);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(commentId, title, body, accountId, postId, creationDate);
+    return Objects.hash(commentId, title, body, accountId, postId, creationTime);
   }
 }

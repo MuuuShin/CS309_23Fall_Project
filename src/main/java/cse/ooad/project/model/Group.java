@@ -40,6 +40,7 @@ public class Group {
   @Column(name = "room_id")
   private Long roomId;
 
+  @JsonIgnore
   @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(
           name = "group_likes",
@@ -47,7 +48,9 @@ public class Group {
           inverseJoinColumns = @JoinColumn(name = "room_id"))
   private List<Room> roomList;
 
-  @OneToOne(mappedBy = "group")
+  @JsonIgnore
+  @OneToOne
+  @JoinColumn(name = "room_id", insertable = false, updatable = false)
   private Room room;
 
   public void setGroupId(Long groupId) {

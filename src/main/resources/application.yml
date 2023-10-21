@@ -16,7 +16,6 @@ spring:
       hibernate:
         temp:
           use_jdbc_metadata_defaults: true
-        dialect: org.hibernate.dialect.PostgreSQL92Dialect
     open-in-view: true
 
 

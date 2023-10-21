@@ -7,6 +7,24 @@ import lombok.Getter;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * {@link  Group}用于表示群组信息的实体类，包括群组的基本信息和属性。<br>
+ * 属性列表：
+ * <ul>
+ *   <li>groupId: 群组ID，唯一标识群组。</li>
+ *   <li>name: 群组名称。</li>
+ *   <li>member1Id: 成员1的ID。</li>
+ *   <li>member2Id: 成员2的ID。</li>
+ *   <li>member3Id: 成员3的ID。</li>
+ *   <li>member4Id: 成员4的ID。</li>
+ *   <li>status: 群组状态，标识群是否已满，是否选择房间。</li>
+ *   <li>leader: 群组领袖，值为1-4。不填默认1。</li>
+ *   <li>roomId: 若选择了房间，给出房间的ID。</li>
+ *   <li>[映射]roomStarList: 群组收藏的房间列表。</li>
+ *   <li>[映射]room: 若选择了房间，给出房间。</li>
+ * </ul>
+ * 在加入新成员时，按照1-4顺序插入(若有空位)。<br>
+ */
 @Getter
 @Entity
 @Table(name = "groups", schema = "public", catalog = "cs309a")
@@ -36,13 +54,22 @@ public class Group {
   @Basic
   @Column(name = "leader")
   private String leader;
+  @Basic
+  @Column(name = "room_id")
+  private Long roomId;
 
+  @JsonIgnore
   @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(
-          name = "group_likes",
+          name = "group_stars",
           joinColumns = @JoinColumn(name = "group_id"),
           inverseJoinColumns = @JoinColumn(name = "room_id"))
-  private List<Room> roomList;
+  private List<Room> roomStarList;
+
+  @JsonIgnore
+  @OneToOne
+  @JoinColumn(name = "room_id", insertable = false, updatable = false)
+  private Room room;
 
   public void setGroupId(Long groupId) {
     this.groupId = groupId;
@@ -81,11 +108,11 @@ public class Group {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Group group = (Group) o;
-    return groupId == group.groupId && Objects.equals(name, group.name) && Objects.equals(member1Id, group.member1Id) && Objects.equals(member2Id, group.member2Id) && Objects.equals(member3Id, group.member3Id) && Objects.equals(member4Id, group.member4Id) && Objects.equals(status, group.status) && Objects.equals(leader, group.leader);
+    return Objects.equals(groupId, group.groupId) && Objects.equals(name, group.name) && Objects.equals(member1Id, group.member1Id) && Objects.equals(member2Id, group.member2Id) && Objects.equals(member3Id, group.member3Id) && Objects.equals(member4Id, group.member4Id) && Objects.equals(status, group.status) && Objects.equals(leader, group.leader) && Objects.equals(roomId, group.roomId);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(groupId, name, member1Id, member2Id, member3Id, member4Id, status, leader);
+    return Objects.hash(groupId, name, member1Id, member2Id, member3Id, member4Id, status, leader, roomId);
   }
 }

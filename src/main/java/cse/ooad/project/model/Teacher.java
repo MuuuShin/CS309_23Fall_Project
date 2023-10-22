@@ -1,7 +1,7 @@
 package cse.ooad.project.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 
 import java.util.Objects;
 
@@ -16,7 +16,7 @@ import java.util.Objects;
  *   <li>password: 教师密码，密码应该至少经过sha或hash加密。</li>
  * </ul>
  */
-@Getter
+@Data
 @Entity
 @Table(name = "teachers", schema = "public", catalog = "cs309a")
 public class Teacher {
@@ -36,14 +36,6 @@ public class Teacher {
     @Basic
     @Column(name = "password")
     private String password;
-
-    public void setTeacherId(Long teacherId) {
-        this.teacherId = teacherId;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     @Override
     public boolean equals(Object o) {

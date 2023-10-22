@@ -2,7 +2,7 @@ package cse.ooad.project.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 
 import java.util.List;
 import java.util.Objects;
@@ -26,7 +26,7 @@ import java.util.Objects;
  * </ul>
  * @see Comment
  */
-@Getter
+@Data
 @Entity
 @Table(name = "rooms", schema = "public", catalog = "cs309a")
 public class Room {
@@ -39,7 +39,7 @@ public class Room {
     private String name;
     @Basic
     @Column(name = "type")
-    private String type;
+    private int type;
     @Basic
     @Column(name = "intro")
     private String intro;
@@ -65,30 +65,6 @@ public class Room {
     @JsonIgnore
     @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Group group;
-
-    public void setRoomId(Long roomId) {
-        this.roomId = roomId;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setIntro(String intro) {
-        this.intro = intro;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
-
-    public void setFloorId(Long floorId) {
-        this.floorId = floorId;
-    }
 
     @Override
     public boolean equals(Object o) {

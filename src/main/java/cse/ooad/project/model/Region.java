@@ -2,7 +2,7 @@ package cse.ooad.project.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 
 import java.util.List;
 import java.util.Objects;
@@ -17,7 +17,7 @@ import java.util.Objects;
  *   <li>[映射]buildingList: 建筑列表。</li>
  * </ul>
  */
-@Getter
+@Data
 @Entity
 @Table(name = "regions", schema = "public", catalog = "cs309a")
 public class Region {
@@ -35,18 +35,6 @@ public class Region {
   @JsonIgnore
   @OneToMany(mappedBy = "region", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<Building> buildingList;
-
-  public void setRegionId(Long regionId) {
-    this.regionId = regionId;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public void setIntro(String intro) {
-    this.intro = intro;
-  }
 
   @Override
   public boolean equals(Object o) {

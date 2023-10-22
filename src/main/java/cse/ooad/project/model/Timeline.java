@@ -1,7 +1,7 @@
 package cse.ooad.project.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -23,7 +23,7 @@ import java.util.Objects;
  * </ul>
  *
  */
-@Getter
+@Data
 @Entity
 @Table(name = "timelines", schema = "public", catalog = "cs309a")
 public class Timeline {
@@ -33,7 +33,7 @@ public class Timeline {
     private Long timelineId;
     @Basic
     @Column(name = "type")
-    private String type;
+    private int type;
     @Basic
     @Column(name = "begin_time1")
     private Timestamp beginTime1;
@@ -58,46 +58,6 @@ public class Timeline {
     @Basic
     @Column(name = "end_time4")
     private Timestamp endTime4;
-
-    public void setTimelineId(Long timelineId) {
-        this.timelineId = timelineId;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public void setBeginTime1(Timestamp beginTime1) {
-        this.beginTime1 = beginTime1;
-    }
-
-    public void setEndTime1(Timestamp endTime1) {
-        this.endTime1 = endTime1;
-    }
-
-    public void setBeginTime2(Timestamp beginTime2) {
-        this.beginTime2 = beginTime2;
-    }
-
-    public void setEndTime2(Timestamp endTime2) {
-        this.endTime2 = endTime2;
-    }
-
-    public void setBeginTime3(Timestamp beginTime3) {
-        this.beginTime3 = beginTime3;
-    }
-
-    public void setEndTime3(Timestamp endTime3) {
-        this.endTime3 = endTime3;
-    }
-
-    public void setBeginTime4(Timestamp beginTime4) {
-        this.beginTime4 = beginTime4;
-    }
-
-    public void setEndTime4(Timestamp endTime4) {
-        this.endTime4 = endTime4;
-    }
 
     @Override
     public boolean equals(Object o) {

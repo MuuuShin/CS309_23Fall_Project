@@ -2,7 +2,7 @@ package cse.ooad.project.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 
 import java.util.List;
 import java.util.Objects;
@@ -25,7 +25,7 @@ import java.util.Objects;
  * </ul>
  * 在加入新成员时，按照1-4顺序插入(若有空位)。<br>
  */
-@Getter
+@Data
 @Entity
 @Table(name = "groups", schema = "public", catalog = "cs309a")
 public class Group {
@@ -70,38 +70,6 @@ public class Group {
   @OneToOne
   @JoinColumn(name = "room_id", insertable = false, updatable = false)
   private Room room;
-
-  public void setGroupId(Long groupId) {
-    this.groupId = groupId;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public void setMember1Id(Long member1Id) {
-    this.member1Id = member1Id;
-  }
-
-  public void setMember2Id(Long member2Id) {
-    this.member2Id = member2Id;
-  }
-
-  public void setMember3Id(Long member3Id) {
-    this.member3Id = member3Id;
-  }
-
-  public void setMember4Id(Long member4Id) {
-    this.member4Id = member4Id;
-  }
-
-  public void setStatus(String status) {
-    this.status = status;
-  }
-
-  public void setLeader(String leader) {
-    this.leader = leader;
-  }
 
   @Override
   public boolean equals(Object o) {

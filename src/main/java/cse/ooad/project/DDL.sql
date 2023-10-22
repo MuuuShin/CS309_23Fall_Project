@@ -1,6 +1,6 @@
 -- Database: cs309a
 
-create table if not exists regions
+create table if not exists public.regions
 (
     region_id bigint generated always as identity
         primary key,
@@ -8,10 +8,10 @@ create table if not exists regions
     intro     varchar(255)
 );
 
-alter table regions
+alter table public.regions
     owner to postgres;
 
-create table if not exists buildings
+create table if not exists public.buildings
 (
     building_id bigint generated always as identity
         primary key,
@@ -19,13 +19,13 @@ create table if not exists buildings
     intro       varchar(255),
     region_id   bigint
         constraint buildings_regions_null_fk
-            references regions
+            references public.regions
 );
 
-alter table buildings
+alter table public.buildings
     owner to postgres;
 
-create table if not exists floors
+create table if not exists public.floors
 (
     floor_id    bigint generated always as identity
         primary key,
@@ -33,31 +33,31 @@ create table if not exists floors
     intro       varchar(255),
     building_id bigint
         constraint floors_buildings_null_fk
-            references buildings
+            references public.buildings
 );
 
-alter table floors
+alter table public.floors
     owner to postgres;
 
-create table if not exists rooms
+create table if not exists public.rooms
 (
     room_id         bigint generated always as identity
         constraint room_pkey
             primary key,
     name            varchar(255),
-    type            varchar(255),
+    type            integer,
     intro           varchar(255),
     status          integer,
     floor_id        bigint
         constraint rooms_floors_null_fk
-            references floors,
+            references public.floors,
     comment_base_id bigint
 );
 
-alter table rooms
+alter table public.rooms
     owner to postgres;
 
-create table if not exists teachers
+create table if not exists public.teachers
 (
     teacher_id bigint generated always as identity
         primary key,
@@ -67,10 +67,10 @@ create table if not exists teachers
     password   varchar(255)
 );
 
-alter table teachers
+alter table public.teachers
     owner to postgres;
 
-create table if not exists comments
+create table if not exists public.comments
 (
     comment_id    bigint generated always as identity
         constraint commets_pkey
@@ -79,13 +79,14 @@ create table if not exists comments
     body          varchar(255),
     account_id    bigint,
     post_id       bigint,
-    creation_date timestamp(6)
+    creation_date timestamp(6),
+    disabled      boolean
 );
 
-alter table comments
+alter table public.comments
     owner to postgres;
 
-create table if not exists groups
+create table if not exists public.groups
 (
     group_id   bigint generated always as identity
         primary key,
@@ -98,13 +99,13 @@ create table if not exists groups
     leader     varchar(255),
     room_id    bigint
         constraint groups_rooms_null_fk
-            references rooms
+            references public.rooms
 );
 
-alter table groups
+alter table public.groups
     owner to postgres;
 
-create table if not exists students
+create table if not exists public.students
 (
     student_id bigint generated always as identity
         primary key,
@@ -113,37 +114,37 @@ create table if not exists students
     gender     smallint,
     group_id   bigint
         constraint students_groups_null_fk
-            references groups,
-    type       varchar(255),
+            references public.groups,
+    type       integer,
     awake_time time(6),
     sleep_time varchar(255),
     account    varchar(255),
     password   varchar(255)
 );
 
-alter table students
+alter table public.students
     owner to postgres;
 
-create table if not exists group_stars
+create table if not exists public.group_stars
 (
     group_id bigint not null
         constraint group_likes_groups_null_fk
-            references groups,
+            references public.groups,
     room_id  bigint not null
         constraint group_likes_rooms_null_fk
-            references rooms,
+            references public.rooms,
     constraint group_likes_pkey
         primary key (group_id, room_id)
 );
 
-alter table group_stars
+alter table public.group_stars
     owner to postgres;
 
-create table if not exists timelines
+create table if not exists public.timelines
 (
     timeline_id bigint generated always as identity
         primary key,
-    type        varchar(255),
+    type        integer,
     begin_time1 timestamp(0),
     end_time1   timestamp(0),
     begin_time2 timestamp(0),
@@ -154,6 +155,21 @@ create table if not exists timelines
     end_time4   timestamp(0)
 );
 
-alter table timelines
+alter table public.timelines
     owner to postgres;
+
+create table if not exists public.msgs
+(
+    msg_id    bigint not null
+        primary key,
+    src_id    bigint,
+    dst_id    bigint,
+    body      varchar(255),
+    timestamp timestamp,
+    unread    boolean
+);
+
+alter table public.msgs
+    owner to postgres;
+
 

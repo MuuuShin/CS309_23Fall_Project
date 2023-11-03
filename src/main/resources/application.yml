@@ -4,8 +4,8 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/cs309a
-    username: postgres
-    password: Qq1754479362
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     # replace ${DB_USERNAME} and ${DB_PASSWORD} with your own username and password
     # or set environment variables
   jpa:
@@ -16,9 +16,6 @@ spring:
       hibernate:
         temp:
           use_jdbc_metadata_defaults: true
-
-
-
     open-in-view: true
 
 

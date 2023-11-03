@@ -1,9 +1,8 @@
 package cse.ooad.project.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.Data;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Objects;
 
@@ -23,66 +22,43 @@ import java.util.Objects;
  * 对这个房间发起的评论视为对元评论的回复，其postId为元评论的commentId，accountId为发起评论的用户ID。<br>
  * 若对评论发起的评论，其postId为被回复的评论的commentId，accountId为发起评论的用户ID。<br>
  */
-@Getter
+@Data
 @Entity
 @Table(name = "comments", schema = "public", catalog = "cs309a")
 public class Comment {
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Id
-  @Column(name = "comment_id")
-  private Long commentId;
-  @Basic
-  @Column(name = "title")
-  private String title;
-  @Basic
-  @Column(name = "body")
-  private String body;
-  @Basic
-  @Column(name = "account_id")
-  private Long accountId;
-  @Basic
-  @Column(name = "post_id")
-  private Long postId;
-  @Basic
-  @Column(name = "creation_date")
-  private Timestamp creationTime;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @Column(name = "comment_id")
+    private Long commentId;
+    @Basic
+    @Column(name = "title")
+    private String title;
+    @Basic
+    @Column(name = "body")
+    private String body;
+    @Basic
+    @Column(name = "account_id")
+    private Long accountId;
+    @Basic
+    @Column(name = "post_id")
+    private Long postId;
+    @Basic
+    @Column(name = "creation_date")
+    private Timestamp creationTime;
+    @Basic
+    @Column(name = "disabled")
+    private Boolean disabled;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Comment comment = (Comment) o;
+        return Objects.equals(commentId, comment.commentId) && Objects.equals(title, comment.title) && Objects.equals(body, comment.body) && Objects.equals(accountId, comment.accountId) && Objects.equals(postId, comment.postId) && Objects.equals(creationTime, comment.creationTime) && Objects.equals(disabled, comment.disabled);
+    }
 
-
-  public void setCommentId(Long commentId) {
-    this.commentId = commentId;
-  }
-
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  public void setBody(String body) {
-    this.body = body;
-  }
-
-  public void setAccountId(Long accountId) {
-    this.accountId = accountId;
-  }
-
-  public void setPostId(Long postId) {
-    this.postId = postId;
-  }
-
-  public void setCreationTime(Timestamp creationTime) {
-    this.creationTime = creationTime;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Comment comment = (Comment) o;
-    return Objects.equals(commentId, comment.commentId) && Objects.equals(title, comment.title) && Objects.equals(body, comment.body) && Objects.equals(accountId, comment.accountId) && Objects.equals(postId, comment.postId) && Objects.equals(creationTime, comment.creationTime);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(commentId, title, body, accountId, postId, creationTime);
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(commentId, title, body, accountId, postId, creationTime, disabled);
+    }
 }

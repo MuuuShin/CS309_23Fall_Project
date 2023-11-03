@@ -45,7 +45,7 @@ public class Student {
     private Long groupId;
     @Basic
     @Column(name = "type")
-    private String type;
+    private int type;
     @Basic
     @Column(name = "awake_time")
     private Time awakeTime;
@@ -58,7 +58,6 @@ public class Student {
     @Basic
     @Column(name = "password")
     private String password;
-
 
     @JsonIgnore
     @ManyToOne

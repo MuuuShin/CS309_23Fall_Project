@@ -15,5 +15,4 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
 
     void removeByBuildingId(Long BuildingId);
 
-
 }

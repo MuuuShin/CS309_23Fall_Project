@@ -19,7 +19,10 @@ import java.util.Objects;
  *   <li>[映射]floorList: 楼层列表。</li>
  * </ul>
  */
+
+
 @Data
+
 @Entity
 @Table(name = "buildings", schema = "public", catalog = "cs309a")
 public class Building {

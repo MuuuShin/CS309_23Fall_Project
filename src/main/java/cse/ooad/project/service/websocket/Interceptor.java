@@ -25,7 +25,6 @@ public class Interceptor implements HandshakeInterceptor {
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
         WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         System.out.println("握手开始");
-        byte[] bytes;
 
         String sessionId = request.getHeaders().get("sessionId").get(0);
         if (Strings.isNotBlank(sessionId)) {

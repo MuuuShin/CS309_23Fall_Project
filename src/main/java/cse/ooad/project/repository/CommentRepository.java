@@ -11,6 +11,10 @@ import org.springframework.stereotype.Repository;
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
 
+    Comment getCommentByCommentId(Long id);
+
+    List<Comment> getCommentsByPostId(Long id);
+
 
 
 }

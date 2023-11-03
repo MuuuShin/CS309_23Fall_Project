@@ -51,7 +51,7 @@ public class Student {
     private Time awakeTime;
     @Basic
     @Column(name = "sleep_time")
-    private String sleepTime;
+    private Time sleepTime;
     @Basic
     @Column(name = "account")
     private String account;

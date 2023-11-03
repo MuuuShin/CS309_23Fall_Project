@@ -1,6 +1,11 @@
 package cse.ooad.project.service.websocket;
 
+import com.google.gson.Gson;
+import cse.ooad.project.model.Msg;
+import cse.ooad.project.repository.MsgRepository;
+import cse.ooad.project.service.MsgService;
 import java.time.LocalDateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -11,6 +16,15 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 public class HttpAuthHandler extends TextWebSocketHandler {
 
 
+
+    @Autowired
+    MsgRepository msgRepository;
+
+    @Autowired
+    MsgService msgService;
+
+    @Autowired
+    Gson gson;
 
     /**
      * socket 建立成功事件
@@ -42,6 +56,9 @@ public class HttpAuthHandler extends TextWebSocketHandler {
         // 获得客户端传来的消息
         String payload = message.getPayload();
         Object sessionId = session.getAttributes().get("session_id");
+        //todo 发来的payload会是一个Msg的Json格式, 因此直接转换为Msg
+        Msg msg = gson.fromJson(payload, Msg.class);
+        msgRepository.save(msg);
         System.out.println("server 接收到 " + sessionId + " 发送的 " + payload);
         session.sendMessage(new TextMessage("server 发送给 " + sessionId + " 消息 " + payload + " " + LocalDateTime.now().toString()));
     }

@@ -2,6 +2,8 @@ package cse.ooad.project;
 
 import cse.ooad.project.model.Building;
 import cse.ooad.project.repository.BuildingRepository;
+import java.util.HashMap;
+import java.util.HashSet;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,10 +14,8 @@ class Cs30923FallProjectApplicationTests {
 	BuildingRepository buildingRepository;
 	@Test
 	void contextLoads() {
-		Building build = new Building();
-		build.setName("国家安全局");
-		buildingRepository.save(build);
-
+		HashMap<String , String>  a = new HashMap<>();
+		System.out.println(a.get("4"));
 	}
 
 }

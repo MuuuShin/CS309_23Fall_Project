@@ -9,9 +9,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BuildingRepository extends JpaRepository<Building, Long> {
 
-    List<Building> findBuildingsByRegionId(Long regionId);
+    List<Building> getBuildingsByRegionId(Long regionId);
 
-    Building save(Building building);
 
     void removeByBuildingId(Long BuildingId);
 

@@ -1,6 +1,7 @@
-package cse.ooad.project.websocket;
+package cse.ooad.project.service.websocket;
 
 import cse.ooad.project.service.StudentService;
+import java.util.Arrays;
 import java.util.Map;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,10 +24,10 @@ public class Interceptor implements HandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
         WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-        System.out.println(studentService.verifyValidity());
         System.out.println("握手开始");
-        String hostName = request.getRemoteAddress().getHostName();
-        String sessionId = hostName + String.valueOf((int) (Math.random() * 1000));
+        byte[] bytes;
+
+        String sessionId = request.getHeaders().get("sessionId").get(0);
         if (Strings.isNotBlank(sessionId)) {
             // 放入属性域
             attributes.put("session_id", sessionId);

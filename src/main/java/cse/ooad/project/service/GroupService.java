@@ -5,6 +5,8 @@ import cse.ooad.project.model.Group;
 import cse.ooad.project.model.Room;
 import cse.ooad.project.model.Student;
 import cse.ooad.project.repository.GroupRepository;
+import cse.ooad.project.repository.RoomRepository;
+import cse.ooad.project.repository.StudentRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,20 +18,13 @@ public class GroupService {
     GroupRepository groupRepository;
 
     @Autowired
-    StudentService studentService;
+    RoomRepository roomRepository;
+    @Autowired
+    StudentRepository studentRepository;
 
     final Long STARLIMITE = 6L;
 
-    /**
-     * 传入一个学生和队伍名，由这个学生来创建队伍，一开始只有他一个人在队里
-     */
-    public void createGroup(Student student, String name) {
-        Group group = new Group();
-        group.setName(name);
-        group.setLeader(student.getName());
-        group.setMember1Id(student.getStudentId());
 
-    }
 
 
     /**
@@ -37,7 +32,6 @@ public class GroupService {
      */
     public void combineGroups(Group group1, Group group2) {
     }
-
 
     /**
      * group将room添加入star中
@@ -63,16 +57,13 @@ public class GroupService {
     }
 
 
-    /**
-     * 学生脱队，队长脱队后顺序继承，是最后一人则解散
-     *
-     * @param group
-     * @param student 脱队的学生
-     */
-    public void memberLeave(Group group, Student student) {
-    }
+
 
     public List<Student> getMemberList(Group group){
+        return null;
+    }
+
+    public List<Group> getGroupsList(){
         return null;
     }
 

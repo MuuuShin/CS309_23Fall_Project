@@ -1,10 +1,6 @@
-package cse.ooad.project.websocket;
+package cse.ooad.project.service.websocket;
 
-import cse.ooad.project.model.Student;
-import cse.ooad.project.service.StudentService;
-import java.io.IOException;
 import java.time.LocalDateTime;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -16,7 +12,6 @@ public class HttpAuthHandler extends TextWebSocketHandler {
 
 
 
-
     /**
      * socket 建立成功事件
      *
@@ -25,6 +20,7 @@ public class HttpAuthHandler extends TextWebSocketHandler {
      */
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+
         Object sessionId = session.getAttributes().get("session_id");
         if (sessionId != null) {
             // 用户连接成功，放入在线用户缓存
@@ -48,8 +44,8 @@ public class HttpAuthHandler extends TextWebSocketHandler {
         Object sessionId = session.getAttributes().get("session_id");
         System.out.println("server 接收到 " + sessionId + " 发送的 " + payload);
         session.sendMessage(new TextMessage("server 发送给 " + sessionId + " 消息 " + payload + " " + LocalDateTime.now().toString()));
-
     }
+
 
     /**
      * socket 断开连接时

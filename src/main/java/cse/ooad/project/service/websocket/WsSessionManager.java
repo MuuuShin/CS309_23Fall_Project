@@ -1,4 +1,4 @@
-package cse.ooad.project.websocket;
+package cse.ooad.project.service.websocket;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;

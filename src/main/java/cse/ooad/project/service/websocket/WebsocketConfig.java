@@ -1,4 +1,4 @@
-package cse.ooad.project.websocket;
+package cse.ooad.project.service.websocket;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;

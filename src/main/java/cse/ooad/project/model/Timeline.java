@@ -11,8 +11,8 @@ import java.util.Objects;
  * 属性列表：
  * <ul>
  *   <li>timelineId: 时间线ID，唯一标识时间线。</li>
- *   <li>type: 时间线类型，这个类型应该与学生type对应。</li>
- *   <li>beginTime1: 时间线开始时间1。</li>
+ *   <li>type: 时间线类型，这个类型应该与学生type对应。MASTER_MALE.MASTER_FEMALE,DOCTOR_MALE,DOCTOR_FEMALE 0,1,2,3</li>
+ *   <li>beginTime1: 时间线开始时间1。这里都是时间戳</li>
  *   <li>endTime1: 时间线结束时间1。</li>
  *   <li>beginTime2: 时间线开始时间2。</li>
  *   <li>endTime2: 时间线结束时间2。</li>
@@ -21,7 +21,6 @@ import java.util.Objects;
  *   <li>beginTime4: 时间线开始时间4。</li>
  *   <li>endTime4: 时间线结束时间4。</li>
  * </ul>
- *
  */
 @Data
 @Entity
@@ -33,7 +32,7 @@ public class Timeline {
     private Long timelineId;
     @Basic
     @Column(name = "type")
-    private int type;
+    private Integer type;
     @Basic
     @Column(name = "begin_time1")
     private Timestamp beginTime1;

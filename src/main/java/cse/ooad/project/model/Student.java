@@ -15,11 +15,12 @@ import java.util.Objects;
  *   <li>intro: 学生介绍,可供学生自行修改。</li>
  *   <li>gender: 学生性别。</li>
  *   <li>groupId: 队伍ID。</li>
- *   <li>type: 学生类型(如是研究生还是博士生)。</li>
- *   <li>awakeTime: 学生醒来时间。</li>
- *   <li>sleepTime: 学生睡觉时间。</li>
+ *   <li>type: 学生类型(如是研究生还是博士生)。MASTER_MALE.MASTER_FEMALE,DOCTOR_MALE,DOCTOR_FEMALE 0,1,2,3</li>
+ *   <li>awakeTime: 学生醒来时间。只存时分秒(Time)</li>
+ *   <li>sleepTime: 学生睡觉时间。只存时分秒(Time)</li>
  *   <li>account: 学生账户。</li>
  *   <li>password: 学生密码，密码应该至少经过sha或hash加密。</li>
+ *   <li>salt: 学生密码的盐。</li>
  *   <li>[映射]group: 学生所在队伍。</li>
  * </ul>
  */
@@ -45,7 +46,7 @@ public class Student {
     private Long groupId;
     @Basic
     @Column(name = "type")
-    private int type;
+    private Integer type;
     @Basic
     @Column(name = "awake_time")
     private Time awakeTime;
@@ -58,6 +59,9 @@ public class Student {
     @Basic
     @Column(name = "password")
     private String password;
+    @Basic
+    @Column(name = "salt")
+    private String salt;
 
     @JsonIgnore
     @ManyToOne
@@ -69,11 +73,11 @@ public class Student {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Student student = (Student) o;
-        return Objects.equals(studentId, student.studentId) && Objects.equals(name, student.name) && Objects.equals(intro, student.intro) && Objects.equals(gender, student.gender) && Objects.equals(groupId, student.groupId) && Objects.equals(type, student.type) && Objects.equals(awakeTime, student.awakeTime) && Objects.equals(sleepTime, student.sleepTime) && Objects.equals(account, student.account) && Objects.equals(password, student.password);
+        return Objects.equals(studentId, student.studentId) && Objects.equals(name, student.name) && Objects.equals(intro, student.intro) && Objects.equals(gender, student.gender) && Objects.equals(groupId, student.groupId) && Objects.equals(type, student.type) && Objects.equals(awakeTime, student.awakeTime) && Objects.equals(sleepTime, student.sleepTime) && Objects.equals(account, student.account) && Objects.equals(password, student.password)  && Objects.equals(salt, student.salt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(studentId, name, intro, gender, groupId, type, awakeTime, sleepTime, account, password);
+        return Objects.hash(studentId, name, intro, gender, groupId, type, awakeTime, sleepTime, account, password, salt);
     }
 }

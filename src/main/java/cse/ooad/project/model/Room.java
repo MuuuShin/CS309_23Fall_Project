@@ -14,9 +14,9 @@ import java.util.Objects;
  * <ul>
  *   <li>roomId: 房间ID，唯一标识房间。</li>
  *   <li>name: 房间名称。</li>
- *   <li>type: 房间类型，如是给博士生的还是硕士生的，是几人间。</li>
+ *   <li>type: 房间类型，如是给博士生的还是硕士生的，是几人间。MASTER_MALE.MASTER_FEMALE,DOCTOR_MALE,DOCTOR_FEMALE 0,1,2,3</li>
  *   <li>intro: 房间介绍。</li>
- *   <li>status: 房间状态，如是否被选择。</li>
+ *   <li>status: 房间状态，如是否被选择。UNSELECTED,SELECTED 0,1</li>
  *   <li>floorId: 所属楼层ID。</li>
  *   <li>commentBaseId: 元评论ID，在评论中此ID视作房间本身。 </li>
  *   <li>[映射]groupStarList: 收藏此房间的群组列表。</li>
@@ -24,6 +24,7 @@ import java.util.Objects;
  *   <li>[映射]group: 若被选择，给出选择的群组。</li>
  *   <li>[映射]commentBase: 元评论。</li>
  * </ul>
+ *
  * @see Comment
  */
 @Data
@@ -39,7 +40,7 @@ public class Room {
     private String name;
     @Basic
     @Column(name = "type")
-    private int type;
+    private Integer type;
     @Basic
     @Column(name = "intro")
     private String intro;

@@ -15,7 +15,7 @@ import java.util.Objects;
  *   <li>dstId: 消息接收者的标识。</li>
  *   <li>body: 消息内容。</li>
  *   <li>timestamp: 消息时间戳，表示消息发送的时间。</li>
- *   <li>unread: 消息是否已读的状态。</li>
+ *   <li>status: 消息是否已读的状态。UNREAD,READ 0,1</li>
  * </ul>
  */
 @Data
@@ -39,19 +39,19 @@ public class Msg {
     @Column(name = "timestamp")
     private Timestamp timestamp;
     @Basic
-    @Column(name = "unread")
-    private Boolean unread;
+    @Column(name = "status")
+    private int status;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Msg msg = (Msg) o;
-        return msgId == msg.msgId && Objects.equals(srcId, msg.srcId) && Objects.equals(dstId, msg.dstId) && Objects.equals(body, msg.body) && Objects.equals(timestamp, msg.timestamp) && Objects.equals(unread, msg.unread);
+        return msgId == msg.msgId && Objects.equals(srcId, msg.srcId) && Objects.equals(dstId, msg.dstId) && Objects.equals(body, msg.body) && Objects.equals(timestamp, msg.timestamp) && Objects.equals(status, msg.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(msgId, srcId, dstId, body, timestamp, unread);
+        return Objects.hash(msgId, srcId, dstId, body, timestamp, status);
     }
 }

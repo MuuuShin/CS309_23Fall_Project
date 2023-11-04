@@ -21,31 +21,31 @@ import java.util.Objects;
 @Entity
 @Table(name = "regions", schema = "public", catalog = "cs309a")
 public class Region {
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Id
-  @Column(name = "region_id")
-  private Long regionId;
-  @Basic
-  @Column(name = "name")
-  private String name;
-  @Basic
-  @Column(name = "intro")
-  private String intro;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @Column(name = "region_id")
+    private Long regionId;
+    @Basic
+    @Column(name = "name")
+    private String name;
+    @Basic
+    @Column(name = "intro")
+    private String intro;
 
-  @JsonIgnore
-  @OneToMany(mappedBy = "region", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-  private List<Building> buildingList;
+    @JsonIgnore
+    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Building> buildingList;
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    Region region = (Region) o;
-    return Objects.equals(regionId, region.regionId) && Objects.equals(name, region.name) && Objects.equals(intro, region.intro);
-  }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Region region = (Region) o;
+        return Objects.equals(regionId, region.regionId) && Objects.equals(name, region.name) && Objects.equals(intro, region.intro);
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(regionId, name, intro);
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(regionId, name, intro);
+    }
 }

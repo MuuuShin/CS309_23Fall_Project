@@ -14,6 +14,7 @@ import java.util.Objects;
  *   <li>permission: 教师权限，暂定分为拥有全部权限和只能增查权限两种。</li>
  *   <li>account: 教师账号。</li>
  *   <li>password: 教师密码，密码应该至少经过sha或hash加密。</li>
+ *   <li>salt: 教师密码的盐。</li>
  * </ul>
  */
 @Data
@@ -36,17 +37,20 @@ public class Teacher {
     @Basic
     @Column(name = "password")
     private String password;
+    @Basic
+    @Column(name = "salt")
+    private String salt;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Teacher teacher = (Teacher) o;
-        return Objects.equals(teacherId, teacher.teacherId) && Objects.equals(name, teacher.name) && Objects.equals(permission, teacher.permission) && Objects.equals(account, teacher.account) && Objects.equals(password, teacher.password);
+        return Objects.equals(teacherId, teacher.teacherId) && Objects.equals(name, teacher.name) && Objects.equals(permission, teacher.permission) && Objects.equals(account, teacher.account) && Objects.equals(password, teacher.password) && Objects.equals(salt, teacher.salt);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(teacherId, name, permission, account, password);
+        return Objects.hash(teacherId, name, permission, account, password, salt);
     }
 }

@@ -1,5 +1,6 @@
 package cse.ooad.project.model;
 
+import cse.ooad.project.utils.MessageStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -15,7 +16,7 @@ import java.util.Objects;
  *   <li>dstId: 消息接收者的标识。</li>
  *   <li>body: 消息内容。</li>
  *   <li>timestamp: 消息时间戳，表示消息发送的时间。</li>
- *   <li>status: 消息是否已读的状态。UNREAD,READ 0,1</li>
+ *   <li>status: 消息是否已读的状态。枚举类参见{@link MessageStatus}</li>
  * </ul>
  */
 @Data
@@ -25,7 +26,7 @@ public class Msg {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "msg_id")
-    private long msgId;
+    private Long msgId;
     @Basic
     @Column(name = "src_id")
     private Long srcId;
@@ -47,7 +48,7 @@ public class Msg {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Msg msg = (Msg) o;
-        return msgId == msg.msgId && Objects.equals(srcId, msg.srcId) && Objects.equals(dstId, msg.dstId) && Objects.equals(body, msg.body) && Objects.equals(timestamp, msg.timestamp) && Objects.equals(status, msg.status);
+        return Objects.equals(msgId, msg.msgId) && Objects.equals(srcId, msg.srcId) && Objects.equals(dstId, msg.dstId) && Objects.equals(body, msg.body) && Objects.equals(timestamp, msg.timestamp) && Objects.equals(status, msg.status);
     }
 
     @Override

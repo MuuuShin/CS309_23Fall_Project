@@ -13,7 +13,7 @@ import java.util.Objects;
  * <ul>
  *   <li>groupId: 群组ID，唯一标识群组。</li>
  *   <li>name: 群组名称。</li>
- *   <li>status: 群组状态，标识群是否已满，是否选择房间。</li>
+ *   <li>status: [保留]群组状态，标识群是否已满，是否选择房间。</li>
  *   <li>leader: 群组领袖，值为队长ID。</li>
  *   <li>roomId: 若选择了房间，给出房间的ID。没有则为-1。</li>
  *   <li>[映射]roomStarList: 群组收藏的房间列表。</li>
@@ -44,7 +44,7 @@ public class Group {
     private Long roomId;
 
     @JsonIgnore
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(
             name = "group_stars",
             joinColumns = @JoinColumn(name = "group_id"),

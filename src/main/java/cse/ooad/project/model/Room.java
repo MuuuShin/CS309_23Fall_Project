@@ -1,6 +1,8 @@
 package cse.ooad.project.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import cse.ooad.project.utils.RoomStatus;
+import cse.ooad.project.utils.StudentType;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -14,18 +16,17 @@ import java.util.Objects;
  * <ul>
  *   <li>roomId: 房间ID，唯一标识房间。</li>
  *   <li>name: 房间名称。</li>
- *   <li>type: 房间类型，如是给博士生的还是硕士生的，是几人间。MASTER_MALE.MASTER_FEMALE,DOCTOR_MALE,DOCTOR_FEMALE 0,1,2,3</li>
+ *   <li>type: 房间类型，如是给博士生的还是硕士生的，是几人间。枚举类参见{@link StudentType}</li>
  *   <li>intro: 房间介绍。</li>
- *   <li>status: 房间状态，如是否被选择。UNSELECTED,SELECTED 0,1</li>
+ *   <li>status: 房间状态，如是否被选择。枚举类参见{@link RoomStatus}</li>
  *   <li>floorId: 所属楼层ID。</li>
  *   <li>commentBaseId: 元评论ID，在评论中此ID视作房间本身。 </li>
  *   <li>[映射]groupStarList: 收藏此房间的群组列表。</li>
  *   <li>[映射]floor: 所属楼层。</li>
  *   <li>[映射]group: 若被选择，给出选择的群组。</li>
- *   <li>[映射]commentBase: 元评论。</li>
+ *   <li>[映射]commentBase: 元评论。评论原理参见{@link Comment}</li>
  * </ul>
- *
- * @see Comment
+
  */
 @Data
 @Entity
@@ -53,9 +54,12 @@ public class Room {
     @Basic
     @Column(name = "comment_base_id")
     private Long commentBaseId;
+    @Basic
+    @Column(name = "imgURL")
+    private String imgURL;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "roomStarList", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "roomStarList", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Group> groupStarList;
 
     @JsonIgnore
@@ -64,7 +68,7 @@ public class Room {
     private Floor floor;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL)
     private Group group;
 
     @Override

@@ -56,8 +56,13 @@ public class SearchService {
         String intro) {
         return studentRepository.getStudentsBySleepTimeLessThanAndAwakeTimeGreaterThanAndIntroLikeAndGenderAndType(
             sleepTime, awakeTime, intro, gender, type);
-
     }
+
+    public List<Student> searchStudents(){
+        return studentRepository.findAll();
+    }
+
+
 
 
     public Set<Group> searchGroups(Long gender, Time awakeTime, Time sleepTime,

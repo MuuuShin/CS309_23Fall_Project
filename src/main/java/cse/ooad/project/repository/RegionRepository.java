@@ -11,5 +11,7 @@ public interface RegionRepository extends JpaRepository<Region, Long> {
 
     List<Region> findAll();
 
+    Integer deleteByRegionId(Long id);
+
     //Region getRegionByRegionId(Long id);
 }

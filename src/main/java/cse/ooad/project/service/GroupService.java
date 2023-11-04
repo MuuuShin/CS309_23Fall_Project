@@ -112,8 +112,9 @@ public class GroupService {
      * 获取star列表
      */
 
-    public List<Room> getStarList(Group group) {
-        return group.getRoomStarList();
+    @Transactional
+    public List<Room> getStarList(Long id) {
+        return groupRepository.getGroupByGroupId(id).getRoomStarList();
     }
 
 

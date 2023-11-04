@@ -12,6 +12,6 @@ public interface BuildingRepository extends JpaRepository<Building, Long> {
     List<Building> getBuildingsByRegionId(Long regionId);
 
 
-    void removeByBuildingId(Long BuildingId);
+    Integer removeByBuildingId(Long BuildingId);
 
 }

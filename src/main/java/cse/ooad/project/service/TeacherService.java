@@ -83,8 +83,8 @@ public class TeacherService {
         regionRepository.save(region);
     }
 
-    public void deleteRegion(Region region) {
-        regionRepository.delete(region);
+    public Boolean deleteRegion(Long id) {
+        return regionRepository.deleteByRegionId(id) != 0;
     }
 
     public void updateRegion(Region region) {
@@ -99,8 +99,8 @@ public class TeacherService {
         roomRepository.save(room);
     }
 
-    public void deleteRoom(Room room) {
-        roomRepository.delete(room);
+    public Boolean deleteRoom(Long id) {
+         return roomRepository.deleteByRoomId(id) != 0;
     }
 
     public void saveBuilding(Building building) {
@@ -111,8 +111,8 @@ public class TeacherService {
         buildingRepository.save(building);
     }
 
-    public void deleteBuilding(Building building) {
-        buildingRepository.delete(building);
+    public Boolean deleteBuilding(Long id) {
+        return buildingRepository.removeByBuildingId(id) != 0;
     }
 
     public void saveTimeline(Timeline timeline) {

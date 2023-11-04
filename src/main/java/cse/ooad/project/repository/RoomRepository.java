@@ -10,4 +10,6 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     Room getRoomsByRoomId(Long id);
 
+    Integer deleteByRoomId(Long id);
+
 }

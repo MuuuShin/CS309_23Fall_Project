@@ -105,8 +105,10 @@ public class StudentService {
         //todo 发送退队消息
     }
 
-    public void sendMessage(Student src, Student sendTo, String message){
+    public void sendMessage(Long srcId, Long sendToId, String message){
         Msg msg = new Msg();
+        Student src = studentRepository.getStudentByStudentId(srcId);
+        Student sendTo = studentRepository.getStudentByStudentId(sendToId);
         msg.setStatus(MessageStatus.UNREAD.getStatusCode());
         msg.setTimestamp(new Timestamp(System.currentTimeMillis()));
         msg.setBody(message);
@@ -116,8 +118,8 @@ public class StudentService {
 
     }
 
-    public List<Msg> getMsgList(Student user, Student target){
-        msgRepository.getMsgsBySrcIdAndDstId(user.getStudentId(), target.getStudentId());
+    public List<Msg> getMsgList(Long id, Long toId){
+        msgRepository.getMsgsBySrcIdAndDstId(id, toId);
         return null;
     }
 
@@ -126,8 +128,8 @@ public class StudentService {
         commentRepository.save(comment);
     }
 
-    public void deleteComment(Comment comment){
-        commentRepository.delete(comment);
+    public void deleteComment(Long id){
+        commentRepository.deleteById(id);
     }
 
 

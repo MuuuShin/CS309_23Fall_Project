@@ -2,7 +2,6 @@ package cse.ooad.project.service;
 
 import cse.ooad.project.model.Timeline;
 import cse.ooad.project.repository.TimelineRepository;
-import cse.ooad.project.util.StudentType;
 import java.sql.Timestamp;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -41,7 +41,7 @@ public class StudentService {
 
     public void changeIntroduce(Student student, Time awakeTime,Time sleepTime,String intro){
         student.setAwakeTime(awakeTime);
-        //student.setSleepTime(sleepTime);
+        student.setSleepTime(sleepTime);
         student.setIntro(intro);
         studentRepository.save(student);
     }

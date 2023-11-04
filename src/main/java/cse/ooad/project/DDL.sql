@@ -1,5 +1,3 @@
--- Database: cs309a
-
 create table if not exists public.regions
 (
     region_id bigint generated always as identity
@@ -64,7 +62,8 @@ create table if not exists public.teachers
     name       varchar(255),
     permission varchar(255),
     account    varchar(255),
-    password   varchar(255)
+    password   varchar(255),
+    salt       varchar(255)
 );
 
 alter table public.teachers
@@ -88,16 +87,12 @@ alter table public.comments
 
 create table if not exists public.groups
 (
-    group_id   bigint generated always as identity
+    group_id bigint generated always as identity
         primary key,
-    name       varchar(255),
-    member1_id bigint,
-    member2_id bigint,
-    member3_id bigint,
-    member4_id bigint,
-    status     varchar(255),
-    leader     varchar(255),
-    room_id    bigint
+    name     varchar(255),
+    status   integer,
+    leader   bigint,
+    room_id  bigint
         constraint groups_rooms_null_fk
             references public.rooms
 );
@@ -119,7 +114,8 @@ create table if not exists public.students
     awake_time time(6),
     sleep_time varchar(255),
     account    varchar(255),
-    password   varchar(255)
+    password   varchar(255),
+    salt       varchar(255)
 );
 
 alter table public.students
@@ -166,10 +162,9 @@ create table if not exists public.msgs
     dst_id    bigint,
     body      varchar(255),
     timestamp timestamp,
-    unread    boolean
+    status    integer
 );
 
 alter table public.msgs
     owner to postgres;
-
 

@@ -90,11 +90,10 @@ public class GroupService {
 
 
     public List<Student> getMemberList(Group group) {
-        List<Student> memberList = new ArrayList<>();
         //todo
         //根据学生id获取队伍
 
-        return memberList;
+        return group.getMemberList();
     }
 
     public List<Group> getGroupsList() {

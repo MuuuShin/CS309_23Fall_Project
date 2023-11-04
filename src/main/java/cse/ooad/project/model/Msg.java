@@ -30,7 +30,7 @@ public class Msg {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "msg_id")
-    private long msgId;
+    private Long msgId;
     @Basic
     @Column(name = "src_id")
     private Long srcId;

@@ -13,10 +13,12 @@ import cse.ooad.project.repository.StudentRepository;
 import cse.ooad.project.utils.MessageStatus;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StudentService {
@@ -40,29 +42,27 @@ public class StudentService {
     MsgRepository msgRepository;
 
 
-    public void changeIntroduce(Student student, Time awakeTime,Time sleepTime,String intro){
-        student.setAwakeTime(awakeTime);
-        student.setSleepTime(sleepTime);
-        student.setIntro(intro);
+    public void changeIntroduce(Student student){
         studentRepository.save(student);
     }
 
-    public void changePassword(Student student,String oldPsw ,String newPsw){
-        if (Objects.equals(student.getPassword(), oldPsw)){
-            student.setPassword(newPsw);
-            studentRepository.save(student);
-        }
+    public void changePassword(Student student){
+        studentRepository.save(student);
     }
 
     /**
-     * 传入一个学生和队伍名，由这个学生来创建队伍，一开始只有他一个人在队里
+     * 传入一个学生id和队伍名，由这个学生来创建队伍，一开始只有他一个人在队里
      */
-    public void createGroup(Student student, String name) {
+    public void createGroup(Long id, String name) {
         Group group = new Group();
         group.setName(name);
-        //group.setLeader(student.getName());
-        group.getMemberList().add(student);
+        group.setMemberList(new ArrayList<>());
+        Student student = studentRepository.getStudentByStudentId(id);
+        group.setLeader(id);
         groupRepository.save(group);
+        System.out.println(group.getGroupId());
+        student.setGroupId(group.getGroupId());
+
 
     }
 
@@ -74,14 +74,18 @@ public class StudentService {
      */
     public boolean joinGroup(Student student, Group group){
         //获得阶段
+
         int stage = timelineService.getStage(student.getType());
         //不记得哪个阶段能加队伍了
-        /*Student leader = studentRepository.getStudentByStudentId();
+        Student leader = studentRepository.getStudentByStudentId(group.getLeader());
         if (leader.getType() == student.getType()){
             //todo 判断人数合不合适
-
+            if (group.getMemberList().size() == 4){
+                return false;
+            }
+            group.getMemberList().add(student);
             return true;
-        }*/
+        }
         return false;
     }
 
@@ -91,10 +95,7 @@ public class StudentService {
      * @param student 脱队的学生
      */
     public void memberLeave(Student student) {
-        Group group = student.getGroup();
-        group.getMemberList().remove(student);
-
-        groupRepository.save(group);
+        student.setGroupId(null);
         studentRepository.save(student);
         //todo 发送退队消息
     }

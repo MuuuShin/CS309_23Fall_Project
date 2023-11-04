@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,28 +54,32 @@ public class StudentService {
     /**
      * 传入一个学生id和队伍名，由这个学生来创建队伍，一开始只有他一个人在队里
      */
+    @Transactional
     public void createGroup(Long id, String name) {
         Group group = new Group();
         group.setName(name);
         group.setMemberList(new ArrayList<>());
         Student student = studentRepository.getStudentByStudentId(id);
         group.setLeader(id);
-        groupRepository.save(group);
-        System.out.println(group.getGroupId());
+        group.getMemberList().add(student);
+        group = groupRepository.save(group);
         student.setGroupId(group.getGroupId());
-
-
+        student = studentRepository.save(student);
+       // student.setGroupId(group.getGroupId());
     }
 
     /**
      * 会判断学生类型、队伍人数来决定能否加入
-     * @param student
-     * @param group
+     * @param studentId
+     * @param groupId
      * @return
      */
-    public boolean joinGroup(Student student, Group group){
-        //获得阶段
 
+    @Transactional
+    public boolean joinGroup(Long studentId, Long groupId){
+        //获得阶段
+        Student student = studentRepository.getStudentByStudentId(studentId);
+        Group group = groupRepository.getGroupByGroupId(groupId);
         int stage = timelineService.getStage(student.getType());
         //不记得哪个阶段能加队伍了
         Student leader = studentRepository.getStudentByStudentId(group.getLeader());

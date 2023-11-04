@@ -7,6 +7,7 @@ import cse.ooad.project.model.Student;
 import cse.ooad.project.repository.GroupRepository;
 import cse.ooad.project.repository.RoomRepository;
 import cse.ooad.project.repository.StudentRepository;
+import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,11 +41,14 @@ public class GroupService {
     /**
      * group将room添加入star中
      *
-     * @param group
-     * @param room
+     * @param groupId
+     * @param roomId
      * @return star数量没超就返回true，否则返回false
      */
-    public boolean starRoom(Group group, Room room) {
+    @Transactional
+    public boolean starRoom(Long groupId, Long roomId) {
+        Group group = groupRepository.getGroupByGroupId(groupId);
+        Room room = roomRepository.getRoomsByRoomId(roomId);
         int stage = timelineService.getStage(
             group.getMemberList().get(0).getType());
         if (stage != 1 && stage != 2){
@@ -61,7 +65,9 @@ public class GroupService {
     /**
      * @return 结合各个阶段判断选房是否成功
      */
-    public boolean chooseRoom(Group group, Room room) {
+    public boolean chooseRoom(Long groupId, Long roomId) {
+        Group group = groupRepository.getGroupByGroupId(groupId);
+        Room room = roomRepository.getRoomsByRoomId(roomId);
         int stage = timelineService.getStage(
             group.getMemberList().get(0).getType());
         if (stage == 2){
@@ -69,6 +75,7 @@ public class GroupService {
             if (!group.getRoomStarList().contains(room)){
                 return false;
             }
+            /*if (group.getMemberList().size() != room)*/
 
             //如果选房的人数不对
             //todo
@@ -88,11 +95,11 @@ public class GroupService {
         return false;
     }
 
-
-    public List<Student> getMemberList(Group group) {
+    @Transactional
+    public List<Student> getMemberList(Long id) {
         //todo
         //根据学生id获取队伍
-
+        Group group=groupRepository.getGroupByGroupId(id);
         return group.getMemberList();
     }
 
@@ -108,6 +115,7 @@ public class GroupService {
     public List<Room> getStarList(Group group) {
         return group.getRoomStarList();
     }
+
 
 
 }

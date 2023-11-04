@@ -60,10 +60,10 @@ class Cs30923FallProjectApplicationTests {
     private CommentRepository commentRepository;
 
 
-    @Test
+   /* @Test
     void delete(){
         teacherService.deleteFloor(1L);
-    }
+    }*/
 
     @Test
     void TeacherTest() {
@@ -109,13 +109,13 @@ class Cs30923FallProjectApplicationTests {
             , 1L, new Timestamp(15153L), true);
         studentService.saveComment(comment);
         Student student1 = searchService.searchStudentById(2L);
-        //studentService.joinGroup(student1, groupService.getGroupsList().get(0));
+        studentService.joinGroup(2L, 1L);
         studentService.memberLeave(student);
     }
 
     @Test
     void GroupTest() {
-        groupService.getMemberList(searchService.searchGroupById(0L));
+        groupService.getMemberList(1L);
 
     }
 

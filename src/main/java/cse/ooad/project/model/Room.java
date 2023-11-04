@@ -2,10 +2,14 @@ package cse.ooad.project.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
 import java.util.Objects;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.ToString.Exclude;
 
 
 /**
@@ -28,6 +32,8 @@ import java.util.Objects;
  * @see Comment
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "rooms", schema = "public", catalog = "cs309a")
 public class Room {
@@ -56,6 +62,7 @@ public class Room {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "roomStarList", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Exclude
     private List<Group> groupStarList;
 
     @JsonIgnore
@@ -64,7 +71,7 @@ public class Room {
     private Floor floor;
 
     @JsonIgnore
-    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL)
     private Group group;
 
     @Override

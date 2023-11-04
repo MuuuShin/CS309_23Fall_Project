@@ -99,7 +99,7 @@ public class GroupService {
 
     public List<Group> getGroupsList() {
 
-        return groupRepository.getGroups();
+        return groupRepository.findAll();
     }
 
     /**

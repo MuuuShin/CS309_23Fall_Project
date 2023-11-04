@@ -1,9 +1,11 @@
 package cse.ooad.project.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.Objects;
+import lombok.NoArgsConstructor;
 
 /**
  * {@link Teacher} 用于表示教师信息的实体类，包括教师的基本信息和属性。<br>
@@ -18,6 +20,8 @@ import java.util.Objects;
  * </ul>
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "teachers", schema = "public", catalog = "cs309a")
 public class Teacher {

@@ -12,7 +12,9 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
 
     void deleteByGroupId(Long id);
 
-    List<Group> getGroups();
+    Group getGroupByGroupId(Long id);
+
+    List<Group> findAll();
 
     Group getGroupByRoomId(Long id);
 

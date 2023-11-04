@@ -1,7 +1,7 @@
 package cse.ooad.project;
 
-import cse.ooad.project.model.Building;
-import cse.ooad.project.model.Student;
+import cse.ooad.project.model.*;
+
 import cse.ooad.project.repository.BuildingRepository;
 import cse.ooad.project.service.GroupService;
 import cse.ooad.project.service.LoginService;
@@ -12,9 +12,10 @@ import cse.ooad.project.service.SearchService;
 import cse.ooad.project.service.StudentService;
 import cse.ooad.project.service.TeacherService;
 import cse.ooad.project.service.TimelineService;
-import java.util.HashMap;
-import java.util.HashSet;
-import org.checkerframework.checker.units.qual.A;
+import java.io.File;
+
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -50,12 +51,66 @@ class Cs30923FallProjectApplicationTests {
 	TimelineService timelineService;
 
 
+
+
+
+
+	@Test
+	void TeacherTest(){
+		teacherService.batchSaveStudent( new File("E:\\student.csv"));
+		Region region = new Region(null, "美利坚特别行政区","二等公民聚居地", new ArrayList<>());
+		Building building = new Building(null, "北京天通苑","家用小厕所", 1L, region, new ArrayList<>());
+		Floor floor = new Floor(null, "L2", "阿巴阿巴", 1L, building, new ArrayList<>());
+		Room room = new Room(null, "爱之窝", 1, "wdawdawd", 1, 1L,1L,new ArrayList<>(), floor, null);
+		teacherService.saveRegion(region);
+		teacherService.saveBuilding(building);
+		teacherService.saveFloor(floor);
+		teacherService.saveRoom(room);
+		room.setIntro("nimama");
+		teacherService.updateRoom(room);
+	}
+
+	@Test
+	void SearchTest(){
+	Region region = searchService.searchRegionById(1L);
+		System.out.println(region);
+	List<Building> building = searchService.searchBuilding(region);
+		System.out.println(building);
+	List<Floor> floors = searchService.searchFloor(building.get(0));
+		System.out.println(floors);
+	List<Room> rooms = searchService.searchRoom(floors.get(0));
+		System.out.println(rooms);
+	}
+
+
 	@Test
 	void StudentTest(){
-		Student student = new Student( 	);
-		student.setIntro("我爱体测");
-		student.setPassword("12110425");
-		student.setAccount("12110425");
+
+	}
+
+	@Test
+	void GroupTest(){
+
+	}
+
+	@Test
+	void LoginTest(){
+
+	}
+
+
+	@Test
+	void MsgTest(){
+
+	}
+
+
+	@Test
+	void RoomTest(){}
+
+	@Test
+
+	void TimelineTest(){
 
 	}
 }

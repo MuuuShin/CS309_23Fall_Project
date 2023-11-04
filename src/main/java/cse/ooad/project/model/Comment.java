@@ -1,10 +1,12 @@
 package cse.ooad.project.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.sql.Timestamp;
 import java.util.Objects;
+import lombok.NoArgsConstructor;
 
 /**
  * {@link  Comment}用于表示评论信息的实体类，包括评论的基本信息和属性。<br>
@@ -23,6 +25,8 @@ import java.util.Objects;
  * 若对评论发起的评论，其postId为被回复的评论的commentId，accountId为发起评论的用户ID。<br>
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "comments", schema = "public", catalog = "cs309a")
 public class Comment {

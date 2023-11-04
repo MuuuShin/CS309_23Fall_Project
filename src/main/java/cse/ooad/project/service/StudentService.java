@@ -60,7 +60,7 @@ public class StudentService {
     public void createGroup(Student student, String name) {
         Group group = new Group();
         group.setName(name);
-        group.setLeader(student.getName());
+        //group.setLeader(student.getName());
         group.getMemberList().add(student);
         groupRepository.save(group);
 

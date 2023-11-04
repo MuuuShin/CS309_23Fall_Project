@@ -2,10 +2,14 @@ package cse.ooad.project.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
 import java.util.Objects;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.ToString.Exclude;
 
 /**
  * {@link  Floor}用于表示楼层信息的实体类，包括楼层的基本信息和属性。<br>
@@ -20,6 +24,8 @@ import java.util.Objects;
  * </ul>
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "floors", schema = "public", catalog = "cs309a")
 public class Floor {
@@ -44,6 +50,7 @@ public class Floor {
 
     @JsonIgnore
     @OneToMany(mappedBy = "floor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Exclude
     private List<Room> roomList;
 
     @Override

@@ -46,7 +46,7 @@ public class GroupService {
      */
     public boolean starRoom(Group group, Room room) {
         int stage = timelineService.getStage(
-            studentRepository.getReferenceById(group.getMember1Id()).getType());
+            group.getMemberList().get(0).getType());
         if (stage != 1 && stage != 2){
             return false;
         }
@@ -63,7 +63,7 @@ public class GroupService {
      */
     public boolean chooseRoom(Group group, Room room) {
         int stage = timelineService.getStage(
-            studentRepository.getReferenceById(group.getMember1Id()).getType());
+            group.getMemberList().get(0).getType());
         if (stage == 2){
             //如果选房的人没有star
             if (!group.getRoomStarList().contains(room)){
@@ -93,18 +93,7 @@ public class GroupService {
         List<Student> memberList = new ArrayList<>();
         //todo
         //根据学生id获取队伍
-        if (group.getMember1Id() != null){
-            memberList.add(studentRepository.getReferenceById(group.getMember1Id()));
-        }
-        if (group.getMember2Id() != null){
-            memberList.add(studentRepository.getReferenceById(group.getMember2Id()));
-        }
-        if (group.getMember3Id() != null){
-            memberList.add(studentRepository.getReferenceById(group.getMember4Id()));
-        }
-        if (group.getMember4Id() != null){
-            memberList.add(studentRepository.getReferenceById(group.getMember4Id()));
-        }
+
         return memberList;
     }
 

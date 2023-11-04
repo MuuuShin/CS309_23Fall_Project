@@ -9,4 +9,8 @@ public enum MessageStatus {
     MessageStatus(int statusCode){
         this.statusCode = statusCode;
     }
+
+    public int getStatusCode(){
+        return this.statusCode;
+    }
 }

@@ -10,6 +10,7 @@ import cse.ooad.project.repository.CommentRepository;
 import cse.ooad.project.repository.GroupRepository;
 import cse.ooad.project.repository.MsgRepository;
 import cse.ooad.project.repository.StudentRepository;
+import cse.ooad.project.utils.MessageStatus;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
@@ -60,7 +61,8 @@ public class StudentService {
         Group group = new Group();
         group.setName(name);
         group.setLeader(student.getName());
-        group.setMember1Id(student.getStudentId());
+        group.getMemberList().add(student);
+        groupRepository.save(group);
 
     }
 
@@ -74,12 +76,12 @@ public class StudentService {
         //获得阶段
         int stage = timelineService.getStage(student.getType());
         //不记得哪个阶段能加队伍了
-        Student leader = studentRepository.getStudentByStudentId(group.getMember1Id());
+        /*Student leader = studentRepository.getStudentByStudentId();
         if (leader.getType() == student.getType()){
             //todo 判断人数合不合适
 
             return true;
-        }
+        }*/
         return false;
     }
 
@@ -90,26 +92,8 @@ public class StudentService {
      */
     public void memberLeave(Student student) {
         Group group = student.getGroup();
-        if (Objects.equals(student.getStudentId(), group.getMember1Id())){
-            group.setMember1Id(null);
-            student.setGroup(null);
-            student.setGroupId(null);
-        }
-        if (Objects.equals(student.getStudentId(), group.getMember2Id())){
-            group.setMember2Id(null);
-            student.setGroup(null);
-            student.setGroupId(null);
-        }
-        if (Objects.equals(student.getStudentId(), group.getMember3Id())){
-            group.setMember3Id(null);
-            student.setGroup(null);
-            student.setGroupId(null);
-        }
-        if (Objects.equals(student.getStudentId(), group.getMember4Id())){
-            group.setMember4Id(null);
-            student.setGroup(null);
-            student.setGroupId(null);
-        }
+        group.getMemberList().remove(student);
+
         groupRepository.save(group);
         studentRepository.save(student);
         //todo 发送退队消息
@@ -117,7 +101,7 @@ public class StudentService {
 
     public void sendMessage(Student src, Student sendTo, String message){
         Msg msg = new Msg();
-        msg.setUnread(true);
+        msg.setStatus(MessageStatus.UNREAD.getStatusCode());
         msg.setTimestamp(new Timestamp(System.currentTimeMillis()));
         msg.setBody(message);
         msg.setSrcId(src.getStudentId());

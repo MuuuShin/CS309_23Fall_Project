@@ -6,7 +6,7 @@ import cse.ooad.project.repository.BuildingRepository;
 import cse.ooad.project.service.GroupService;
 import cse.ooad.project.service.LoginService;
 import cse.ooad.project.service.MsgService;
-import cse.ooad.project.service.NotificationService;
+
 import cse.ooad.project.service.RoomService;
 import cse.ooad.project.service.SearchService;
 import cse.ooad.project.service.StudentService;

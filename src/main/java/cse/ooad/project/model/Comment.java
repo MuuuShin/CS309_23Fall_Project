@@ -1,8 +1,9 @@
 package cse.ooad.project.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+
+import lombok.*;
+
 
 import java.sql.Timestamp;
 import java.util.Objects;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
  *   <li>commentId: 评论ID，唯一标识评论。</li>
  *   <li>title: 评论标题。</li>
  *   <li>body: 评论内容。</li>
- *   <li>accountId: 评论发表者的帐户ID。</li>
+ *   <li>userId: 评论发表者的帐户ID。老师和学生都可以评论。</li>
  *   <li>postId: 评论所属的帖子ID。</li>
  *   <li>creationTime: 评论创建时间。</li>
  * </ul>
@@ -24,9 +25,11 @@ import lombok.NoArgsConstructor;
  * 对这个房间发起的评论视为对元评论的回复，其postId为元评论的commentId，accountId为发起评论的用户ID。<br>
  * 若对评论发起的评论，其postId为被回复的评论的commentId，accountId为发起评论的用户ID。<br>
  */
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+
 @Entity
 @Table(name = "comments", schema = "public", catalog = "cs309a")
 public class Comment {
@@ -41,8 +44,8 @@ public class Comment {
     @Column(name = "body")
     private String body;
     @Basic
-    @Column(name = "account_id")
-    private Long accountId;
+    @Column(name = "user_id")
+    private Long userId;
     @Basic
     @Column(name = "post_id")
     private Long postId;
@@ -58,11 +61,11 @@ public class Comment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Comment comment = (Comment) o;
-        return Objects.equals(commentId, comment.commentId) && Objects.equals(title, comment.title) && Objects.equals(body, comment.body) && Objects.equals(accountId, comment.accountId) && Objects.equals(postId, comment.postId) && Objects.equals(creationTime, comment.creationTime) && Objects.equals(disabled, comment.disabled);
+        return Objects.equals(commentId, comment.commentId) && Objects.equals(title, comment.title) && Objects.equals(body, comment.body) && Objects.equals(userId, comment.userId) && Objects.equals(postId, comment.postId) && Objects.equals(creationTime, comment.creationTime) && Objects.equals(disabled, comment.disabled);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(commentId, title, body, accountId, postId, creationTime, disabled);
+        return Objects.hash(commentId, title, body, userId, postId, creationTime, disabled);
     }
 }

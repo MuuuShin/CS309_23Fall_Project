@@ -50,7 +50,7 @@ public class Group {
     private Long roomId;
 
     @JsonIgnore
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinTable(
             name = "group_stars",
             joinColumns = @JoinColumn(name = "group_id"),

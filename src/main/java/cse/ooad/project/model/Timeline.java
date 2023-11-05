@@ -2,10 +2,12 @@ package cse.ooad.project.model;
 
 import cse.ooad.project.utils.StudentType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.sql.Timestamp;
 import java.util.Objects;
+import lombok.NoArgsConstructor;
 
 /**
  * {@link Timeline} 用于表示时间线信息的实体类，包括时间线的基本信息和属性。这个类用来标明不同type的学生选房的四个阶段时间段。<br>
@@ -24,6 +26,8 @@ import java.util.Objects;
  * </ul>
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "timelines", schema = "public", catalog = "cs309a")
 public class Timeline {

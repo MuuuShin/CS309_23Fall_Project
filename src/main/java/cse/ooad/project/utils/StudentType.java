@@ -1,8 +1,8 @@
 package cse.ooad.project.utils;
 
 public enum StudentType {
-    MASTER_MALE("MASTER_MALE", 0),DOCTOR_MALE("DOCTOR-MALE", 1),
-    MASTER_FEMALE("MASTER_FEMALE", 2), DOCTOR_FEMALE("DOCTOR_FEMALE", 3);
+    MASTER_MALE("MASTER_MALE", 1),DOCTOR_MALE("DOCTOR-MALE", 3),
+    MASTER_FEMALE("MASTER_FEMALE", 2), DOCTOR_FEMALE("DOCTOR_FEMALE", 4);
 
     public final String name;
     public final int type;

@@ -2,10 +2,14 @@ package cse.ooad.project.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
 import java.util.Objects;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+import lombok.ToString.Exclude;
 
 /**
  * {@link  Group}用于表示群组信息的实体类，包括群组的基本信息和属性。<br>
@@ -23,6 +27,8 @@ import java.util.Objects;
  * 在加入新成员时，按照1-4顺序插入(若有空位)。<br>
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "groups", schema = "public", catalog = "cs309a")
 public class Group {
@@ -38,7 +44,7 @@ public class Group {
     private String status;
     @Basic
     @Column(name = "leader")
-    private String leader;
+    private Long leader;
     @Basic
     @Column(name = "room_id")
     private Long roomId;
@@ -49,15 +55,18 @@ public class Group {
             name = "group_stars",
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "room_id"))
+    @Exclude
     private List<Room> roomStarList;
 
     @JsonIgnore
     @OneToOne
     @JoinColumn(name = "room_id", insertable = false, updatable = false)
+    @Exclude
     private Room room;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = false, fetch = FetchType.LAZY)
+    @Exclude
     private List<Student> memberList;
 
 

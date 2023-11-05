@@ -9,14 +9,18 @@ import cse.ooad.project.model.Student;
 import cse.ooad.project.repository.CommentRepository;
 import cse.ooad.project.repository.GroupRepository;
 import cse.ooad.project.repository.MsgRepository;
+import cse.ooad.project.repository.RegionRepository;
 import cse.ooad.project.repository.StudentRepository;
 import cse.ooad.project.utils.MessageStatus;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class StudentService {
@@ -38,69 +42,85 @@ public class StudentService {
 
     @Autowired
     MsgRepository msgRepository;
+    @Autowired
+    private RegionRepository regionRepository;
 
 
-    public void changeIntroduce(Student student, Time awakeTime,Time sleepTime,String intro){
-        student.setAwakeTime(awakeTime);
-        student.setSleepTime(sleepTime);
-        student.setIntro(intro);
+    public void changeIntroduce(Student student){
         studentRepository.save(student);
     }
 
-    public void changePassword(Student student,String oldPsw ,String newPsw){
-        if (Objects.equals(student.getPassword(), oldPsw)){
-            student.setPassword(newPsw);
-            studentRepository.save(student);
-        }
+    public void changePassword(Student student){
+        studentRepository.save(student);
     }
 
     /**
-     * 传入一个学生和队伍名，由这个学生来创建队伍，一开始只有他一个人在队里
+     * 传入一个学生id和队伍名，由这个学生来创建队伍，一开始只有他一个人在队里
      */
-    public void createGroup(Student student, String name) {
+    @Transactional
+    public Group createGroup(Long id, String name) {
         Group group = new Group();
         group.setName(name);
-        group.setLeader(student.getName());
+        group.setMemberList(new ArrayList<>());
+        Student student = studentRepository.getStudentByStudentId(id);
+        group.setLeader(id);
         group.getMemberList().add(student);
-        groupRepository.save(group);
+        group = groupRepository.save(group);
+        student.setGroupId(group.getGroupId());
+        studentRepository.save(student);
+        return group;
 
     }
 
     /**
      * 会判断学生类型、队伍人数来决定能否加入
-     * @param student
-     * @param group
+     * @param studentId
+     * @param groupId
      * @return
      */
-    public boolean joinGroup(Student student, Group group){
+
+    @Transactional
+    public boolean joinGroup(Long studentId, Long groupId){
         //获得阶段
+        Student student = studentRepository.getStudentByStudentId(studentId);
+        Group group = groupRepository.getGroupByGroupId(groupId);
         int stage = timelineService.getStage(student.getType());
         //不记得哪个阶段能加队伍了
-        /*Student leader = studentRepository.getStudentByStudentId();
-        if (leader.getType() == student.getType()){
+        Student leader = studentRepository.getStudentByStudentId(group.getLeader());
+        if (Objects.equals(leader.getType(), student.getType())){
             //todo 判断人数合不合适
-
+            if (group.getMemberList().size() == 4){
+                return false;
+            }
+            //判断有没有加入队伍
+            if (student.getGroup() != null){
+                return false;
+            }
+            group.getMemberList().add(student);
+            student.setGroupId(groupId);
+            studentRepository.save(student);
             return true;
-        }*/
+        }
         return false;
     }
 
     /**
      * 学生脱队，队长脱队后顺序继承，是最后一人则解散
      *会自动给队长发退队消息
-     * @param student 脱队的学生
+     * @param id 脱队的学生
      */
-    public void memberLeave(Student student) {
-        Group group = student.getGroup();
-        group.getMemberList().remove(student);
-
-        groupRepository.save(group);
+    public Boolean memberLeave(Long id) {
+        Student student = studentRepository.getStudentByStudentId(id);
+        student.setGroupId(null);
         studentRepository.save(student);
         //todo 发送退队消息
+        return true;
     }
 
-    public void sendMessage(Student src, Student sendTo, String message){
+    public void sendMessage(Long srcId, Long sendToId, String message){
         Msg msg = new Msg();
+        Student src = studentRepository.getStudentByStudentId(srcId);
+        Student sendTo = studentRepository.getStudentByStudentId(sendToId);
         msg.setStatus(MessageStatus.UNREAD.getStatusCode());
         msg.setTimestamp(new Timestamp(System.currentTimeMillis()));
         msg.setBody(message);
@@ -110,18 +130,19 @@ public class StudentService {
 
     }
 
-    public List<Msg> getMsgList(Student user, Student target){
-        msgRepository.getMsgsBySrcIdAndDstId(user.getStudentId(), target.getStudentId());
+    public List<Msg> getMsgList(Long id, Long toId){
+        msgRepository.getMsgsBySrcIdAndDstId(id, toId);
         return null;
     }
 
 
-    public void saveComment(Comment comment){
+    public Comment saveComment(Comment comment){
         commentRepository.save(comment);
+        return comment;
     }
 
-    public void deleteComment(Comment comment){
-        commentRepository.delete(comment);
+    public Boolean deleteComment(Long id){
+        return commentRepository.deleteByCommentId(id)!= 0;
     }
 
 

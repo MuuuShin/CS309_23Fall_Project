@@ -27,7 +27,6 @@ public class MsgService {
     public void saveMsg(Msg msg) {
         msgRepository.save(msg);
         forwardMsg(msg);
-
     }
 
     public void forwardMsg(Msg msg) {

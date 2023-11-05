@@ -1,9 +1,7 @@
 package cse.ooad.project.repository;
 
 import cse.ooad.project.model.Student;
-import cse.ooad.project.service.StudentService;
 import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -17,9 +15,10 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     List<Student> getStudentsByName(String name);
 
-    List<Student> getStudentsBySleepTimeLessThanAndAwakeTimeGreaterThanAndIntroLikeAAndGenderAAndType(
+    List<Student> getStudentsBySleepTimeLessThanAndAwakeTimeGreaterThanAndIntroLikeAndGenderAndType(
         Time sleepTime, Time awakeTime, String intro,Long gender, Long type);
 
+    Integer deleteByStudentId(Long id);
 
 
 }

@@ -6,6 +6,7 @@ import cse.ooad.project.model.Group;
 import cse.ooad.project.model.Room;
 import cse.ooad.project.repository.CommentRepository;
 import cse.ooad.project.repository.RoomRepository;
+import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +23,14 @@ public class RoomService {
     CommentRepository commentRepository;
 
 
-    public List<Group> getGroupStarList(Room room) {
-        return room.getGroupStarList();
+    @Transactional
+    public List<Group> getGroupStarList(Long id) {
+        return roomRepository.getRoomsByRoomId(id).getGroupStarList();
     }
 
 
-    public List<Comment> getCommentsByRoom(Room room) {
+    public List<Comment> getCommentsByRoom(Long id) {
+        Room room = roomRepository.getRoomsByRoomId(id);
         int index = 0;
         List<Comment> commentList = new ArrayList<>();
         commentList.add(commentRepository.getCommentByCommentId(room.getCommentBaseId()));

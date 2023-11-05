@@ -3,10 +3,12 @@ package cse.ooad.project.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import cse.ooad.project.utils.StudentType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.sql.Time;
 import java.util.Objects;
+import lombok.NoArgsConstructor;
 
 /**
  * {@link  Student}用于表示学生信息的实体类，包括学生的基本信息和属性。<br>
@@ -24,6 +26,8 @@ import java.util.Objects;
  * </ul>
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "students", schema = "public", catalog = "cs309a")
 public class Student {

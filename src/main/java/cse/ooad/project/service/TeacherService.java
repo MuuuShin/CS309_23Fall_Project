@@ -23,7 +23,9 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,8 +59,8 @@ public class TeacherService {
         studentRepository.save(student);
     }
 
-    public void deleteStudent(Long id) {
-        studentRepository.deleteById(id);
+    public Boolean deleteStudent(Long id) {
+        return studentRepository.deleteByStudentId(id) != 0;
     }
 
     public void updateStudent(Student student) {
@@ -136,15 +138,46 @@ public class TeacherService {
                 list.add(student);
             }
             studentRepository.saveAll(list);
-
-
-
             csvReader.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
-
+    public void batchSaveRoom(File file) {
+        try {
+            DataInputStream in = new DataInputStream(new FileInputStream(file));
+            CSVReader csvReader = new CSVReader(new InputStreamReader(in, StandardCharsets.UTF_8),
+                CSVParser.DEFAULT_SEPARATOR,
+                CSVParser.DEFAULT_QUOTE_CHARACTER, CSVParser.DEFAULT_ESCAPE_CHARACTER, 1);
+            String[] strs;
+            while ((strs = csvReader.readNext()) != null) {
+                Region region = new Region();
+                region.setName(strs[0]);
+                region.setIntro(strs[1]);
+                region = regionRepository.save(region);
+                Building building = new Building();
+                building.setName(strs[2]);
+                building.setIntro(strs[3]);
+                building.setRegionId(region.getRegionId());
+                building = buildingRepository.save(building);
+                Floor floor = new Floor();
+                floor.setName(strs[4]);
+                floor.setIntro(strs[5]);
+                floor.setBuildingId(building.getBuildingId());
+                floor = floorRepository.save(floor);
+                Room room = new Room();
+                room.setName(strs[6]);
+                room.setIntro(strs[7]);
+                room.setType(Integer.parseInt(strs[8]));
+                room.setStatus(Integer.parseInt(strs[9]));
+                room.setFloorId(floor.getFloorId());
+                roomRepository.save(room);
+            }
+            csvReader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

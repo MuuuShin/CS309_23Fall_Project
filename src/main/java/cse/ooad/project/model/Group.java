@@ -61,10 +61,11 @@ public class Group {
     @JsonIgnore
     @OneToOne
     @JoinColumn(name = "room_id", insertable = false, updatable = false)
+    @Exclude
     private Room room;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = false, fetch = FetchType.LAZY)
     @Exclude
     private List<Student> memberList;
 

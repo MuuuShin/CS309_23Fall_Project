@@ -18,6 +18,8 @@ import cse.ooad.project.service.SearchService;
 import cse.ooad.project.service.StudentService;
 import cse.ooad.project.service.TeacherService;
 import cse.ooad.project.service.TimelineService;
+import cse.ooad.project.utils.RoomType;
+import cse.ooad.project.utils.StudentType;
 import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -59,63 +61,58 @@ class Cs30923FallProjectApplicationTests {
     @Autowired
     private CommentRepository commentRepository;
 
-
-   /* @Test
-    void delete(){
-        teacherService.deleteFloor(1L);
-    }*/
-
     @Test
     void TeacherTest() {
         teacherService.batchSaveStudent(new File("E:\\student.csv"));
-        Region region = new Region(null, "美利坚特别行政区", "二等公民聚居地", new ArrayList<>());
-        Building building = new Building(null, "北京天通苑", "家用小厕所", 1L, region,
-            new ArrayList<>());
-        Floor floor = new Floor(null, "L2", "阿巴阿巴", 1L, building, new ArrayList<>());
-        Room room = new Room(null, "爱之窝", 1, "wdawdawd", 1, 1L, 1L, new ArrayList<>(), floor,
-            null);
-        teacherService.saveRegion(region);
-        teacherService.saveBuilding(building);
-        teacherService.saveFloor(floor);
-        teacherService.saveRoom(room);
-        room.setIntro("nimama");
-        teacherService.updateRoom(room);
+        teacherService.batchSaveRoom(new File("E:\\Rooms.csv"));
+
         Timeline timeline = new Timeline(null, 1, new Timestamp(1), new Timestamp(100000000000L),
             new Timestamp(10), new Timestamp(20), new Timestamp(20), new Timestamp(30),
             new Timestamp(30), new Timestamp(40));
         teacherService.saveTimeline(timeline);
     }
 
-    @Test
-    void SearchTest() {
-        Region region = searchService.searchRegionById(1L);
-        System.out.println(region);
-        List<Building> building = searchService.searchBuilding(1L);
-        System.out.println(building);
-        List<Floor> floors = searchService.searchFloor(1L);
-        System.out.println(floors);
-        List<Room> rooms = searchService.searchRoom(1L);
-        System.out.println(rooms);
-    }
 
 
     @Test
     void StudentTest() {
-        studentService.createGroup(1L, "冒险小虎队");
+        System.out.println(studentService.createGroup(1L, "冒险小虎队"));
+        System.out.println(studentService.createGroup(2L, "多多探险队"));
         Student student = searchService.searchStudentById(1L);
         student.setIntro("我爱洗澡皮肤好好");
+        student.setType(StudentType.MASTER_MALE.type);
         studentService.changeIntroduce(student);
         Comment comment = new Comment(null, "震惊", "西天取经", student.getStudentId()
-            , 1L, new Timestamp(15153L), true);
+            , 2L, new Timestamp(15153L), true);
         studentService.saveComment(comment);
-        Student student1 = searchService.searchStudentById(2L);
-        studentService.joinGroup(2L, 1L);
-        studentService.memberLeave(student);
+        System.out.println(studentService.joinGroup(3L, 2L));
+        System.out.println(studentService.joinGroup(3L, 1L));
+        System.out.println(studentService.joinGroup(4L, 2L));
+        System.out.println(studentService.joinGroup(4L, 1L));
+
     }
 
     @Test
     void GroupTest() {
+        TimelineService.STATUS = 1;
         groupService.getMemberList(1L);
+        System.out.println(groupService.starRoom(1L, 1L));
+        System.out.println(groupService.starRoom(1L, 2L));
+        System.out.println(groupService.chooseRoom(1L, 1L));
+        //System.out.println(groupService.getStarList(1L));
+        TimelineService.STATUS = 2;
+        System.out.println(groupService.chooseRoom(1L, 3L));
+        System.out.println(groupService.chooseRoom(1L, 1L));
+        System.out.println(groupService.getGroupsList());
+        System.out.println(groupService.chooseRoom(2L, 1L));
+        TimelineService.STATUS = 3;
+        studentService.memberLeave(3L);
+        studentService.createGroup(3L, "冒险小虎队1984");
+        System.out.println(groupService.chooseRoom(2L, 1L));
+        System.out.println(groupService.chooseRoom(1L, 1L));
+        System.out.println(groupService.chooseRoom(3L, 1L));
+
+
 
     }
 
@@ -134,11 +131,29 @@ class Cs30923FallProjectApplicationTests {
 
     @Test
     void RoomTest() {
-
+        System.out.println(roomService.getGroupStarList(1L));
+        System.out.println(roomService.getCommentsByRoom(1L));
     }
 
     @Test
     void TimelineTest() {
 
     }
+
+    @Test
+    void SearchTest() {
+        Region region = searchService.searchRegionById(1L);
+        System.out.println(region);
+        List<Building> building = searchService.searchBuilding(1L);
+        System.out.println(building);
+        List<Floor> floors = searchService.searchFloor(1L);
+        System.out.println(floors);
+        List<Room> rooms = searchService.searchRoom(1L);
+        System.out.println(rooms);
+
+        System.out.println(searchService.searchCommentById(1L));
+        System.out.println(searchService.searchMsgById(1L));
+        System.out.println(searchService.searchStudents());
+    }
+
 }

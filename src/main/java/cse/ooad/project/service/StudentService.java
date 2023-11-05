@@ -9,6 +9,7 @@ import cse.ooad.project.model.Student;
 import cse.ooad.project.repository.CommentRepository;
 import cse.ooad.project.repository.GroupRepository;
 import cse.ooad.project.repository.MsgRepository;
+import cse.ooad.project.repository.RegionRepository;
 import cse.ooad.project.repository.StudentRepository;
 import cse.ooad.project.utils.MessageStatus;
 import java.sql.Time;
@@ -41,6 +42,8 @@ public class StudentService {
 
     @Autowired
     MsgRepository msgRepository;
+    @Autowired
+    private RegionRepository regionRepository;
 
 
     public void changeIntroduce(Student student){
@@ -55,7 +58,7 @@ public class StudentService {
      * 传入一个学生id和队伍名，由这个学生来创建队伍，一开始只有他一个人在队里
      */
     @Transactional
-    public void createGroup(Long id, String name) {
+    public Group createGroup(Long id, String name) {
         Group group = new Group();
         group.setName(name);
         group.setMemberList(new ArrayList<>());
@@ -64,8 +67,9 @@ public class StudentService {
         group.getMemberList().add(student);
         group = groupRepository.save(group);
         student.setGroupId(group.getGroupId());
-        student = studentRepository.save(student);
-       // student.setGroupId(group.getGroupId());
+        studentRepository.save(student);
+        return group;
+
     }
 
     /**
@@ -83,12 +87,18 @@ public class StudentService {
         int stage = timelineService.getStage(student.getType());
         //不记得哪个阶段能加队伍了
         Student leader = studentRepository.getStudentByStudentId(group.getLeader());
-        if (leader.getType() == student.getType()){
+        if (Objects.equals(leader.getType(), student.getType())){
             //todo 判断人数合不合适
             if (group.getMemberList().size() == 4){
                 return false;
             }
+            //判断有没有加入队伍
+            if (student.getGroup() != null){
+                return false;
+            }
             group.getMemberList().add(student);
+            student.setGroupId(groupId);
+            studentRepository.save(student);
             return true;
         }
         return false;
@@ -97,12 +107,14 @@ public class StudentService {
     /**
      * 学生脱队，队长脱队后顺序继承，是最后一人则解散
      *会自动给队长发退队消息
-     * @param student 脱队的学生
+     * @param id 脱队的学生
      */
-    public void memberLeave(Student student) {
+    public Boolean memberLeave(Long id) {
+        Student student = studentRepository.getStudentByStudentId(id);
         student.setGroupId(null);
         studentRepository.save(student);
         //todo 发送退队消息
+        return true;
     }
 
     public void sendMessage(Long srcId, Long sendToId, String message){
@@ -124,12 +136,13 @@ public class StudentService {
     }
 
 
-    public void saveComment(Comment comment){
+    public Comment saveComment(Comment comment){
         commentRepository.save(comment);
+        return comment;
     }
 
-    public void deleteComment(Long id){
-        commentRepository.deleteById(id);
+    public Boolean deleteComment(Long id){
+        return commentRepository.deleteByCommentId(id)!= 0;
     }
 
 

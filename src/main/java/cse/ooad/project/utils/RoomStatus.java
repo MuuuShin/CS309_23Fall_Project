@@ -1,10 +1,10 @@
 package cse.ooad.project.utils;
 
 public enum RoomStatus {
-    SELECTED(0), UNSELECTED(1);
+    SELECTED(1), UNSELECTED(0);
 
 
-    final int statusCode;
+    public final int statusCode;
     RoomStatus(int statusCode){
         this.statusCode = statusCode;
     }

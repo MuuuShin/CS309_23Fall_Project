@@ -11,6 +11,8 @@ import cse.ooad.project.repository.GroupRepository;
 import cse.ooad.project.repository.MsgRepository;
 import cse.ooad.project.repository.StudentRepository;
 import cse.ooad.project.utils.MessageStatus;
+
+import java.io.File;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
@@ -60,7 +62,7 @@ public class StudentService {
     public void createGroup(Student student, String name) {
         Group group = new Group();
         group.setName(name);
-        group.setLeader(student.getName());
+        //group.setLeader(student.getName());
         group.getMemberList().add(student);
         groupRepository.save(group);
 
@@ -125,12 +127,11 @@ public class StudentService {
     }
 
 
-
-
-
-
-
-
-
+    public boolean batchSaveDormitory(File file) {
+        if (file == null) {
+            return false;
+        }
+        return true;
+    }
 }
 

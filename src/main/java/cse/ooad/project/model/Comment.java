@@ -12,6 +12,7 @@ import java.util.Objects;
  * <ul>
  *   <li>commentId: 评论ID，唯一标识评论。</li>
  *   <li>title: 评论标题。</li>
+ *
  *   <li>body: 评论内容。</li>
  *   <li>accountId: 评论发表者的帐户ID。</li>
  *   <li>postId: 评论所属的帖子ID。</li>

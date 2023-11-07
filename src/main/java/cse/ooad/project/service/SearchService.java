@@ -1,25 +1,22 @@
 package cse.ooad.project.service;
 
 
-import cse.ooad.project.model.Building;
-import cse.ooad.project.model.Floor;
-import cse.ooad.project.model.Group;
-import cse.ooad.project.model.Region;
-import cse.ooad.project.model.Room;
-import cse.ooad.project.model.Student;
+import cse.ooad.project.model.*;
 import cse.ooad.project.repository.BuildingRepository;
+import cse.ooad.project.repository.CommentRepository;
 import cse.ooad.project.repository.FloorRepository;
 import cse.ooad.project.repository.GroupRepository;
+import cse.ooad.project.repository.MsgRepository;
 import cse.ooad.project.repository.RegionRepository;
 import cse.ooad.project.repository.RoomRepository;
 import cse.ooad.project.repository.StudentRepository;
+import cse.ooad.project.repository.TeacherRepository;
+import cse.ooad.project.repository.TimelineRepository;
 import java.sql.Time;
-import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+import org.apache.commons.lang3.ObjectUtils.Null;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,10 +39,18 @@ public class SearchService {
 
     @Autowired
     private FloorRepository floorRepository;
+    @Autowired
+    private MsgRepository msgRepository;
+    @Autowired
+    private TeacherRepository teacherRepository;
+    @Autowired
+    private CommentRepository commentRepository;
+    @Autowired
+    private TimelineRepository timelineRepository;
 
     public List<Student> searchStudents(Long gender, Time awakeTime, Time sleepTime, Long type,
         String intro) {
-        return studentRepository.getStudentsBySleepTimeLessThanAndAwakeTimeGreaterThanAndIntroLikeAAndGenderAAndType(
+        return studentRepository.getStudentsBySleepTimeLessThanAndAwakeTimeGreaterThanAndIntroLikeAndGenderAndType(
             sleepTime, awakeTime, intro, gender, type);
 
     }
@@ -53,7 +58,7 @@ public class SearchService {
 
     public Set<Group> searchGroups(Long gender, Time awakeTime, Time sleepTime,
         Long type, String intro) {
-        List<Student> students = studentRepository.getStudentsBySleepTimeLessThanAndAwakeTimeGreaterThanAndIntroLikeAAndGenderAAndType(
+        List<Student> students = studentRepository.getStudentsBySleepTimeLessThanAndAwakeTimeGreaterThanAndIntroLikeAndGenderAndType(
             sleepTime, awakeTime, intro, gender, type);
         Set<Group> groupSet = new HashSet<>();
         students.forEach(t -> groupSet.add( t.getGroup()));
@@ -61,7 +66,7 @@ public class SearchService {
     }
 
     public List<Region> searchRegion() {
-        return regionRepository.getRegions();
+        return regionRepository.findAll();
     }
 
     public List<Building> searchBuilding(Region region) {
@@ -80,6 +85,47 @@ public class SearchService {
     public List<Student> searchStudentByName(String name) {
         return studentRepository.getStudentsByName(name);
     }
+
+    public Student searchStudentById(Long id){
+        return studentRepository.getStudentByStudentId(id);
+    }
+
+//    public Group searchGroupById(Long id){
+//        return groupRepository.getGroupByGroupId(id);
+//    }
+
+    public Region searchRegionById(Long id){
+        return regionRepository.findById(id).orElse(null);
+    }
+
+    public Msg searchMsgById(Long id){
+        return msgRepository.findById(id).orElse(null);
+    }
+
+    public Room searchRoomById(Long id){
+        return roomRepository.findById(id).orElse(null);
+    }
+
+    public Teacher searchTeacherById(Long id){
+        return teacherRepository.findById(id).orElse(null);
+    }
+
+    public Floor searchFloorById(Long id){
+        return floorRepository.findById(id).orElse(null);
+    }
+
+    public Building searchBuildingById(Long id){
+        return buildingRepository.findById(id).orElse(null);
+    }
+
+    public Comment searchCommentById(Long id){
+        return commentRepository.findById(id).orElse(null);
+    }
+
+    public Timeline searchTimelineById(Long id){
+        return timelineRepository.findById(id).orElse(null);
+    }
+
 
 
 }

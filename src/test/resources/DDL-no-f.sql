@@ -100,7 +100,7 @@ create table if not exists public.students
     group_id   bigint,
     type       integer,
     awake_time time(6),
-    sleep_time varchar(255),
+    sleep_time time(6),
     account    varchar(255)
 );
 

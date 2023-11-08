@@ -58,8 +58,8 @@ public class GroupService {
     /**
      * group将room添加入star中
      *
-     * @param groupId
-     * @param roomId
+     * @param groupId 传入的队伍id
+     * @param roomId 传入的房间id
      * @return star数量没超就返回true，否则返回false
      */
     @Transactional

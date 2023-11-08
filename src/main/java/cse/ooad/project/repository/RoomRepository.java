@@ -3,9 +3,7 @@ package cse.ooad.project.repository;
 import cse.ooad.project.model.Group;
 import cse.ooad.project.model.Room;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

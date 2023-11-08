@@ -11,17 +11,27 @@ import cse.ooad.project.service.SearchService;
 import cse.ooad.project.service.StudentService;
 import cse.ooad.project.service.TeacherService;
 import cse.ooad.project.service.TimelineService;
-import cse.ooad.project.utils.RoomType;
 import cse.ooad.project.utils.StudentType;
 import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.jupiter.api.Test;
+
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.init.ScriptUtils;
+
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 @SpringBootTest
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class Cs30923FallProjectApplicationTests {
 
     @Autowired
@@ -54,10 +64,28 @@ class Cs30923FallProjectApplicationTests {
     @Autowired
     private CommentRepository commentRepository;
 
+    @Autowired
+    private DataSource dataSource;
+
+    @Order(1)
+    @Test
+    public void setUp() throws IOException, SQLException{
+        System.out.println("setUp");
+        //执行
+        // 获取数据库连接
+        try (Connection connection = dataSource.getConnection()) {
+            ScriptUtils.executeSqlScript(connection, new ClassPathResource("drop.sql"));
+            // 使用 Spring 的 ScriptUtils 执行 SQL 文件
+            ScriptUtils.executeSqlScript(connection, new ClassPathResource("DDL.sql"));
+        }
+        System.out.println("setUp end");
+    }
+
+    @Order(2)
     @Test
     void TeacherTest() {
-        teacherService.batchSaveStudent(new File("E:\\SUSTC\\OOAD\\proj\\CS309_23Fall_Project\\student.csv"));
-        teacherService.batchSaveRoom(new File("E:\\SUSTC\\OOAD\\proj\\CS309_23Fall_Project\\Rooms.csv"));
+        teacherService.batchSaveStudent(new File("src/test/resources/student.csv"));
+        teacherService.batchSaveRoom(new File("src/test/resources/Rooms.csv"));
 
         Timeline timeline = new Timeline(null, 1, new Timestamp(1), new Timestamp(100000000000L),
             new Timestamp(10), new Timestamp(20), new Timestamp(20), new Timestamp(30),
@@ -66,7 +94,7 @@ class Cs30923FallProjectApplicationTests {
     }
 
 
-
+    @Order(3)
     @Test
     void StudentTest() {
         System.out.println(studentService.createGroup(200000001L, "冒险小虎队"));
@@ -85,6 +113,7 @@ class Cs30923FallProjectApplicationTests {
 
     }
 
+    @Order(5)
     @Test
     void GroupTest() {
         TimelineService.STATUS = 1;
@@ -109,30 +138,33 @@ class Cs30923FallProjectApplicationTests {
 
     }
 
+    @Order(6)
     @Test
     void LoginTest() {
 
     }
 
-
+    @Order(7)
     @Test
     void MsgTest() {
         Msg msg = new Msg(null, 1L, 2L, "罗启航牛逼", new Timestamp(12315616L), 12);
         msgService.saveMsg(msg);
     }
 
-
+    @Order(4)
     @Test
     void RoomTest() {
         System.out.println(roomService.getGroupStarList(2L));
         System.out.println(roomService.getCommentsByRoom(2L));
     }
 
+    @Order(8)
     @Test
     void TimelineTest() {
 
     }
 
+    @Order(9)
     @Test
     void SearchTest() {
         Region region = searchService.searchRegionById(1L);

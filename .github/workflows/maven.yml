@@ -78,6 +78,9 @@ jobs:
         cache: maven
     
     - name: Build with Maven
+      env:
+        DB_USERNAME: ${{ secrets.DB_USERNAME }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       run: mvn -B package --file pom.xml
     
     - name: Clean up PostgreSQL

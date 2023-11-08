@@ -1,11 +1,9 @@
 package cse.ooad.project.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
 import java.util.Objects;
-import lombok.NoArgsConstructor;
 
 /**
  * {@link Teacher} 用于表示教师信息的实体类，包括教师的基本信息和属性。<br>
@@ -17,7 +15,9 @@ import lombok.NoArgsConstructor;
  *   <li>account: 教师账号。</li>
  * </ul>
  */
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity

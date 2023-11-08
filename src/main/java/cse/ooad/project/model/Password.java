@@ -1,7 +1,7 @@
 package cse.ooad.project.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.util.Objects;
 
@@ -15,17 +15,24 @@ import java.util.Objects;
  * </ul>
  */
 
-@Data
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "passwords", schema = "public", catalog = "cs309a")
 public class Password {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "account")
     private String account;
     @Basic
     @Column(name = "password")
     private String password;
+
+
+    //@OneToOne orphanRemoval = true
 
     @Override
     public boolean equals(Object o) {

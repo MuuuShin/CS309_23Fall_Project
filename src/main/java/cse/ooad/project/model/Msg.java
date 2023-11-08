@@ -2,32 +2,31 @@ package cse.ooad.project.model;
 
 import cse.ooad.project.utils.MessageStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
 import java.sql.Timestamp;
 import java.util.Objects;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 /**
  * {@link Msg} 用于表示消息的实体类，包括消息的基本信息和属性。<br>
  * 属性列表：
  * <ul>
  *   <li>msgId: 消息的唯一标识。</li>
- *   <li>srcId: 消息发送者的标识。</li>
+ *   <li>srcId: 消息发送者的标识。如果为0则为系统消息(System)</li>
  *   <li>dstId: 消息接收者的标识。</li>
  *   <li>body: 消息内容。</li>
  *   <li>timestamp: 消息时间戳，表示消息发送的时间。</li>
  *   <li>status: 消息是否已读的状态。枚举类参见{@link MessageStatus}</li>
  * </ul>
  */
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "msgs", schema = "public", catalog = "cs309a")
-public class Msg {
+public class                                                               Msg {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "msg_id")

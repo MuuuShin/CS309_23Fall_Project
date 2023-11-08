@@ -16,8 +16,6 @@ create table if not exists public.buildings
     name        varchar(255),
     intro       varchar(255),
     region_id   bigint
-        constraint buildings_regions_null_fk
-            references public.regions
 );
 
 alter table public.buildings
@@ -30,8 +28,6 @@ create table if not exists public.floors
     name        varchar(255),
     intro       varchar(255),
     building_id bigint
-        constraint floors_buildings_null_fk
-            references public.buildings
 );
 
 alter table public.floors
@@ -46,9 +42,7 @@ create table if not exists public.rooms
     type            integer,
     intro           varchar(255),
     status          integer,
-    floor_id        bigint
-        constraint rooms_floors_null_fk
-            references public.floors,
+    floor_id        bigint,
     comment_base_id bigint,
     img_url         varchar(255)
 );
@@ -91,8 +85,6 @@ create table if not exists public.groups
     name     varchar(255),
     leader   bigint,
     room_id  bigint
-        constraint groups_rooms_null_fk
-            references public.rooms
 );
 
 alter table public.groups
@@ -105,9 +97,7 @@ create table if not exists public.students
     name       varchar(255),
     intro      varchar(255),
     gender     smallint,
-    group_id   bigint
-        constraint students_groups_null_fk
-            references public.groups,
+    group_id   bigint,
     type       integer,
     awake_time time(6),
     sleep_time varchar(255),
@@ -119,12 +109,8 @@ alter table public.students
 
 create table if not exists public.group_stars
 (
-    group_id bigint not null
-        constraint group_likes_groups_null_fk
-            references public.groups,
-    room_id  bigint not null
-        constraint group_likes_rooms_null_fk
-            references public.rooms,
+    group_id bigint not null,
+    room_id  bigint not null,
     constraint group_likes_pkey
         primary key (group_id, room_id)
 );

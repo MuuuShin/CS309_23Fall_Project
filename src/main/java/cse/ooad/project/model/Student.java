@@ -3,12 +3,10 @@ package cse.ooad.project.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import cse.ooad.project.utils.StudentType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
 import java.sql.Time;
 import java.util.Objects;
-import lombok.NoArgsConstructor;
 
 /**
  * {@link  Student}用于表示学生信息的实体类，包括学生的基本信息和属性。<br>
@@ -25,12 +23,16 @@ import lombok.NoArgsConstructor;
  *   <li>[映射]group: 学生所在队伍。</li>
  * </ul>
  */
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "students", schema = "public", catalog = "cs309a")
 public class Student {
+    //@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "your_sequence_generator")
+    //@SequenceGenerator(name = "your_sequence_generator", sequenceName = "your_sequence_name", initialValue = 200000001, allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "student_id")
@@ -59,6 +61,8 @@ public class Student {
     @Basic
     @Column(name = "account")
     private String account;
+
+    /* 映射实体 */
 
     @JsonIgnore
     @ManyToOne

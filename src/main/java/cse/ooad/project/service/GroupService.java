@@ -10,6 +10,8 @@ import cse.ooad.project.repository.StudentRepository;
 import cse.ooad.project.utils.RoomStatus;
 import jakarta.transaction.Transactional;
 import java.util.List;
+
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -159,7 +161,6 @@ public class GroupService {
     }
 
     public List<Group> getGroupsList() {
-
         return groupRepository.findAll();
     }
 
@@ -171,6 +172,7 @@ public class GroupService {
     public List<Room> getStarList(Long id) {
         Group group = groupRepository.getGroupByGroupId(id);
         List<Room> rooms = group.getRoomStarList();
+        Hibernate.initialize(rooms);
         return rooms;
     }
 

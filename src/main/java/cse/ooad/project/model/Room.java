@@ -4,14 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import cse.ooad.project.utils.RoomStatus;
 import cse.ooad.project.utils.StudentType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
+import lombok.ToString.Exclude;
 
 import java.util.List;
 import java.util.Objects;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.ToString.Exclude;
 
 
 /**
@@ -25,6 +22,7 @@ import lombok.ToString.Exclude;
  *   <li>status: 房间状态，如是否被选择。枚举类参见{@link RoomStatus}</li>
  *   <li>floorId: 所属楼层ID。</li>
  *   <li>commentBaseId: 元评论ID，在评论中此ID视作房间本身。 </li>
+ *   <li>imgURL: 房间图片URL。</li>
  *   <li>[映射]groupStarList: 收藏此房间的群组列表。</li>
  *   <li>[映射]floor: 所属楼层。</li>
  *   <li>[映射]group: 若被选择，给出选择的群组。</li>
@@ -32,7 +30,9 @@ import lombok.ToString.Exclude;
  * </ul>
 
  */
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -61,22 +61,25 @@ public class Room {
     @Column(name = "comment_base_id")
     private Long commentBaseId;
     @Basic
-    @Column(name = "imgURL")
+    @Column(name = "img_url")
     private String imgURL;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "roomStarList", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Exclude
+    /* 映射实体 */
 
+    @Exclude
+    @JsonIgnore
+    @ManyToMany(mappedBy = "roomStarList", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     private List<Group> groupStarList;
 
+    @Exclude
     @JsonIgnore
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "floor_id", insertable = false, updatable = false)
     private Floor floor;
 
+    @Exclude
     @JsonIgnore
-    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL) //orphanRemoval = false
     private Group group;
 
     @Override

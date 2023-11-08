@@ -76,17 +76,17 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+
+    - name: Clean up PostgreSQL
+      run: |
+        psql -h localhost -U ${{ secrets.DB_USERNAME }} -d postgres -c "DROP DATABASE IF EXISTS cs309a;"
+        psql -h localhost -U ${{ secrets.DB_USERNAME }} -d postgres -c "CREATE DATABASE cs309a;"
     
     - name: Build with Maven
       env:
         DB_USERNAME: ${{ secrets.DB_USERNAME }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       run: mvn -B package --file pom.xml
-    
-    - name: Clean up PostgreSQL
-      run: |
-        psql -h localhost -U ${{ secrets.DB_USERNAME }} -d postgres -c "DROP DATABASE IF EXISTS cs309a;"
-        psql -h localhost -U ${{ secrets.DB_USERNAME }} -d postgres -c "CREATE DATABASE cs309a;"
     
     - name: Run JUnit tests
       run: mvn test

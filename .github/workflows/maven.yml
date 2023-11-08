@@ -78,6 +78,8 @@ jobs:
         cache: maven
 
     - name: Clean up PostgreSQL
+      env:
+        PGPASSWORD: ${{ secrets.DB_PASSWORD }}
       run: |
         psql -h localhost -U ${{ secrets.DB_USERNAME }} -d postgres -c "DROP DATABASE IF EXISTS cs309a;"
         psql -h localhost -U ${{ secrets.DB_USERNAME }} -d postgres -c "CREATE DATABASE cs309a;"

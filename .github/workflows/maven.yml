@@ -88,9 +88,12 @@ jobs:
       env:
         DB_USERNAME: ${{ secrets.DB_USERNAME }}
         DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      run: mvn -B package --file pom.xml
+      run: mvn -B package -DskipTests --file pom.xml
     
     - name: Run JUnit tests
+      env:
+        DB_USERNAME: ${{ secrets.DB_USERNAME }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
       run: mvn test
       
     - name: Upload test results

@@ -57,9 +57,9 @@ public class HttpAuthHandler extends TextWebSocketHandler {
         String payload = message.getPayload();
         Object sessionId = session.getAttributes().get("session_id");
         //todo 发来的payload会是一个Msg的Json格式, 因此直接转换为Msg
-        Msg msg = gson.fromJson(payload, Msg.class);
-        msgRepository.save(msg);
-        System.out.println("server 接收到 " + sessionId + " 发送的 " + payload);
+            /*Msg msg = gson.fromJson(payload, Msg.class);
+            msgRepository.save(msg);
+            System.out.println("server 接收到 " + sessionId + " 发送的 " + payload);*/
         session.sendMessage(new TextMessage("server 发送给 " + sessionId + " 消息 " + payload + " " + LocalDateTime.now().toString()));
     }
 

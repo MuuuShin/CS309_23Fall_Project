@@ -2,14 +2,11 @@ package cse.ooad.project.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
+import lombok.ToString.Exclude;
 
 import java.util.List;
 import java.util.Objects;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.ToString.Exclude;
 
 /**
  * {@link  Region}用于表示区划信息的实体类，包括区划的基本信息和属性。<br>
@@ -21,7 +18,9 @@ import lombok.ToString.Exclude;
  *   <li>[映射]buildingList: 建筑列表。</li>
  * </ul>
  */
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -38,9 +37,11 @@ public class Region {
     @Column(name = "intro")
     private String intro;
 
+    /* 映射实体 */
+
+    @Exclude
     @JsonIgnore
     @OneToMany(mappedBy = "region", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @Exclude
     private List<Building> buildingList;
 
     @Override

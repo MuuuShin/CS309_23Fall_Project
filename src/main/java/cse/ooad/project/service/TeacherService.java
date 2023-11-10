@@ -3,24 +3,15 @@ package cse.ooad.project.service;
 
 import com.opencsv.CSVParser;
 import com.opencsv.CSVReader;
-import cse.ooad.project.model.Building;
-import cse.ooad.project.model.Floor;
-import cse.ooad.project.model.Region;
-import cse.ooad.project.model.Room;
-import cse.ooad.project.model.Student;
-import cse.ooad.project.model.Timeline;
-import cse.ooad.project.repository.BuildingRepository;
-import cse.ooad.project.repository.FloorRepository;
-import cse.ooad.project.repository.RegionRepository;
-import cse.ooad.project.repository.RoomRepository;
-import cse.ooad.project.repository.StudentRepository;
-import cse.ooad.project.repository.TeacherRepository;
-import cse.ooad.project.repository.TimelineRepository;
+import cse.ooad.project.model.*;
+import cse.ooad.project.repository.*;
+
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -35,27 +26,26 @@ public class TeacherService {
 
     @Autowired
     TeacherRepository teacherRepository;
-
     @Autowired
     StudentRepository studentRepository;
-
     @Autowired
     RoomRepository roomRepository;
-
     @Autowired
     FloorRepository floorRepository;
-
     @Autowired
     BuildingRepository buildingRepository;
-
     @Autowired
     RegionRepository regionRepository;
-
     @Autowired
     TimelineRepository timelineRepository;
+    @Autowired
+    PasswordRepository passwordRepository;
+    @Autowired
+    private CommentRepository commentRepository;
 
 
     public void saveStudent(Student student) {
+        //todo: password
         studentRepository.save(student);
     }
 
@@ -133,7 +123,8 @@ public class TeacherService {
                 Student student = new Student();
                 student.setName(strs[1]);
                 student.setAccount(strs[2]);
-                student.setPassword(strs[3]);
+                Password password = new Password(strs[2], strs[3]);
+                passwordRepository.save(password);
                 student.setType(Integer.parseInt(strs[4]));
                 list.add(student);
             }
@@ -172,7 +163,12 @@ public class TeacherService {
                 room.setType(Integer.parseInt(strs[8]));
                 room.setStatus(Integer.parseInt(strs[9]));
                 room.setFloorId(floor.getFloorId());
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                Comment comment=new Comment(null,strs[6],null,room.getRoomId(),0L,timestamp,false);
+                commentRepository.save(comment);
+                room.setCommentBaseId(comment.getCommentId());
                 roomRepository.save(room);
+                System.out.println(room);
             }
             csvReader.close();
         } catch (Exception e) {

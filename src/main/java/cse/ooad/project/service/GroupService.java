@@ -10,6 +10,8 @@ import cse.ooad.project.repository.StudentRepository;
 import cse.ooad.project.utils.RoomStatus;
 import jakarta.transaction.Transactional;
 import java.util.List;
+
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,8 +58,8 @@ public class GroupService {
     /**
      * group将room添加入star中
      *
-     * @param groupId
-     * @param roomId
+     * @param groupId 传入的队伍id
+     * @param roomId 传入的房间id
      * @return star数量没超就返回true，否则返回false
      */
     @Transactional
@@ -159,7 +161,6 @@ public class GroupService {
     }
 
     public List<Group> getGroupsList() {
-
         return groupRepository.findAll();
     }
 
@@ -171,6 +172,7 @@ public class GroupService {
     public List<Room> getStarList(Long id) {
         Group group = groupRepository.getGroupByGroupId(id);
         List<Room> rooms = group.getRoomStarList();
+        Hibernate.initialize(rooms);
         return rooms;
     }
 

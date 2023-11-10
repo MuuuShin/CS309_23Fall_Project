@@ -1,13 +1,10 @@
 package cse.ooad.project.model;
 
 import jakarta.persistence.*;
-
 import lombok.*;
-
 
 import java.sql.Timestamp;
 import java.util.Objects;
-import lombok.NoArgsConstructor;
 
 /**
  * {@link  Comment}用于表示评论信息的实体类，包括评论的基本信息和属性。<br>
@@ -19,14 +16,19 @@ import lombok.NoArgsConstructor;
  *   <li>userId: 评论发表者的帐户ID。老师和学生都可以评论。</li>
  *   <li>postId: 评论所属的帖子ID。</li>
  *   <li>creationTime: 评论创建时间。</li>
+ *   <li>disabled: 评论是否被禁用。</li>
+ *   <li>[映射][未使用]post: 评论所属的帖子。</li>
+ *   <li>[映射][未使用]replyList: 评论的回复列表。</li>
  * </ul>
  * 评论的嵌套方式：<br>
- * 每个房间拥有一条元评论，元评论的postId为0，accountId为房间的ID。<br>
- * 对这个房间发起的评论视为对元评论的回复，其postId为元评论的commentId，accountId为发起评论的用户ID。<br>
- * 若对评论发起的评论，其postId为被回复的评论的commentId，accountId为发起评论的用户ID。<br>
+ * 每个房间拥有一条元评论，元评论的postId为0，userId为房间的ID。<br>
+ * 对这个房间发起的评论视为对元评论的回复，其postId为元评论的commentId，userId为发起评论的用户ID。<br>
+ * 若对评论发起的评论，其postId为被回复的评论的commentId，userId为发起评论的用户ID。<br>
  */
 
-@Data
+@Getter
+@Setter
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 
@@ -55,6 +57,19 @@ public class Comment {
     @Basic
     @Column(name = "disabled")
     private Boolean disabled;
+
+    /* 映射实体 */
+//    todo: 不加了 增加工作量 或者加上也可以?再说
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "post_id", insertable = false, updatable = false)
+//    private Comment post;
+//
+//    @Exclude
+//    @JsonIgnore
+//    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    private List<Comment> replyList;
+
+
 
     @Override
     public boolean equals(Object o) {

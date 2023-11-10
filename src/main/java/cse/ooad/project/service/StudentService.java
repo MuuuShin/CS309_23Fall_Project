@@ -68,6 +68,7 @@ public class StudentService {
         group = groupRepository.save(group);
         student.setGroupId(group.getGroupId());
         studentRepository.save(student);
+        //todo 系统发送创建队伍成功消息
         return group;
 
     }
@@ -86,6 +87,7 @@ public class StudentService {
         Group group = groupRepository.getGroupByGroupId(groupId);
         int stage = timelineService.getStage(student.getType());
         //不记得哪个阶段能加队伍了
+        //todo: 回答 第一个阶段可以 第三个阶段可以
         Student leader = studentRepository.getStudentByStudentId(group.getLeader());
         if (Objects.equals(leader.getType(), student.getType())){
             //todo 判断人数合不合适
@@ -102,6 +104,7 @@ public class StudentService {
             return true;
         }
         return false;
+        //todo 系统发送加入队伍成功/失败消息 针对加入的这个人和队伍里其他人 发送的消息应该不一样
     }
 
     /**

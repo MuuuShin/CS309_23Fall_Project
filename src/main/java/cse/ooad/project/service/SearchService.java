@@ -18,6 +18,10 @@ import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang3.ObjectUtils.Null;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -52,8 +56,13 @@ public class SearchService {
         String intro) {
         return studentRepository.getStudentsBySleepTimeLessThanAndAwakeTimeGreaterThanAndIntroLikeAndGenderAndType(
             sleepTime, awakeTime, intro, gender, type);
-
     }
+
+    public List<Student> searchStudents(){
+        return studentRepository.findAll();
+    }
+
+
 
 
     public Set<Group> searchGroups(Long gender, Time awakeTime, Time sleepTime,
@@ -69,16 +78,21 @@ public class SearchService {
         return regionRepository.findAll();
     }
 
-    public List<Building> searchBuilding(Region region) {
-        return buildingRepository.getBuildingsByRegionId(region.getRegionId());
+    public List<Building> searchBuilding(Long id) {
+        return buildingRepository.getBuildingsByRegionId(id);
     }
 
-    public List<Floor> searchFloor(Building building) {
-        return floorRepository.getFloorsByBuildingId(building.getBuildingId());
+    public List<Floor> searchFloor(Long id) {
+        return floorRepository.getFloorsByBuildingId(id);
     }
 
-    public List<Room> searchRoom(Floor floor) {
-        return roomRepository.getRoomsByFloorId(floor.getFloorId());
+    public List<Room> searchRoom(Long id) {
+        return roomRepository.getRoomsByFloorId(id);
+    }
+
+    public List<Group> searchAllGroup(Integer page, Integer size){
+        Pageable pageable = PageRequest.of(page, size);
+        return groupRepository.findAll(pageable).getContent();
     }
 
 
@@ -90,9 +104,9 @@ public class SearchService {
         return studentRepository.getStudentByStudentId(id);
     }
 
-//    public Group searchGroupById(Long id){
-//        return groupRepository.getGroupByGroupId(id);
-//    }
+    public Group searchGroupById(Long id){
+        return groupRepository.getGroupByGroupId(id);
+    }
 
     public Region searchRegionById(Long id){
         return regionRepository.findById(id).orElse(null);

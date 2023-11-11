@@ -14,12 +14,17 @@ public class TimelineService {
     @Autowired
     TimelineRepository timelineRepository;
 
+
+    //测试用的
+    public static int STATUS = 0;
+
     public int getStage(int type){
         Timeline timeline = timelineRepository.getTimelineByType(type);
 
         Timestamp nowTime = new Timestamp(new Date().getTime());
-
-        if (nowTime.before(timeline.getBeginTime1()))
+        //测试的时候用的
+        return STATUS;
+        /*if (nowTime.before(timeline.getBeginTime1()))
             return 0;
         if (nowTime.after(timeline.getBeginTime1()) && nowTime.after(timeline.getEndTime1()))
             return 1;
@@ -29,6 +34,6 @@ public class TimelineService {
             return 3;
         if (nowTime.after(timeline.getBeginTime4()) && nowTime.before(timeline.getEndTime4()))
             return 4;
-        return 5;
+        return 5;*/
     }
 }

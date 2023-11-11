@@ -16,6 +16,6 @@ spring:
       hibernate:
         temp:
           use_jdbc_metadata_defaults: true
-    open-in-view: true
+    open-in-view: false
 
 

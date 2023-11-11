@@ -12,7 +12,7 @@ import lombok.Data;
  *   <li>data: 发送的实际内容。</li>
  * </ul>
  */
-@Data
+
 public class Result<T> {
     private String code;
     private String msg;

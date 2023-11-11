@@ -2,7 +2,8 @@ package cse.ooad.project.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+import lombok.ToString.Exclude;
 
 import java.util.List;
 import java.util.Objects;
@@ -19,7 +20,11 @@ import java.util.Objects;
  *   <li>[映射]roomList: 房间列表。</li>
  * </ul>
  */
-@Data
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "floors", schema = "public", catalog = "cs309a")
 public class Floor {
@@ -37,11 +42,13 @@ public class Floor {
     @Column(name = "building_id")
     private Long buildingId;
 
+    /* 映射实体 */
+
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "building_id", insertable = false, updatable = false)
     private Building building;
 
+    @Exclude
     @JsonIgnore
     @OneToMany(mappedBy = "floor", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Room> roomList;

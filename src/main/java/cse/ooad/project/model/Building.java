@@ -2,8 +2,8 @@ package cse.ooad.project.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
+import lombok.ToString.Exclude;
 
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +20,11 @@ import java.util.Objects;
  *   <li>[映射]floorList: 楼层列表。</li>
  * </ul>
  */
-@Data
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "buildings", schema = "public", catalog = "cs309a")
 public class Building {
@@ -38,11 +42,13 @@ public class Building {
     @Column(name = "region_id")
     private Long regionId;
 
-    @JsonIgnore
+    /* 映射实体 */
+
     @ManyToOne
     @JoinColumn(name = "region_id", insertable = false, updatable = false)
     private Region region;
 
+    @Exclude
     @JsonIgnore
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Floor> floorList;

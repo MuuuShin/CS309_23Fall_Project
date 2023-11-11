@@ -2,7 +2,8 @@ package cse.ooad.project.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+import lombok.ToString.Exclude;
 
 import java.util.List;
 import java.util.Objects;
@@ -13,7 +14,6 @@ import java.util.Objects;
  * <ul>
  *   <li>groupId: 群组ID，唯一标识群组。</li>
  *   <li>name: 群组名称。</li>
- *   <li>status: 群组状态，标识群是否已满，是否选择房间。</li>
  *   <li>leader: 群组领袖，值为队长ID。</li>
  *   <li>roomId: 若选择了房间，给出房间的ID。没有则为-1。</li>
  *   <li>[映射]roomStarList: 群组收藏的房间列表。</li>
@@ -22,7 +22,11 @@ import java.util.Objects;
  * </ul>
  * 在加入新成员时，按照1-4顺序插入(若有空位)。<br>
  */
-@Data
+@Getter
+@Setter
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "groups", schema = "public", catalog = "cs309a")
 public class Group {
@@ -34,30 +38,32 @@ public class Group {
     @Column(name = "name")
     private String name;
     @Basic
-    @Column(name = "status")
-    private String status;
-    @Basic
     @Column(name = "leader")
-    private String leader;
+    private Long leader;
     @Basic
     @Column(name = "room_id")
     private Long roomId;
 
+    /* 映射实体 */
+
+    @Exclude
     @JsonIgnore
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "group_stars",
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "room_id"))
     private List<Room> roomStarList;
 
+    @Exclude
     @JsonIgnore
     @OneToOne
     @JoinColumn(name = "room_id", insertable = false, updatable = false)
     private Room room;
 
+    @Exclude
     @JsonIgnore
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = false, fetch = FetchType.LAZY)
     private List<Student> memberList;
 
 
@@ -66,11 +72,11 @@ public class Group {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Group group = (Group) o;
-        return Objects.equals(groupId, group.groupId) && Objects.equals(name, group.name) && Objects.equals(status, group.status) && Objects.equals(leader, group.leader) && Objects.equals(roomId, group.roomId);
+        return Objects.equals(groupId, group.groupId) && Objects.equals(name, group.name) && Objects.equals(leader, group.leader) && Objects.equals(roomId, group.roomId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(groupId, name, status, leader, roomId);
+        return Objects.hash(groupId, name, leader, roomId);
     }
 }

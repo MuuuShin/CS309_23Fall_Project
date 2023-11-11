@@ -86,7 +86,7 @@ class Cs30923FallProjectApplicationTests {
     @Test
     void TeacherTest() {
         teacherService.batchSaveStudent(new File("src/test/resources/student.csv"));
-        teacherService.batchSaveRoom(new File("src/test/resources/Rooms.csv"));
+        teacherService.batchSaveRoom(new File("src/test/resources/university_data.csv"));
 
         Timeline timeline = new Timeline(null, 1, new Timestamp(1), new Timestamp(100000000000L),
             new Timestamp(10), new Timestamp(20), new Timestamp(20), new Timestamp(30),

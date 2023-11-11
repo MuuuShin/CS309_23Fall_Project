@@ -14,4 +14,6 @@ public interface PasswordRepository extends JpaRepository<Password, Long> {
     }
 
     PasswordProjection findPasswordByAccount(String account);
+
+
 }

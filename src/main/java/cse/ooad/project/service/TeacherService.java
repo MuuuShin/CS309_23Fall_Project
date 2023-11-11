@@ -178,8 +178,8 @@ public class TeacherService {
             HashMap<String, Region> regionHashMap = new HashMap<>();
             HashMap<String, Building> buildingHashMap = new HashMap<>();
             HashMap<String, Floor> floorHashMap = new HashMap<>();
-            HashMap<String, Room> roomHashMap = new HashMap<>();
 
+            List<Room> rooms = new ArrayList<>();
             while ((strs = csvReader.readNext()) != null) {
                 Region region = new Region();
                 region.setName(strs[0]);
@@ -226,9 +226,10 @@ public class TeacherService {
                 Comment comment=new Comment(null,strs[6],null,room.getRoomId(),0L,timestamp,false);
                 commentRepository.save(comment);
                 room.setCommentBaseId(comment.getCommentId());
-                roomRepository.save(room);
-                System.out.println(room);
+                rooms.add(room);
+
             }
+            roomRepository.saveAll(rooms);
             csvReader.close();
         } catch (Exception e) {
             e.printStackTrace();

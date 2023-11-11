@@ -36,4 +36,9 @@ public class TimelineService {
             return 4;
         return 5;*/
     }
+
+    public Timeline timeline(){
+        //todo 跟前端聊什么type返回什么东西
+        return null;
+    }
 }

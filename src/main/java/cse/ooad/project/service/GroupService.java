@@ -47,7 +47,6 @@ public class GroupService {
             });
             group2.setMemberList(null);
             group2 = groupRepository.save(group2);
-            //group1.getMemberList().addAll(group2.getMemberList());
             groupRepository.deleteByGroupId(group2.getGroupId());
             groupRepository.save(group1);
             return true;
@@ -109,7 +108,6 @@ public class GroupService {
             }
 
             //如果选房的人数不对
-            //todo
             if (group.getMemberList().size() != roomCapacity) {
                 return false;
             }
@@ -138,7 +136,6 @@ public class GroupService {
                 return true;
 
             } else {
-                //todo 将两个队伍人数进行相加判断能不能选，能选就执行合并队伍操作
                 if (roomMaster.getMemberList().size() + group.getMemberList().size()
                     > roomCapacity) {
                     return false;
@@ -154,7 +151,6 @@ public class GroupService {
 
     @Transactional
     public List<Student> getMemberList(Long id) {
-        //todo
         //根据学生id获取队伍
         Group group = groupRepository.getGroupByGroupId(id);
         return group.getMemberList();
@@ -164,9 +160,7 @@ public class GroupService {
         return groupRepository.findAll();
     }
 
-    /**
-     * 获取star列表
-     */
+
 
     @Transactional
     public List<Room> getStarList(Long id) {

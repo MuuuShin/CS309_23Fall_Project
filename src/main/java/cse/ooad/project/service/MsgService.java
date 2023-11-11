@@ -24,9 +24,10 @@ public class MsgService {
     @Autowired
     Gson gson;
 
-    public void saveMsg(Msg msg) {
-        msgRepository.save(msg);
+    public Msg saveMsg(Msg msg) {
         forwardMsg(msg);
+        return msgRepository.save(msg);
+
     }
 
     public void forwardMsg(Msg msg) {

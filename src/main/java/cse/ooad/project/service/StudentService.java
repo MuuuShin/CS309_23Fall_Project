@@ -46,12 +46,12 @@ public class StudentService {
     private RegionRepository regionRepository;
 
 
-    public void changeIntroduce(Student student){
-        studentRepository.save(student);
+    public Student changeIntroduce(Student student){
+        return studentRepository.save(student);
     }
 
-    public void changePassword(Student student){
-        studentRepository.save(student);
+    public Student changePassword(Student student){
+        return studentRepository.save(student);
     }
 
     /**
@@ -86,8 +86,12 @@ public class StudentService {
         Student student = studentRepository.getStudentByStudentId(studentId);
         Group group = groupRepository.getGroupByGroupId(groupId);
         int stage = timelineService.getStage(student.getType());
+
         //不记得哪个阶段能加队伍了
         //todo: 回答 第一个阶段可以 第三个阶段可以
+        if (stage != 1 && stage != 3){
+            return false;
+        }
         Student leader = studentRepository.getStudentByStudentId(group.getLeader());
         if (Objects.equals(leader.getType(), student.getType())){
             //todo 判断人数合不合适
@@ -134,8 +138,7 @@ public class StudentService {
     }
 
     public List<Msg> getMsgList(Long id, Long toId){
-        msgRepository.getMsgsBySrcIdAndDstId(id, toId);
-        return null;
+        return msgRepository.getMsgsBySrcIdAndDstId(id, toId);
     }
 
 

@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -112,6 +113,30 @@ public class TeacherService {
         return timelineRepository.save(timeline);
     }
 
+    public Boolean transRoom(Long id1, Long id2){
+        Student student1 = studentRepository.getStudentByStudentId(id1);
+        Student student2 = studentRepository.getStudentByStudentId(id2);
+        if (!Objects.equals(student1.getType(), student2.getType())){
+            return false;
+        }
+
+        Group group1 = student1.getGroup();
+        Group group2 = student2.getGroup();
+        if (group1 != null){
+            student2.setGroupId(group1.getGroupId());
+            if (Objects.equals(group1.getLeader(), student1.getStudentId())){
+                group1.setLeader(student2.getStudentId());
+            }
+        }
+        if (group2 != null){
+            student1.setGroupId(group2.getGroupId());
+            if (Objects.equals(group2.getLeader(), student2.getStudentId())){
+                group2.setLeader(student1.getStudentId());
+            }
+        }
+        return true;
+    }
+
     public void batchSaveStudent(File file) {
         try {
             DataInputStream in = new DataInputStream(new FileInputStream(file));
@@ -126,10 +151,11 @@ public class TeacherService {
                 Password password = new Password();
 
                 student.setName(strs[1]);
-                student.setAccount(strs[2]);
-                student.setType(Integer.parseInt(strs[4]));
-                password.setPassword(strs[3]);
-                password.setAccount(strs[2]);
+                student.setGender(Short.parseShort(strs[2]));
+                student.setAccount(strs[3]);
+                student.setType(Integer.parseInt(strs[5]));
+                password.setPassword(strs[4]);
+                password.setAccount(strs[3]);
                 passwordList.add(password);
                 list.add(student);
             }

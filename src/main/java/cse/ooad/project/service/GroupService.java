@@ -91,19 +91,17 @@ public class GroupService {
         int stage = timelineService.getStage(lead.getType());
         //判断房间类型对不对
         if ((room.getType() - 1) / 4 + 1 != lead.getType()) {
-            System.out.println(1);
             return false;
         }
         int roomCapacity = room.getType() % 4 == 0 ? 4 : room.getType() % 4;
         if (stage == 2) {
             //如果选房的人没有star
             if (!group.getRoomStarList().contains(room)) {
-                System.out.println(2);
                 return false;
             }
             //房间已经被选了
             if (room.getStatus() != RoomStatus.UNSELECTED.statusCode) {
-                System.out.println(3);
+
                 return false;
             }
 
@@ -145,21 +143,37 @@ public class GroupService {
 
 
         }
-        System.out.println(10);
         return false;
     }
 
     @Transactional
     public List<Student> getMemberList(Long id) {
-        //根据学生id获取队伍
         Group group = groupRepository.getGroupByGroupId(id);
-        return group.getMemberList();
+
+        List<Student> students = group.getMemberList();
+        Hibernate.initialize(students);
+        return students;
     }
 
     public List<Group> getGroupsList() {
         return groupRepository.findAll();
     }
 
+    public Boolean changeLeader(Long groupId, Long studentId) {
+        Group group = groupRepository.getGroupByGroupId(groupId);
+        Student student = studentRepository.getStudentByStudentId(studentId);
+        if (group.getMemberList().contains(student)) {
+            group.setLeader(studentId);
+            groupRepository.save(group);
+            return true;
+        }
+        return false;
+    }
+
+    public Boolean isLeader(Long groupId, Long studentId) {
+        Group group = groupRepository.getGroupByGroupId(groupId);
+        return group.getLeader().equals(studentId);
+    }
 
 
     @Transactional

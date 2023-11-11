@@ -116,8 +116,17 @@ public class StudentService {
      *会自动给队长发退队消息
      * @param id 脱队的学生
      */
+    @Transactional
     public Boolean memberLeave(Long id) {
         Student student = studentRepository.getStudentByStudentId(id);
+        Group group = student.getGroup();
+
+        if (group == null){
+            return false;
+        }
+        if(Objects.equals(group.getLeader(), id)){
+            return false;
+        }
         student.setGroupId(null);
         studentRepository.save(student);
         //todo 发送退队消息

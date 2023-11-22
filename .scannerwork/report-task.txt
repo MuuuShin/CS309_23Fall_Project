@@ -1,0 +1,6 @@
+projectKey=cs309a-project
+serverUrl=http://localhost:9000
+serverVersion=10.3.0.82913
+dashboardUrl=http://localhost:9000/dashboard?id=cs309a-project
+ceTaskId=AYvypo-_8zFKPn7TLvwt
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AYvypo-_8zFKPn7TLvwt

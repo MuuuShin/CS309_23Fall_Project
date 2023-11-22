@@ -47,7 +47,6 @@ public class GroupService {
             });
             group2.setMemberList(null);
             group2 = groupRepository.save(group2);
-            //group1.getMemberList().addAll(group2.getMemberList());
             groupRepository.deleteByGroupId(group2.getGroupId());
             groupRepository.save(group1);
             return true;
@@ -66,11 +65,12 @@ public class GroupService {
     public boolean starRoom(Long groupId, Long roomId) {
         Group group = groupRepository.getGroupByGroupId(groupId);
         Room room = roomRepository.getRoomsByRoomId(roomId);
-        int stage = timelineService.getStage(
-            group.getMemberList().get(0).getType());
-        if (stage != 1) {
-            return false;
-        }
+        //TODO:判断阶段
+//        int stage = timelineService.getStage(
+//            group.getMemberList().get(0).getType());
+//        if (stage != 1) {
+//            return false;
+//        }
         if (group.getRoomStarList().size() < STARLIMITE) {
             group.getRoomStarList().add(room);
             groupRepository.save(group);
@@ -92,24 +92,21 @@ public class GroupService {
         int stage = timelineService.getStage(lead.getType());
         //判断房间类型对不对
         if ((room.getType() - 1) / 4 + 1 != lead.getType()) {
-            System.out.println(1);
             return false;
         }
         int roomCapacity = room.getType() % 4 == 0 ? 4 : room.getType() % 4;
         if (stage == 2) {
             //如果选房的人没有star
             if (!group.getRoomStarList().contains(room)) {
-                System.out.println(2);
                 return false;
             }
             //房间已经被选了
             if (room.getStatus() != RoomStatus.UNSELECTED.statusCode) {
-                System.out.println(3);
+
                 return false;
             }
 
             //如果选房的人数不对
-            //todo
             if (group.getMemberList().size() != roomCapacity) {
                 return false;
             }
@@ -138,7 +135,6 @@ public class GroupService {
                 return true;
 
             } else {
-                //todo 将两个队伍人数进行相加判断能不能选，能选就执行合并队伍操作
                 if (roomMaster.getMemberList().size() + group.getMemberList().size()
                     > roomCapacity) {
                     return false;
@@ -148,25 +144,38 @@ public class GroupService {
 
 
         }
-        System.out.println(10);
         return false;
     }
 
     @Transactional
     public List<Student> getMemberList(Long id) {
-        //todo
-        //根据学生id获取队伍
         Group group = groupRepository.getGroupByGroupId(id);
-        return group.getMemberList();
+
+        List<Student> students = group.getMemberList();
+        Hibernate.initialize(students);
+        return students;
     }
 
     public List<Group> getGroupsList() {
         return groupRepository.findAll();
     }
 
-    /**
-     * 获取star列表
-     */
+    public Boolean changeLeader(Long groupId, Long studentId) {
+        Group group = groupRepository.getGroupByGroupId(groupId);
+        Student student = studentRepository.getStudentByStudentId(studentId);
+        if (group.getMemberList().contains(student)) {
+            group.setLeader(studentId);
+            groupRepository.save(group);
+            return true;
+        }
+        return false;
+    }
+
+    public Boolean isLeader(Long groupId, Long studentId) {
+        Group group = groupRepository.getGroupByGroupId(groupId);
+        return group.getLeader().equals(studentId);
+    }
+
 
     @Transactional
     public List<Room> getStarList(Long id) {

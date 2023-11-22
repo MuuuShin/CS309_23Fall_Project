@@ -16,12 +16,9 @@ import java.sql.Time;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.commons.lang3.ObjectUtils.Null;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -54,7 +51,7 @@ public class SearchService {
 
     public List<Student> searchStudents(Long gender, Time awakeTime, Time sleepTime, Long type,
         String intro) {
-        return studentRepository.getStudentsBySleepTimeLessThanAndAwakeTimeGreaterThanAndIntroLikeAndGenderAndType(
+        return studentRepository.getStudentsBySleepTimeLessThanAndAwakeTimeGreaterThanAndIntroContainingAndGenderAndType(
             sleepTime, awakeTime, intro, gender, type);
     }
 
@@ -67,7 +64,7 @@ public class SearchService {
 
     public Set<Group> searchGroups(Long gender, Time awakeTime, Time sleepTime,
         Long type, String intro) {
-        List<Student> students = studentRepository.getStudentsBySleepTimeLessThanAndAwakeTimeGreaterThanAndIntroLikeAndGenderAndType(
+        List<Student> students = studentRepository.getStudentsBySleepTimeLessThanAndAwakeTimeGreaterThanAndIntroContainingAndGenderAndType(
             sleepTime, awakeTime, intro, gender, type);
         Set<Group> groupSet = new HashSet<>();
         students.forEach(t -> groupSet.add( t.getGroup()));

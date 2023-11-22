@@ -14,14 +14,19 @@ import java.util.Map;
 @Slf4j
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/auth")
+//@RequestMapping("/auth")
 public class AuthController {
 
     @Autowired
     private LoginService loginService;
 
     @PostMapping("/login")
-    public Result<String> login(@RequestParam String username, @RequestParam String password, @RequestBody boolean isTeacher) {
+    public Result<String> login(@RequestBody Map<String, Object> jsonMap) {
+        String username = (String) jsonMap.get("username");
+        String password = (String) jsonMap.get("password");
+        String isTeacherStr = (String) jsonMap.get("isTeacher");
+        boolean isTeacher = isTeacherStr.equals("true");
+//        boolean isTeacher = (boolean) jsonMap.get("isTeacher");
         if (isTeacher) {
             Teacher result = loginService.loginTeacher(username, password);
             if (result == null) {

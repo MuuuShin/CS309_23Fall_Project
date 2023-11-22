@@ -78,16 +78,16 @@ public class RoomService {
         commentList.add(commentRepository.getCommentByCommentId(room.getCommentBaseId()));
         while (index < commentList.size()) {
             //弄一个队列，如果可视就入队
-            List<Comment> list =  commentRepository.getCommentsByPostId(commentList.get(index).getPostId());
-            list.forEach(t -> {if (t.getDisabled()) {
+            List<Comment> list =  commentRepository.getCommentsByPostId(commentList.get(index).getCommentId());
+            list.forEach(t -> {if (!t.getDisabled()) {
                 commentList.add(t);
-            }});
 
+            }});
             index++;
+            System.out.println(commentList);
         }
         return commentList;
     }
-
 
 
 }

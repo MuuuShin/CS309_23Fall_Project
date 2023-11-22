@@ -2,7 +2,11 @@ package cse.ooad.project.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNullApi;
+import org.springframework.lang.Nullable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -19,7 +23,12 @@ import java.util.Set;
 public class AuthInterceptor implements HandlerInterceptor {
 
 
-    private Set<String> blackList = new HashSet<>();
+    private final Set<String> blackList = new HashSet<>();
+
+    @Scheduled(fixedRate = 60 * 60 * 1000)
+    public void clearBlackList() {
+        blackList.clear();
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -27,9 +36,14 @@ public class AuthInterceptor implements HandlerInterceptor {
         String regexLogin="^/login$";
 //        String regexRegister="^/register$";
         String regexLogout="^/logout$";
-        String jwt = request.getParameter("Authorization");
+        String jwt = request.getHeader("Authorization");
 
         log.info("Authorization: {}", jwt);
+
+        if (url.matches(regexLogin)){
+            log.info("Login");
+            return true;
+        }
 
         if (url.matches(regexLogout)){
             log.info("Logout");

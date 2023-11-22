@@ -1,15 +1,19 @@
 package cse.ooad.project.controller;
 
 
+
 import cse.ooad.project.model.Group;
 import cse.ooad.project.model.Room;
 import cse.ooad.project.model.Student;
 import cse.ooad.project.service.GroupService;
+import cse.ooad.project.service.SearchService;
+import cse.ooad.project.service.StudentService;
 import cse.ooad.project.service.TeacherService;
 import cse.ooad.project.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,13 +31,19 @@ public class TeamController {
     private TeacherService teacherService;
 
 
+    @Autowired
+    private StudentService studentService;
+
+    @Autowired
+    private SearchService searchService;
+
+
     @PostMapping("/trans-room")
     public Result<String> transRoom(@RequestBody Map<String, Object> JsonData){
         String studentId1 = (String) JsonData.get("studentId1");
         String studentId2 = (String) JsonData.get("studentId2");
-//        boolean success = teacherService.transRoom(studentId1, studentId2);
+        boolean success = teacherService.transRoom(Long.parseLong(studentId1), Long.parseLong(studentId2));
 
-        boolean success = true;
         if (success) {
             return Result.success("success", null);
         } else {
@@ -44,17 +54,22 @@ public class TeamController {
 
 
     @PostMapping("/select-room")
-    public Result<String> selectRoom(@RequestBody Map<String, Object> JsonData, @RequestHeader("Authorization") String token){
-        String teamId = (String) JsonData.get("studentId");
+    public Result<String> selectRoom(@RequestBody Map<String, Object> JsonData, @RequestHeader("Authorization") String token) {
+        String teamId = (String) JsonData.get("teamId");
         String roomId = (String) JsonData.get("roomId");
-        Claims claims = JwtUtils.parseJWT(token);
-//        boolean isLeader = GroupService.isLeader(teamId, claims.get("id").toString());
-        boolean isLeader = true;
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("fail");
+        }
+
+
+        boolean isLeader = groupService.isLeader(Long.parseLong(teamId), Long.parseLong(claims.get("id").toString()));
         if (!isLeader) {
             return Result.error("fail");
         }
-//        boolean success = groupService.selectRoom(teamId, roomId);
-        boolean success = true;
+        boolean success = groupService.chooseRoom(Long.parseLong(teamId), Long.parseLong(roomId));
         if (success) {
             return Result.success("success", null);
         } else {
@@ -64,16 +79,19 @@ public class TeamController {
     }
 
     @PostMapping("/{teamId}/transfer-leadership")
-    public Result<String> transferLeadership(@PathVariable("teamId") String teamId, @RequestBody Map<String, Object> JsonData, @RequestHeader("Authorization") String token){
+    public Result<String> transferLeadership(@PathVariable("teamId") String teamId, @RequestBody Map<String, Object> JsonData, @RequestHeader("Authorization") String token) {
         String newLeaderId = (String) JsonData.get("newLeaderId");
-        Claims claims = JwtUtils.parseJWT(token);
-//        boolean isLeader = GroupService.isLeader(teamId, claims.get("id").toString());
-        boolean isLeader = true;
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("fail");
+        }
+        boolean isLeader = groupService.isLeader(Long.parseLong(teamId), Long.parseLong(claims.get("id").toString()));
         if (!isLeader) {
             return Result.error("fail");
         }
-//        boolean success = groupService.transferLeadership(teamId, newLeaderId);
-        boolean success = true;
+        boolean success = groupService.changeLeader(Long.parseLong(teamId), Long.parseLong(newLeaderId));
         if (success) {
             return Result.success("success", null);
         } else {
@@ -85,16 +103,23 @@ public class TeamController {
     @GetMapping("/{teamId}/members")
     public Result<List<Student>> getMembers(@PathVariable("teamId") String teamId) {
 
-//        List<Student> members = groupService.getMembers(teamId);
-        List<Student> members = null; //TODO: get members
-        return Result.success("success", members);
+        List<Student> members = groupService.getMemberList(Long.parseLong(teamId));
+        if (members != null) {
+            return Result.success("success", members);
+        }
+
+        return Result.error("fail");
     }
 
     @PostMapping("/{teamId}/leave")
     public Result<String> leaveTeam(@PathVariable("teamId") String teamId, @RequestHeader("Authorization") String token) {
-        Claims claims = JwtUtils.parseJWT(token);
-//        boolean success = groupService.leaveTeam(teamId, claims.get("id").toString());
-        boolean success = true;
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("fail");
+        }
+        boolean success = studentService.memberLeave(Long.parseLong(claims.get("id").toString()));
         if (success) {
             return Result.success("success", null);
         } else {
@@ -105,9 +130,13 @@ public class TeamController {
 
     @PostMapping("/{teamId}/join")
     public Result<String> joinTeam(@PathVariable("teamId") String teamId, @RequestHeader("Authorization") String token) {
-        Claims claims = JwtUtils.parseJWT(token);
-//        boolean success = groupService.joinTeam(teamId, claims.get("id").toString());
-        boolean success = true;
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("fail");
+        }
+        boolean success = studentService.joinGroup(Long.parseLong(claims.get("id").toString()), Long.parseLong(teamId));
         if (success) {
             return Result.success("success", null);
         } else {
@@ -117,13 +146,17 @@ public class TeamController {
 
     @DeleteMapping("/{teamId}/favorites")
     public Result<String> deleteFavorite(@PathVariable("teamId") String teamId, @RequestHeader("Authorization") String token) {
-        Claims claims = JwtUtils.parseJWT(token);
-//        boolean isLeader = GroupService.isLeader(teamId, claims.get("id").toString());
-        boolean isLeader = true;
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("fail");
+        }
+        boolean isLeader = groupService.isLeader(Long.parseLong(teamId), Long.parseLong(claims.get("id").toString()));
         if (!isLeader) {
             return Result.error("fail");
         }
-//        boolean success = groupService.deleteFavorite(teamId);
+        //TODO 传入roomId
         boolean success = true;
         if (success) {
             return Result.success("success", null);
@@ -134,22 +167,28 @@ public class TeamController {
 
     @GetMapping("/{teamId}/favorites")
     public Result<List<Room>> getFavorites(@PathVariable("teamId") String teamId) {
-//        List<Room> favorites = groupService.getFavorites(teamId);
-        List<Room> favorites = null; //TODO: get favorites
-        return Result.success("success", favorites);
+        List<Room> favorites = groupService.getStarList(Long.parseLong(teamId));
+        if (favorites != null) {
+            return Result.success("success", favorites);
+        }
+
+        return Result.error("fail");
     }
 
     @PostMapping("/{teamId}/favorites")
     public Result<String> addFavorite(@PathVariable("teamId") String teamId, @RequestBody Map<String, Object> JsonData, @RequestHeader("Authorization") String token) {
         String roomId = (String) JsonData.get("roomId");
-        Claims claims = JwtUtils.parseJWT(token);
-//        boolean isLeader = GroupService.isLeader(teamId, claims.get("id").toString());
-        boolean isLeader = true;
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("fail");
+        }
+        boolean isLeader = groupService.isLeader(Long.parseLong(teamId), Long.parseLong(claims.get("id").toString()));
         if (!isLeader) {
             return Result.error("fail");
         }
-//        boolean success = groupService.addFavorite(teamId, roomId);
-        boolean success = true;
+        boolean success = groupService.starRoom(Long.parseLong(teamId), Long.parseLong(roomId));
         if (success) {
             return Result.success("success", null);
         } else {
@@ -157,47 +196,73 @@ public class TeamController {
         }
     }
 
-    @DeleteMapping("/{teamId}")
-    public Result<String> deleteTeam(@PathVariable("teamId") String teamId, @RequestHeader("Authorization") String token) {
-        Claims claims = JwtUtils.parseJWT(token);
+//    @DeleteMapping("/{teamId}")
+//    public Result<String> deleteTeam(@PathVariable("teamId") String teamId, @RequestHeader("Authorization") String token) {
+//        Claims claims;
+//        try {
+//            claims = JwtUtils.parseJWT(token);
+//        } catch (Exception e) {
+//            return Result.error("fail");
+//        }
 //        boolean isLeader = GroupService.isLeader(teamId, claims.get("id").toString());
-        boolean isLeader = true;
-        if (!isLeader) {
-            return Result.error("fail");
-        }
+////        boolean isLeader = true;
+//        if (!isLeader) {
+//            return Result.error("fail");
+//        }
 //        boolean success = groupService.deleteTeam(teamId);
-        boolean success = true;
-        if (success) {
-            return Result.success("success", null);
-        } else {
-            return Result.error("fail");
-        }
-    }
+////        boolean success = true;
+//        if (success) {
+//            return Result.success("success", null);
+//        } else {
+//            return Result.error("fail");
+//        }
+//    }
 
     @GetMapping("/{teamId}")
     public Result<Group> getTeamInfo(@PathVariable("teamId") String teamId) {
-//        Group teamInfo = groupService.getTeamInfo(teamId);
-        Group teamInfo = null; //TODO: get team info
-        return Result.success("success", teamInfo);
+        Group teamInfo = searchService.searchGroupById(Long.parseLong(teamId));
+        if (teamInfo != null) {
+            return Result.success("success", teamInfo);
+        }
+
+        return Result.error("fail");
     }
 
 
 
-    @GetMapping("/")
-    public Result<List<Group>> getAllTeamInfo() {
-        log.info("get team info");
-//        List<Group> allTeamInfo = groupService.getAllTeamInfo();
-        List<Group> teamInfo = null; //TODO: get all team info
-        return Result.success("success", teamInfo);
+    @GetMapping("")
+    public Result<List<Group>> getAllTeamInfo(@RequestBody Map<String, Object> JsonData, @RequestHeader("Authorization") String token) {
+        Integer offset = (Integer) JsonData.get("offset");
+        Integer size = (Integer) JsonData.get("size");
+
+        if (offset == null || size == null) {
+            return Result.error("fail");
+        }
+        offset--;
+        if (offset < 0 || size < 0) {
+            return Result.error("fail");
+        }
+
+        List<Group> allTeamInfo = searchService.searchAllGroup(offset, size);
+        if (allTeamInfo != null) {
+            return Result.success("success", allTeamInfo);
+        }
+
+        return Result.error("fail");
     }
 
-    @PostMapping("/")
+    @PostMapping("")
     public Result<String> createTeam(@RequestBody Map<String, Object> JsonData, @RequestHeader("Authorization") String token) {
-        String teamName = (String) JsonData.get("teamName");
-        Claims claims = JwtUtils.parseJWT(token);
-//        boolean success = groupService.createTeam(teamName, claims.get("id").toString());
-        boolean success = true;
-        if (success) {
+        String teamName = (String) JsonData.get("name");
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("fail");
+        }
+
+        Group group  = studentService.createGroup(Long.parseLong(claims.get("id").toString()), teamName);
+        if (group != null) {
             return Result.success("success", null);
         } else {
             return Result.error("fail");

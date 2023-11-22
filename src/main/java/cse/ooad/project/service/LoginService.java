@@ -23,6 +23,7 @@ public class LoginService {
 
     public Student loginStudent(String account, String password) {
         //打算加盐处理密码，但是目前还没有进行处理
+        //todo 密码加盐
         Student student = studentRepository.getStudentByAccount(account);
         if (student != null) {
             String paw = passwordRepository.findPasswordByAccount(account).getPassword();

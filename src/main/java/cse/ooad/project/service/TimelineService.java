@@ -17,16 +17,21 @@ public class TimelineService {
 
     //测试用的
     public static int STATUS = 0;
+    public static int timestamp = 0;
 
     public int getStage(int type){
         Timeline timeline = timelineRepository.getTimelineByType(type);
 
-        Timestamp nowTime = new Timestamp(new Date().getTime());
+        //Timestamp nowTime = new Timestamp(new Date().getTime());
         //测试的时候用的
-        return STATUS;
-        /*if (nowTime.before(timeline.getBeginTime1()))
+        if (timestamp == 0){
+            return STATUS;
+        }
+        Timestamp nowTime = new Timestamp(timestamp);
+        //return STATUS;
+        if (nowTime.before(timeline.getBeginTime1()))
             return 0;
-        if (nowTime.after(timeline.getBeginTime1()) && nowTime.after(timeline.getEndTime1()))
+        if (nowTime.after(timeline.getBeginTime1()) && nowTime.before(timeline.getEndTime1()))
             return 1;
         if (nowTime.after(timeline.getBeginTime2()) && nowTime.before(timeline.getEndTime2()))
             return 2;
@@ -34,6 +39,15 @@ public class TimelineService {
             return 3;
         if (nowTime.after(timeline.getBeginTime4()) && nowTime.before(timeline.getEndTime4()))
             return 4;
-        return 5;*/
+        return 5;
+    }
+
+    public Timeline timeline(int type){
+        //todo 跟前端聊什么type返回什么东西
+        return null;
+    }
+
+    public Timeline getTimelineByType(Integer type){
+        return timelineRepository.getTimelineByType(type);
     }
 }

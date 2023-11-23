@@ -86,7 +86,11 @@ public class GroupService {
     public boolean chooseRoom(Long groupId, Long roomId) {
         Group group = groupRepository.getGroupByGroupId(groupId);
         Room room = roomRepository.getRoomsByRoomId(roomId);
+      if (group == null|| room == null) {
+            return false;
+        }
         Student lead = studentRepository.getStudentByStudentId(group.getLeader());
+
 
         int stage = timelineService.getStage(lead.getType());
         //判断房间类型对不对
@@ -159,6 +163,8 @@ public class GroupService {
         return groupRepository.findAll();
     }
 
+
+    @Transactional
     public Boolean changeLeader(Long groupId, Long studentId) {
         Group group = groupRepository.getGroupByGroupId(groupId);
         Student student = studentRepository.getStudentByStudentId(studentId);

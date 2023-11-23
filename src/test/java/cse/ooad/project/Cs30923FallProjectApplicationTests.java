@@ -88,9 +88,9 @@ class Cs30923FallProjectApplicationTests {
         teacherService.batchSaveStudent(new File("src/test/resources/student.csv"));
         teacherService.batchSaveRoom(new File("src/test/resources/university_data.csv"));
 
-        Timeline timeline = new Timeline(null, 1, new Timestamp(1), new Timestamp(100000000000L),
-            new Timestamp(10), new Timestamp(20), new Timestamp(20), new Timestamp(30),
-            new Timestamp(30), new Timestamp(40));
+        Timeline timeline = new Timeline(null, 1, new Timestamp(10000L), new Timestamp(20000L),
+            new Timestamp(20000), new Timestamp(30000), new Timestamp(30000), new Timestamp(40000),
+            new Timestamp(40000), new Timestamp(50000));
         teacherService.saveTimeline(timeline);
     }
 
@@ -135,10 +135,13 @@ class Cs30923FallProjectApplicationTests {
         System.out.println(groupService.getMemberList(group1.getGroupId()));
         System.out.println(studentService.memberLeave(200000001L));
         System.out.println(groupService.getMemberList(group1.getGroupId()));
-        studentService.createGroup(200000003L, "冒险小虎队1984");
+        System.out.println(studentService.createGroup(200000003L, "冒险小虎队1984"));
+
         System.out.println(groupService.chooseRoom(2L, 1L));
         System.out.println(groupService.chooseRoom(1L, 1L));
         System.out.println(groupService.chooseRoom(3L, 1L));
+        //修改队长
+        System.out.println(groupService.changeLeader(2L, 200000004L));
         //todo 合并队伍
 
 
@@ -172,7 +175,16 @@ class Cs30923FallProjectApplicationTests {
     @Order(8)
     @Test
     void TimelineTest() {
-
+        TimelineService.timestamp = 1000;
+        System.out.println(timelineService.getStage(1));
+        TimelineService.timestamp = 10100;
+        System.out.println(timelineService.getStage(1));
+        TimelineService.timestamp = 20200;
+        System.out.println(timelineService.getStage(1));
+        TimelineService.timestamp = 30300;
+        System.out.println(timelineService.getStage(1));
+        TimelineService.timestamp = 40400;
+        System.out.println(timelineService.getStage(1));
     }
 
     @Order(9)

@@ -63,16 +63,21 @@ public class StudentService {
      */
     @Transactional
     public Group createGroup(Long id, String name) {
+        Student student = studentRepository.getStudentByStudentId(id);
+        if (student.getGroup() != null){
+            return null;
+        }
         Group group = new Group();
         group.setName(name);
         group.setMemberList(new ArrayList<>());
-        Student student = studentRepository.getStudentByStudentId(id);
+
         group.setLeader(id);
         group.getMemberList().add(student);
         group = groupRepository.save(group);
         student.setGroupId(group.getGroupId());
         studentRepository.save(student);
         //todo 系统发送创建队伍成功消息
+        msgService.sendSystemMsg(group.getMemberList(), "你创建了队伍" + group.getName());
         return group;
 
     }
@@ -92,14 +97,13 @@ public class StudentService {
         Group group = groupRepository.getGroupByGroupId(groupId);
         int stage = timelineService.getStage(student.getType());
 
-        //不记得哪个阶段能加队伍了
-        //todo: 回答 第一个阶段可以 第三个阶段可以
+        // 第一个阶段可以 第三个阶段可以
         if (stage != 1 && stage != 3) {
             return false;
         }
         Student leader = studentRepository.getStudentByStudentId(group.getLeader());
         if (Objects.equals(leader.getType(), student.getType())) {
-            //todo 判断人数合不合适
+            //判断人数合不合适
             if (group.getMemberList().size() == 4) {
                 return false;
             }
@@ -107,8 +111,11 @@ public class StudentService {
             if (student.getGroup() != null) {
                 return false;
             }
-            group.getMemberList().add(student);
+            msgService.sendSystemMsg(group.getMemberList(), student.getName() + "加入了队伍");
             student.setGroupId(groupId);
+            ArrayList<Student> list = new ArrayList<>();
+            list.add(student);
+            msgService.sendSystemMsg(list, "你加入了队伍" + group.getName());
             studentRepository.save(student);
             return true;
         }
@@ -134,7 +141,7 @@ public class StudentService {
         }
         student.setGroupId(null);
         studentRepository.save(student);
-        //todo 发送退队消息
+        msgService.sendSystemMsg(group.getMemberList(), student.getName() + "离开了队伍");
         return true;
     }
 
@@ -147,8 +154,7 @@ public class StudentService {
         msg.setBody(message);
         msg.setSrcId(src.getStudentId());
         msg.setDstId(sendTo.getStudentId());
-        msgService.saveMsg(msg);
-
+        msgService.forwardMsg(msg);
     }
 
     public List<Msg> getMsgList(Long id, Long toId) {
@@ -161,8 +167,29 @@ public class StudentService {
         return comment;
     }
 
-    public Boolean deleteComment(Long id) {
-        return commentRepository.deleteByCommentId(id) != 0;
+    public Boolean deleteComment(Long id, Long userId) {
+        Comment comment = commentRepository.getCommentByCommentId(id);
+        boolean isTeacher = userId < 2 * 100000000;
+        boolean isStudent = userId >= 2 * 100000000;
+        if (isTeacher) {
+            comment.setDisabled(true);
+            commentRepository.save(comment);
+            return true;
+        }
+        if (isStudent) {
+            //防止删除根评论
+            if (comment.getUserId() == null) {
+                return false;
+            }
+            //删除对应的评论
+            if (!Objects.equals(comment.getUserId(), userId)) {
+                return false;
+            }
+            comment.setDisabled(true);
+            commentRepository.save(comment);
+            return true;
+        }
+        return false;
     }
 
 

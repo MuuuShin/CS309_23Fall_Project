@@ -141,7 +141,11 @@ class Cs30923FallProjectApplicationTests {
         System.out.println(groupService.chooseRoom(1L, 1L));
         System.out.println(groupService.chooseRoom(3L, 1L));
         //修改队长
+        Student student = new Student(null, "白",  "不爱洗澡皮肤好好", (short) 1, null, 1, null,null, "12110433", null);
+        teacherService.saveStudent(student);
+        studentService.createGroup(200000005L, "飞天茅台9999");
         System.out.println(groupService.changeLeader(2L, 200000004L));
+        System.out.println(teacherService.transRoom(200000001L, 200000005L));
         //todo 合并队伍
 
 

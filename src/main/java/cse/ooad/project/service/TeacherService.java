@@ -44,6 +44,8 @@ public class TeacherService {
     PasswordRepository passwordRepository;
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private GroupRepository groupRepository;
 
 
     public Student saveStudent(Student student) {
@@ -113,6 +115,8 @@ public class TeacherService {
         return timelineRepository.save(timeline);
     }
 
+
+    //以学生为单位调换宿舍
     public Boolean transRoom(Long id1, Long id2){
         Student student1 = studentRepository.getStudentByStudentId(id1);
         Student student2 = studentRepository.getStudentByStudentId(id2);
@@ -122,6 +126,7 @@ public class TeacherService {
 
         Group group1 = student1.getGroup();
         Group group2 = student2.getGroup();
+
         if (group1 != null){
             student2.setGroupId(group1.getGroupId());
             if (Objects.equals(group1.getLeader(), student1.getStudentId())){
@@ -134,6 +139,12 @@ public class TeacherService {
                 group2.setLeader(student1.getStudentId());
             }
         }
+        student1.setGroupId(group2.getGroupId());
+        student2.setGroupId(group1.getGroupId());
+        studentRepository.save(student1);
+        studentRepository.save(student2);
+        groupRepository.save(group1);
+        groupRepository.save(group2);
         return true;
     }
 

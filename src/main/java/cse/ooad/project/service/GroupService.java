@@ -33,6 +33,17 @@ public class GroupService {
     final Long STARLIMITE = 6L;
 
 
+    // 仅用于测试缓存是否成功运行
+    @Transactional
+    public void test(){
+        for(int i=0;i<10;i++){
+            Group group1 = groupRepository.getGroupByGroupId(1L);
+            System.out.println(group1);
+        }
+
+    }
+
+
     /**
      * group1合并进group2，阶段三的时候使用
      */
@@ -58,7 +69,7 @@ public class GroupService {
      * group将room添加入star中
      *
      * @param groupId 传入的队伍id
-     * @param roomId 传入的房间id
+     * @param roomId  传入的房间id
      * @return star数量没超就返回true，否则返回false
      */
     @Transactional
@@ -73,6 +84,30 @@ public class GroupService {
 //        }
         if (group.getRoomStarList().size() < STARLIMITE) {
             group.getRoomStarList().add(room);
+            groupRepository.save(group);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * group将room从star中移除
+     *
+     * @param groupId 传入的队伍id
+     * @param roomId  传入的房间id
+     * @return star中有这个房间且移除成功就返回true，否则返回false
+     */
+    @Transactional
+    public boolean unstarRoom(Long groupId, Long roomId) {
+        Group group = groupRepository.getGroupByGroupId(groupId);
+        Room room = roomRepository.getRoomsByRoomId(roomId);
+        int stage = timelineService.getStage(
+                group.getMemberList().get(0).getType());
+        if (stage != 1) {
+            return false;
+        }
+        if (group.getRoomStarList().contains(room)) {
+            group.getRoomStarList().remove(room);
             groupRepository.save(group);
             return true;
         }

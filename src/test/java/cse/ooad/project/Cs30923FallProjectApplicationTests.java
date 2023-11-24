@@ -12,6 +12,7 @@ import cse.ooad.project.service.StudentService;
 import cse.ooad.project.service.TeacherService;
 import cse.ooad.project.service.TimelineService;
 import cse.ooad.project.utils.StudentType;
+
 import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
@@ -30,6 +32,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+@EnableCaching
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class Cs30923FallProjectApplicationTests {
@@ -69,7 +72,7 @@ class Cs30923FallProjectApplicationTests {
 
     @Order(1)
     @Test
-    public void setUp() throws IOException, SQLException{
+    public void setUp() throws IOException, SQLException {
         System.out.println("setUp");
         //执行
         // 获取数据库连接
@@ -88,8 +91,8 @@ class Cs30923FallProjectApplicationTests {
         teacherService.batchSaveRoom(new File("src/test/resources/Rooms.csv"));
 
         Timeline timeline = new Timeline(null, 1, new Timestamp(1), new Timestamp(100000000000L),
-            new Timestamp(10), new Timestamp(20), new Timestamp(20), new Timestamp(30),
-            new Timestamp(30), new Timestamp(40));
+                new Timestamp(10), new Timestamp(20), new Timestamp(20), new Timestamp(30),
+                new Timestamp(30), new Timestamp(40));
         teacherService.saveTimeline(timeline);
     }
 
@@ -104,7 +107,7 @@ class Cs30923FallProjectApplicationTests {
         student.setType(StudentType.MASTER_MALE.type);
         studentService.changeIntroduce(student);
         Comment comment = new Comment(null, "震惊", "西天取经", student.getStudentId()
-            , 2L, new Timestamp(15153L), true);
+                , 2L, new Timestamp(15153L), true);
         studentService.saveComment(comment);
         System.out.println(studentService.joinGroup(200000003L, 2L));
         System.out.println(studentService.joinGroup(200000003L, 1L));
@@ -112,6 +115,14 @@ class Cs30923FallProjectApplicationTests {
         System.out.println(studentService.joinGroup(200000004L, 1L));
 
     }
+
+    @Order(4)
+    @Test
+    void RoomTest() {
+        System.out.println(roomService.getGroupStarList(2L));
+        System.out.println(roomService.getCommentsByRoom(2L));
+    }
+
 
     @Order(5)
     @Test
@@ -134,7 +145,7 @@ class Cs30923FallProjectApplicationTests {
         System.out.println(groupService.chooseRoom(1L, 1L));
         System.out.println(groupService.chooseRoom(3L, 1L));
 
-
+        groupService.test();
 
     }
 
@@ -151,12 +162,6 @@ class Cs30923FallProjectApplicationTests {
         msgService.saveMsg(msg);
     }
 
-    @Order(4)
-    @Test
-    void RoomTest() {
-        System.out.println(roomService.getGroupStarList(2L));
-        System.out.println(roomService.getCommentsByRoom(2L));
-    }
 
     @Order(8)
     @Test

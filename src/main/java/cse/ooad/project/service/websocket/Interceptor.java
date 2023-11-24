@@ -26,7 +26,9 @@ public class Interceptor implements HandshakeInterceptor {
         WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         System.out.println("握手开始");
 
-        String sessionId = request.getHeaders().get("sessionId").get(0);
+        /*String sessionId = request.getHeaders().get("sessionId").get(0);*/
+        String hostName = request.getRemoteAddress().getHostName();
+        String sessionId = hostName + String.valueOf((int) (Math.random() * 1000));
         if (Strings.isNotBlank(sessionId)) {
             // 放入属性域
             attributes.put("session_id", sessionId);

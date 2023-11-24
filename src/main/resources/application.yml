@@ -8,6 +8,16 @@ spring:
     password: ${DB_PASSWORD}
     # replace ${DB_USERNAME} and ${DB_PASSWORD} with your own username and password
     # or set environment variables
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 159MB
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+      - org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration
   jpa:
     hibernate:
       ddl-auto: update
@@ -16,6 +26,12 @@ spring:
       hibernate:
         temp:
           use_jdbc_metadata_defaults: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
+
+
+#logging:
+#  level:
+#    root: WARN
 
 

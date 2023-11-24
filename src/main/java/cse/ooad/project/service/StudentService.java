@@ -1,7 +1,6 @@
 package cse.ooad.project.service;
 
 
-
 import cse.ooad.project.model.Comment;
 import cse.ooad.project.model.Group;
 import cse.ooad.project.model.Msg;
@@ -12,13 +11,11 @@ import cse.ooad.project.repository.MsgRepository;
 import cse.ooad.project.repository.RegionRepository;
 import cse.ooad.project.repository.StudentRepository;
 import cse.ooad.project.utils.MessageStatus;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,12 +43,19 @@ public class StudentService {
     private RegionRepository regionRepository;
 
 
-    public void changeIntroduce(Student student){
-        studentRepository.save(student);
+    public Student changeIntroduce(Student student) {
+        Student old = studentRepository.getStudentByStudentId(student.getStudentId());
+        student.setGender(old.getGender());
+        student.setType(old.getType());
+        student.setAccount(old.getAccount());
+        student.setGroupId(old.getGroupId());
+        student.setStudentId(old.getStudentId());
+        student.setName(old.getName());
+        return studentRepository.save(student);
     }
 
-    public void changePassword(Student student){
-        studentRepository.save(student);
+    public Student changePassword(Student student) {
+        return studentRepository.save(student);
     }
 
     /**
@@ -75,27 +79,33 @@ public class StudentService {
 
     /**
      * 会判断学生类型、队伍人数来决定能否加入
+     *
      * @param studentId
      * @param groupId
      * @return
      */
 
     @Transactional
-    public boolean joinGroup(Long studentId, Long groupId){
+    public boolean joinGroup(Long studentId, Long groupId) {
         //获得阶段
         Student student = studentRepository.getStudentByStudentId(studentId);
         Group group = groupRepository.getGroupByGroupId(groupId);
         int stage = timelineService.getStage(student.getType());
+
         //不记得哪个阶段能加队伍了
         //todo: 回答 第一个阶段可以 第三个阶段可以
+//        stage = 1;
+        if (stage != 1 && stage != 3) {
+            return false;
+        }
         Student leader = studentRepository.getStudentByStudentId(group.getLeader());
-        if (Objects.equals(leader.getType(), student.getType())){
+        if (Objects.equals(leader.getType(), student.getType())) {
             //todo 判断人数合不合适
-            if (group.getMemberList().size() == 4){
+            if (group.getMemberList().size() == 4) {
                 return false;
             }
             //判断有没有加入队伍
-            if (student.getGroup() != null){
+            if (student.getGroup() != null) {
                 return false;
             }
             group.getMemberList().add(student);
@@ -108,19 +118,28 @@ public class StudentService {
     }
 
     /**
-     * 学生脱队，队长脱队后顺序继承，是最后一人则解散
-     *会自动给队长发退队消息
+     * 学生脱队，队长脱队后顺序继承，是最后一人则解散 会自动给队长发退队消息
+     *
      * @param id 脱队的学生
      */
+    @Transactional
     public Boolean memberLeave(Long id) {
         Student student = studentRepository.getStudentByStudentId(id);
+        Group group = student.getGroup();
+
+        if (group == null) {
+            return false;
+        }
+        if (Objects.equals(group.getLeader(), id)) {
+            return false;
+        }
         student.setGroupId(null);
         studentRepository.save(student);
         //todo 发送退队消息
         return true;
     }
 
-    public void sendMessage(Long srcId, Long sendToId, String message){
+    public void sendMessage(Long srcId, Long sendToId, String message) {
         Msg msg = new Msg();
         Student src = studentRepository.getStudentByStudentId(srcId);
         Student sendTo = studentRepository.getStudentByStudentId(sendToId);
@@ -133,27 +152,41 @@ public class StudentService {
 
     }
 
-    public List<Msg> getMsgList(Long id, Long toId){
-        msgRepository.getMsgsBySrcIdAndDstId(id, toId);
-        return null;
+    public List<Msg> getMsgList(Long id, Long toId) {
+        return msgRepository.getMsgsBySrcIdAndDstId(id, toId);
     }
 
 
-    public Comment saveComment(Comment comment){
+    public Comment saveComment(Comment comment) {
         commentRepository.save(comment);
         return comment;
     }
 
-    public Boolean deleteComment(Long id){
-        return commentRepository.deleteByCommentId(id)!= 0;
+    public Boolean deleteComment(Long id, Long userId) {
+        Comment comment = commentRepository.getCommentByCommentId(id);
+        boolean isTeacher = userId < 2 * 100000000;
+        boolean isStudent = userId >= 2 * 100000000;
+        if (isTeacher) {
+            comment.setDisabled(true);
+            commentRepository.save(comment);
+            return true;
+        }
+        if (isStudent) {
+            //防止删除根评论
+            if (comment.getUserId() == null) {
+                return false;
+            }
+            //删除对应的评论
+            if (!Objects.equals(comment.getUserId(), userId)) {
+                return false;
+            }
+            comment.setDisabled(true);
+            commentRepository.save(comment);
+            return true;
+        }
+        return false;
+
     }
-
-
-
-
-
-
-
 
 
 }

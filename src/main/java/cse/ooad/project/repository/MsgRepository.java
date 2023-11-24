@@ -1,7 +1,7 @@
 package cse.ooad.project.repository;
 
 
-import cse.ooad.project.model.Group;
+
 import cse.ooad.project.model.Msg;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;

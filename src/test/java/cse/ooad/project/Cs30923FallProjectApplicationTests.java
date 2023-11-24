@@ -18,7 +18,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +27,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -63,16 +61,16 @@ class Cs30923FallProjectApplicationTests {
 
     @Autowired
     TimelineService timelineService;
-
-    @Autowired
-    private CommentRepository commentRepository;
+//
+//    @Autowired
+//    private CommentRepository commentRepository;
 
     @Autowired
     private DataSource dataSource;
 
     @Order(1)
     @Test
-    public void setUp() throws IOException, SQLException {
+    public void setUp() throws SQLException {
         System.out.println("setUp");
         //执行
         // 获取数据库连接

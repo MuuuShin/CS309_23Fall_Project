@@ -6,14 +6,12 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface PasswordRepository extends JpaRepository<Password, Long> {
+public interface PasswordRepository extends JpaRepository<Password, String> {
 
     interface PasswordProjection {
-
         String getPassword();
     }
 
     PasswordProjection findPasswordByAccount(String account);
-
 
 }

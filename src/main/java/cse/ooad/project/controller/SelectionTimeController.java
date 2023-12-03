@@ -28,8 +28,8 @@ public class SelectionTimeController {
     TimelineService timelineService;
 
     @GetMapping("/selection-time/{type}")
-    public Result<Timeline> getSelectionTime(@RequestParam("type") String type) {
-        log.info("get selection time");
+    public Result<Timeline> getSelectionTime(@PathVariable("type") String type) {
+        log.info(type);
         //TODO: get selection time
         Timeline selectionTime = timelineService.getTimelineByType(Integer.parseInt(type));
 

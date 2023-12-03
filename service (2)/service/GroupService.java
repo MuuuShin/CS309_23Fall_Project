@@ -181,31 +181,6 @@ public class GroupService {
         return group.getLeader().equals(studentId);
     }
 
-    /**
-     * group将room从star中移除
-     *
-     * @param groupId 传入的队伍id
-     * @param roomId  传入的房间id
-     * @return star中有这个房间且移除成功就返回true，否则返回false
-     */
-    @Transactional
-    public boolean unStarRoom(Long groupId, Long roomId) {
-        Group group = groupRepository.getGroupByGroupId(groupId);
-        Room room = roomRepository.getRoomsByRoomId(roomId);
-        int stage = timelineService.getStage(
-            group.getMemberList().get(0).getType());
-        if (stage != 1) {
-            return false;
-        }
-        if (group.getRoomStarList().contains(room)) {
-            group.getRoomStarList().remove(room);
-            groupRepository.save(group);
-            return true;
-        }
-        return false;
-    }
-
-
 
     @Transactional
     public List<Room> getStarList(Long id) {

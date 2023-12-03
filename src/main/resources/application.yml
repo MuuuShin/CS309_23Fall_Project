@@ -9,10 +9,13 @@ spring:
     # replace ${DB_USERNAME} and ${DB_PASSWORD} with your own username and password
     # or set environment variables
 
+
   servlet:
     multipart:
       max-file-size: 100MB
       max-request-size: 159MB
+
+#    path: /api
 
   autoconfigure:
     exclude:

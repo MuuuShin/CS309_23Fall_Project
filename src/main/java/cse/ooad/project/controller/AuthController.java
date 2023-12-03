@@ -14,7 +14,8 @@ import java.util.Map;
 @Slf4j
 @RestController
 @CrossOrigin(origins = "*")
-//@RequestMapping("/auth")
+//@RequestMapping("/api")
+
 public class AuthController {
 
     @Autowired

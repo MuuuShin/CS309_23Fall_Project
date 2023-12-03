@@ -12,6 +12,7 @@ import java.util.Objects;
  * 属性列表：
  * <ul>
  *   <li>msgId: 消息的唯一标识。</li>
+ *   <li>type: 消息的类型。枚举类参见{@link cse.ooad.project.utils.MessageType}</li>
  *   <li>srcId: 消息发送者的标识。如果为0则为系统消息(System)</li>
  *   <li>dstId: 消息接收者的标识。</li>
  *   <li>body: 消息内容。</li>
@@ -26,11 +27,14 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "msgs", schema = "public", catalog = "cs309a")
-public class                                                               Msg {
+public class Msg {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "msg_id")
     private Long msgId;
+    @Basic
+    @Column(name = "type")
+    private int type;
     @Basic
     @Column(name = "src_id")
     private Long srcId;

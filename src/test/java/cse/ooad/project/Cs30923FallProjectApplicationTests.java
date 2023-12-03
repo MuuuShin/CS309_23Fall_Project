@@ -156,7 +156,7 @@ class Cs30923FallProjectApplicationTests {
     @Order(7)
     @Test
     void MsgTest() {
-        Msg msg = new Msg(null, 1L, 2L, "罗启航牛逼", new Timestamp(12315616L), 12);
+        Msg msg = new Msg(null,0, 1L, 2L, "罗启航牛逼", new Timestamp(12315616L), 12);
         msgService.saveMsg(msg);
     }
 

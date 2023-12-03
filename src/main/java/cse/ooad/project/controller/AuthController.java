@@ -30,7 +30,7 @@ public class AuthController {
         if (isTeacher) {
             Teacher result = loginService.loginTeacher(username, password);
             if (result == null) {
-                log.info(username + "Invalid username or password");
+                log.info(username + " Invalid username or password");
                 return Result.error("Invalid username or password");
             }
             Map<String, Object> claims = new HashMap<>();

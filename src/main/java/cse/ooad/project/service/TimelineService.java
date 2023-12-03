@@ -42,12 +42,7 @@ public class TimelineService {
         return 5;
     }
 
-    public Timeline timeline(int type){
-        //todo 跟前端聊什么type返回什么东西
-        return null;
-    }
-
-    public Timeline getTimelineByType(Integer type){
+    public Timeline getTimelineByType(int type){
         return timelineRepository.getTimelineByType(type);
     }
 }

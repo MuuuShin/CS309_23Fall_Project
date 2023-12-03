@@ -11,6 +11,7 @@ import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -123,7 +124,7 @@ public class RoomController {
     }
 
     @PostMapping("/rooms")
-    public Result<String> addRoom(@RequestBody Room room) {
+    public Result<String> addRoom(@RequestBody Room room, @RequestParam("image") MultipartFile image) {
         log.info("add room");
         teacherService.saveRoom(room);
         return Result.success("success", null);

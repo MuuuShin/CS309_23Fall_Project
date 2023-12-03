@@ -11,6 +11,7 @@ import cse.ooad.project.repository.MsgRepository;
 import cse.ooad.project.repository.RegionRepository;
 import cse.ooad.project.repository.StudentRepository;
 import cse.ooad.project.utils.MessageStatus;
+import cse.ooad.project.utils.RoomType;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +44,7 @@ public class StudentService {
     private RegionRepository regionRepository;
 
 
-    public Student changeIntroduce(Student student) {
+    public Student updateIntroduce(Student student) {
         Student old = studentRepository.getStudentByStudentId(student.getStudentId());
         student.setGender(old.getGender());
         student.setType(old.getType());
@@ -63,16 +64,21 @@ public class StudentService {
      */
     @Transactional
     public Group createGroup(Long id, String name) {
+        Student student = studentRepository.getStudentByStudentId(id);
+        if (student.getGroup() != null){
+            return null;
+        }
         Group group = new Group();
         group.setName(name);
         group.setMemberList(new ArrayList<>());
-        Student student = studentRepository.getStudentByStudentId(id);
+
         group.setLeader(id);
         group.getMemberList().add(student);
         group = groupRepository.save(group);
         student.setGroupId(group.getGroupId());
         studentRepository.save(student);
         //todo 系统发送创建队伍成功消息
+        msgService.sendSystemMsg(group.getMemberList(), "你创建了队伍" + group.getName());
         return group;
 
     }
@@ -87,20 +93,19 @@ public class StudentService {
 
     @Transactional
     public boolean joinGroup(Long studentId, Long groupId) {
+        //todo 更加详细的测试这个方法
         //获得阶段
         Student student = studentRepository.getStudentByStudentId(studentId);
         Group group = groupRepository.getGroupByGroupId(groupId);
         int stage = timelineService.getStage(student.getType());
 
-        //不记得哪个阶段能加队伍了
-        //todo: 回答 第一个阶段可以 第三个阶段可以
-//        stage = 1;
+        // 第一个阶段可以 第三个阶段可以
         if (stage != 1 && stage != 3) {
             return false;
         }
         Student leader = studentRepository.getStudentByStudentId(group.getLeader());
         if (Objects.equals(leader.getType(), student.getType())) {
-            //todo 判断人数合不合适
+            //判断人数合不合适
             if (group.getMemberList().size() == 4) {
                 return false;
             }
@@ -108,8 +113,11 @@ public class StudentService {
             if (student.getGroup() != null) {
                 return false;
             }
-            group.getMemberList().add(student);
+            msgService.sendSystemMsg(group.getMemberList(), student.getName() + "加入了队伍");
             student.setGroupId(groupId);
+            ArrayList<Student> list = new ArrayList<>();
+            list.add(student);
+            msgService.sendSystemMsg(list, "你加入了队伍" + group.getName());
             studentRepository.save(student);
             return true;
         }
@@ -135,7 +143,7 @@ public class StudentService {
         }
         student.setGroupId(null);
         studentRepository.save(student);
-        //todo 发送退队消息
+        msgService.sendSystemMsg(group.getMemberList(), student.getName() + "离开了队伍");
         return true;
     }
 
@@ -148,13 +156,70 @@ public class StudentService {
         msg.setBody(message);
         msg.setSrcId(src.getStudentId());
         msg.setDstId(sendTo.getStudentId());
-        msgService.saveMsg(msg);
-
+        msgService.forwardMsg(msg);
     }
 
     public List<Msg> getMsgList(Long id, Long toId) {
         return msgRepository.getMsgsBySrcIdAndDstId(id, toId);
     }
+
+
+    //发送入队申请
+    public boolean sendApply(Long studentId, Long leaderId, String message) {
+        Msg msg = new Msg();
+        Student src = studentRepository.getStudentByStudentId(studentId);
+        Student leader = studentRepository.getStudentByStudentId(leaderId);
+        Group group = groupRepository.getGroupByGroupId(leader.getGroupId());
+        //判断是否有这个队伍
+        if (group == null) {
+            return false;
+        }
+        //是否已经入队
+        if (src.getGroup() != null){
+            return false;
+        }
+        if(group.getMemberList().size() == 4) {
+            return false;
+        }
+        //如果队伍选了房间且已经满员
+        return group.getRoom() == null
+            || RoomType.valueOf(group.getRoom().getType() + "").getCapacity()
+            != group.getMemberList().size();
+        //todo 判断是否已经发送过申请
+        //todo 保存该申请
+    }
+
+    //获取申请消息列表
+    public List<Msg> getApplyList(Long groupId) {
+        //todo 添加按消息类型获得申请
+        return msgRepository.getMsgsByDstIdAndStatus(groupId, MessageStatus.UNREAD.getStatusCode());
+    }
+
+
+    //处理申请
+    public boolean handleApply(Long msgId, boolean isAgree) {
+        Msg msg = msgRepository.getMsgByMsgId(msgId);
+        if (msg == null) {
+            return false;
+        }
+        if (msg.getStatus() != MessageStatus.UNREAD.getStatusCode()) {
+            return false;
+        }
+        if (isAgree) {
+            if (joinGroup(msg.getSrcId(), msg.getDstId())){
+                msg.setStatus(MessageStatus.READ_AND_ACCEPTED.getStatusCode());
+                msgRepository.save(msg);
+                return true;
+            }else {
+                return false;
+            }
+
+        }
+        msg.setStatus(MessageStatus.READ_AND_REJECTED.getStatusCode());
+        msgRepository.save(msg);
+        return false;
+    }
+
 
 
     public Comment saveComment(Comment comment) {
@@ -185,7 +250,6 @@ public class StudentService {
             return true;
         }
         return false;
-
     }
 
 

@@ -145,19 +145,20 @@ public class TeamController {
     }
 
     @DeleteMapping("/{teamId}/favorites")
-    public Result<String> deleteFavorite(@PathVariable("teamId") String teamId, @RequestHeader("Authorization") String token) {
+    public Result<String> deleteFavorite(@PathVariable("teamId") String teamId, @RequestHeader("Authorization") String token, @RequestBody Map<String, Object> JsonData) {
+        String roomId = (String) JsonData.get("roomId");
         Claims claims;
         try {
             claims = JwtUtils.parseJWT(token);
         } catch (Exception e) {
-            return Result.error("fail");
+            return Result.error("jwt error");
         }
         boolean isLeader = groupService.isLeader(Long.parseLong(teamId), Long.parseLong(claims.get("id").toString()));
         if (!isLeader) {
-            return Result.error("fail");
+            return Result.error("not leader");
         }
         //TODO 传入roomId
-        boolean success = true;
+        boolean success = groupService.unStarRoom(Long.parseLong(teamId), Long.parseLong(roomId));
         if (success) {
             return Result.success("success", null);
         } else {

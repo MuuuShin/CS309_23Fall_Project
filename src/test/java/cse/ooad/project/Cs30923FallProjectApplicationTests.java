@@ -3,19 +3,12 @@ package cse.ooad.project;
 import cse.ooad.project.model.*;
 import cse.ooad.project.repository.BuildingRepository;
 import cse.ooad.project.repository.CommentRepository;
-import cse.ooad.project.service.GroupService;
-import cse.ooad.project.service.LoginService;
-import cse.ooad.project.service.MsgService;
-import cse.ooad.project.service.RoomService;
-import cse.ooad.project.service.SearchService;
-import cse.ooad.project.service.StudentService;
-import cse.ooad.project.service.TeacherService;
-import cse.ooad.project.service.TimelineService;
+import cse.ooad.project.service.*;
 import cse.ooad.project.utils.StudentType;
 
 import java.io.File;
+import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.*;
@@ -23,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 
 import javax.sql.DataSource;
@@ -88,12 +80,14 @@ class Cs30923FallProjectApplicationTests {
         teacherService.batchSaveStudent(new File("src/test/resources/student.csv"));
         teacherService.batchSaveRoom(new File("src/test/resources/Rooms.csv"));
 
-        Timeline timeline = new Timeline(null, 1, new Timestamp(1), new Timestamp(100000000000L),
-                new Timestamp(10), new Timestamp(20), new Timestamp(20), new Timestamp(30),
-                new Timestamp(30), new Timestamp(40));
-        teacherService.saveTimeline(timeline);
-    }
 
+        Timeline timeline = new Timeline(null, 1, new Timestamp(10000L), new Timestamp(20000L),
+                new Timestamp(20000), new Timestamp(30000), new Timestamp(30000), new Timestamp(40000),
+                new Timestamp(40000), new Timestamp(50000));
+
+        teacherService.saveTimeline(timeline);
+
+    }
 
     @Order(3)
     @Test
@@ -103,14 +97,16 @@ class Cs30923FallProjectApplicationTests {
         Student student = searchService.searchStudentById(200000001L);
         student.setIntro("我爱洗澡皮肤好好");
         student.setType(StudentType.MASTER_MALE.type);
-        studentService.changeIntroduce(student);
+        studentService.updateIntroduce(student);
         Comment comment = new Comment(null, "震惊", "西天取经", student.getStudentId()
                 , 2L, new Timestamp(15153L), true);
         studentService.saveComment(comment);
+        TimelineService.STATUS = 1;
         System.out.println(studentService.joinGroup(200000003L, 2L));
         System.out.println(studentService.joinGroup(200000003L, 1L));
         System.out.println(studentService.joinGroup(200000004L, 2L));
         System.out.println(studentService.joinGroup(200000004L, 1L));
+
 
     }
 
@@ -119,6 +115,8 @@ class Cs30923FallProjectApplicationTests {
     void RoomTest() {
         System.out.println(roomService.getGroupStarList(2L));
         System.out.println(roomService.getCommentsByRoom(2L));
+        System.out.println(roomService.getGroupStarList(1L));
+        System.out.println(roomService.getCommentsByRoom(1L));
     }
 
 
@@ -137,11 +135,22 @@ class Cs30923FallProjectApplicationTests {
         System.out.println(groupService.getGroupsList());
         System.out.println(groupService.chooseRoom(2L, 1L));
         TimelineService.STATUS = 3;
-        studentService.memberLeave(200000003L);
-        studentService.createGroup(200000003L, "冒险小虎队1984");
+        Group group1 = searchService.searchStudentById(200000001L).getGroup();
+        System.out.println(groupService.getMemberList(group1.getGroupId()));
+        System.out.println(studentService.memberLeave(200000001L));
+        System.out.println(groupService.getMemberList(group1.getGroupId()));
+        System.out.println(studentService.createGroup(200000003L, "冒险小虎队1984"));
+
         System.out.println(groupService.chooseRoom(2L, 1L));
         System.out.println(groupService.chooseRoom(1L, 1L));
         System.out.println(groupService.chooseRoom(3L, 1L));
+        //修改队长
+        Student student = new Student(null, "白",  "不爱洗澡皮肤好好", (short) 1, null, 1, null,null, "12110433", null);
+        teacherService.saveStudent(student);
+        studentService.createGroup(200000005L, "飞天茅台9999");
+        System.out.println(groupService.changeLeader(2L, 200000004L));
+        System.out.println(teacherService.transRoom(200000001L, 200000005L));
+        //todo 合并队伍
 
         groupService.test();
 
@@ -150,6 +159,7 @@ class Cs30923FallProjectApplicationTests {
     @Order(6)
     @Test
     void LoginTest() {
+        System.out.println(loginService.loginStudent("12151515", "1546465465"));
 
     }
 
@@ -158,13 +168,22 @@ class Cs30923FallProjectApplicationTests {
     void MsgTest() {
         Msg msg = new Msg(null,0, 1L, 2L, "罗启航牛逼", new Timestamp(12315616L), 12);
         msgService.saveMsg(msg);
+        msgService.forwardMsg(msg);
     }
-
 
     @Order(8)
     @Test
     void TimelineTest() {
-
+        TimelineService.timestamp = 1000;
+        System.out.println(timelineService.getStage(1));
+        TimelineService.timestamp = 10100;
+        System.out.println(timelineService.getStage(1));
+        TimelineService.timestamp = 20200;
+        System.out.println(timelineService.getStage(1));
+        TimelineService.timestamp = 30300;
+        System.out.println(timelineService.getStage(1));
+        TimelineService.timestamp = 40400;
+        System.out.println(timelineService.getStage(1));
     }
 
     @Order(9)
@@ -178,10 +197,29 @@ class Cs30923FallProjectApplicationTests {
         System.out.println(floors);
         List<Room> rooms = searchService.searchRoom(1L);
         System.out.println(rooms);
-
+        Student student = searchService.searchStudentById(200000001L);
+        student.setAwakeTime(new Time(10,10, 10));
+        student.setSleepTime(new Time(20,0,0));
+        student.setIntro("我爱洗澡皮肤好好");
+        studentService.updateIntroduce(student);
+        System.out.println("查学生");
+        System.out.println(searchService.searchStudents(1L, new Time(9,12,1), new Time(2, 1,5), 1L, "洗澡"));
         System.out.println(searchService.searchCommentById(1L));
+        System.out.println(searchService.searchGroups(1L, new Time(9,12,1), new Time(22, 1,5), 1L, "洗澡"));
         System.out.println(searchService.searchMsgById(1L));
         System.out.println(searchService.searchStudents());
+    }
+
+    @Order(10)
+    @Test
+    void deleteTest(){
+        studentService.deleteComment(20001L, 200000001L);
+        teacherService.deleteStudent(200000003L);
+        teacherService.deleteFloor(1L);
+        teacherService.deleteBuilding(1L);
+        teacherService.deleteRegion(1L);
+        teacherService.deleteRoom(1L);
+
     }
 
 }

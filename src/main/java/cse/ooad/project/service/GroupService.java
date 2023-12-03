@@ -76,12 +76,11 @@ public class GroupService {
     public boolean starRoom(Long groupId, Long roomId) {
         Group group = groupRepository.getGroupByGroupId(groupId);
         Room room = roomRepository.getRoomsByRoomId(roomId);
-        //TODO:判断阶段
-//        int stage = timelineService.getStage(
-//            group.getMemberList().get(0).getType());
-//        if (stage != 1) {
-//            return false;
-//        }
+        int stage = timelineService.getStage(
+            group.getMemberList().get(0).getType());
+        if (stage != 1) {
+            return false;
+        }
         if (group.getRoomStarList().size() < STARLIMITE) {
             group.getRoomStarList().add(room);
             groupRepository.save(group);
@@ -122,7 +121,11 @@ public class GroupService {
     public boolean chooseRoom(Long groupId, Long roomId) {
         Group group = groupRepository.getGroupByGroupId(groupId);
         Room room = roomRepository.getRoomsByRoomId(roomId);
+      if (group == null|| room == null) {
+            return false;
+        }
         Student lead = studentRepository.getStudentByStudentId(group.getLeader());
+
 
         int stage = timelineService.getStage(lead.getType());
         //判断房间类型对不对
@@ -195,6 +198,8 @@ public class GroupService {
         return groupRepository.findAll();
     }
 
+
+    @Transactional
     public Boolean changeLeader(Long groupId, Long studentId) {
         Group group = groupRepository.getGroupByGroupId(groupId);
         Student student = studentRepository.getStudentByStudentId(studentId);
@@ -210,6 +215,31 @@ public class GroupService {
         Group group = groupRepository.getGroupByGroupId(groupId);
         return group.getLeader().equals(studentId);
     }
+
+    /**
+     * group将room从star中移除
+     *
+     * @param groupId 传入的队伍id
+     * @param roomId  传入的房间id
+     * @return star中有这个房间且移除成功就返回true，否则返回false
+     */
+    @Transactional
+    public boolean unStarRoom(Long groupId, Long roomId) {
+        Group group = groupRepository.getGroupByGroupId(groupId);
+        Room room = roomRepository.getRoomsByRoomId(roomId);
+        int stage = timelineService.getStage(
+            group.getMemberList().get(0).getType());
+        if (stage != 1) {
+            return false;
+        }
+        if (group.getRoomStarList().contains(room)) {
+            group.getRoomStarList().remove(room);
+            groupRepository.save(group);
+            return true;
+        }
+        return false;
+    }
+
 
 
     @Transactional

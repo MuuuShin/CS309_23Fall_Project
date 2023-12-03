@@ -84,7 +84,6 @@ public class RoomService {
 
             }});
             index++;
-            System.out.println(commentList);
         }
         return commentList;
     }

@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Time;
 import java.util.List;
 
 @RestController
@@ -38,7 +39,7 @@ public class UserController {
                 return Result.success("success", students);
             }
             else {
-//                List<Student> students = studentService.searchAllStudents();
+                // List<Student> students = searchService.searchStudents();
                 return Result.error("error");
             }
         }
@@ -62,7 +63,7 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{id}")
-    public Result<String> deleteUserById(String id) {
+    public Result<String> deleteUserById(@PathVariable("id") String id, @RequestHeader("Authorization") String token) {
         log.info("delete user by id");
         boolean b = teacherService.deleteStudent(Long.parseLong(id));
 //        boolean b = false;
@@ -107,7 +108,7 @@ public class UserController {
         student.setStudentId(Long.parseLong(id));
 
         log.info("update user by id");
-        Student s = studentService.changeIntroduce(student);
+        Student s = studentService.updateIntroduce(student);
 //        boolean b = false;
         if (s != null) {
             return Result.success("success", null);
@@ -117,7 +118,29 @@ public class UserController {
     }
 
 
+    @GetMapping("/users/finduser/{sleeptime}/{awaketime}/{query}")
+    public Result<List<Student>> findUser(@PathVariable("sleeptime") String sleeptime, @PathVariable("awaketime") String awaketime, @PathVariable("query") String query, @RequestHeader("Authorization") String token) {
+        log.info("find user");
+        Time awakeTime = Time.valueOf(awaketime);
+        Time sleepTime = Time.valueOf(sleeptime);
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("not login");
+        }
+        String userId = claims.get("id").toString();
+        Student student = searchService.searchStudentById(Long.parseLong(userId));
+        Long gender = Long.parseLong(String.valueOf(student.getGender()));
+        Long type = Long.parseLong(String.valueOf(student.getType()));
+        List<Student> students = searchService.searchStudents(gender, awakeTime, sleepTime, type, query);
+
+        if (students != null) {
+            return Result.success("success", students);
+        }
+        return Result.error("error");
 
 
+    }
 
 }

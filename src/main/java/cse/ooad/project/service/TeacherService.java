@@ -13,12 +13,9 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +41,8 @@ public class TeacherService {
     PasswordRepository passwordRepository;
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private GroupRepository groupRepository;
 
 
     public Student saveStudent(Student student) {
@@ -51,12 +50,19 @@ public class TeacherService {
         return studentRepository.save(student);
     }
 
+
+    @Transactional
     public Boolean deleteStudent(Long id) {
+
         return studentRepository.deleteByStudentId(id) != 0;
     }
 
     public Student updateStudent(Student student) {
-        return studentRepository.save(student);
+        Student old = studentRepository.getStudentByStudentId(student.getStudentId());
+        old.setSleepTime(student.getSleepTime());
+        old.setAwakeTime(student.getAwakeTime());
+        old.setIntro(student.getIntro());
+        return studentRepository.save(old);
     }
 
     public Floor saveFloor(Floor floor) {
@@ -77,6 +83,8 @@ public class TeacherService {
         return regionRepository.save(region);
     }
 
+
+    @Transactional
     public Boolean deleteRegion(Long id) {
         return regionRepository.deleteByRegionId(id) != 0;
     }
@@ -93,6 +101,8 @@ public class TeacherService {
         return roomRepository.save(room);
     }
 
+
+    @Transactional
     public Boolean deleteRoom(Long id) {
          return roomRepository.deleteByRoomId(id) != 0;
     }
@@ -105,6 +115,8 @@ public class TeacherService {
         return buildingRepository.save(building);
     }
 
+
+    @Transactional
     public Boolean deleteBuilding(Long id) {
         return buildingRepository.removeByBuildingId(id) != 0;
     }
@@ -113,6 +125,8 @@ public class TeacherService {
         return timelineRepository.save(timeline);
     }
 
+
+    //以学生为单位调换宿舍
     public Boolean transRoom(Long id1, Long id2){
         Student student1 = studentRepository.getStudentByStudentId(id1);
         Student student2 = studentRepository.getStudentByStudentId(id2);
@@ -122,6 +136,7 @@ public class TeacherService {
 
         Group group1 = student1.getGroup();
         Group group2 = student2.getGroup();
+
         if (group1 != null){
             student2.setGroupId(group1.getGroupId());
             if (Objects.equals(group1.getLeader(), student1.getStudentId())){
@@ -134,6 +149,12 @@ public class TeacherService {
                 group2.setLeader(student1.getStudentId());
             }
         }
+        student1.setGroupId(group2.getGroupId());
+        student2.setGroupId(group1.getGroupId());
+        studentRepository.save(student1);
+        studentRepository.save(student2);
+        groupRepository.save(group1);
+        groupRepository.save(group2);
         return true;
     }
 

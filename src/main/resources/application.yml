@@ -31,7 +31,8 @@ spring:
           use_jdbc_metadata_defaults: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false
-
+#  cache:
+#    type: caffeine
 
 #logging:
 #  level:

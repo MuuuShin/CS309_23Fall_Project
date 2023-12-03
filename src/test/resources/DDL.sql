@@ -154,6 +154,7 @@ create table if not exists public.msgs
 (
     msg_id    bigint generated always as identity
         primary key,
+    type    integer,
     src_id    bigint,
     dst_id    bigint,
     body      varchar(255),

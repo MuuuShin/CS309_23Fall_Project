@@ -5,6 +5,7 @@ import cse.ooad.project.repository.BuildingRepository;
 import cse.ooad.project.repository.CommentRepository;
 import cse.ooad.project.service.*;
 import cse.ooad.project.utils.StudentType;
+
 import java.io.File;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -13,14 +14,15 @@ import java.util.List;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+@EnableCaching
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class Cs30923FallProjectApplicationTests {
@@ -51,16 +53,16 @@ class Cs30923FallProjectApplicationTests {
 
     @Autowired
     TimelineService timelineService;
-
-    @Autowired
-    private CommentRepository commentRepository;
+//
+//    @Autowired
+//    private CommentRepository commentRepository;
 
     @Autowired
     private DataSource dataSource;
 
     @Order(1)
     @Test
-    public void setUp() throws IOException, SQLException{
+    public void setUp() throws SQLException {
         System.out.println("setUp");
         //执行
         // 获取数据库连接
@@ -78,13 +80,14 @@ class Cs30923FallProjectApplicationTests {
         teacherService.batchSaveStudent(new File("src/test/resources/student.csv"));
         teacherService.batchSaveRoom(new File("src/test/resources/Rooms.csv"));
 
+
         Timeline timeline = new Timeline(null, 1, new Timestamp(10000L), new Timestamp(20000L),
                 new Timestamp(20000), new Timestamp(30000), new Timestamp(30000), new Timestamp(40000),
                 new Timestamp(40000), new Timestamp(50000));
+
         teacherService.saveTimeline(timeline);
 
     }
-
 
     @Order(3)
     @Test
@@ -106,6 +109,16 @@ class Cs30923FallProjectApplicationTests {
 
 
     }
+
+    @Order(4)
+    @Test
+    void RoomTest() {
+        System.out.println(roomService.getGroupStarList(2L));
+        System.out.println(roomService.getCommentsByRoom(2L));
+        System.out.println(roomService.getGroupStarList(1L));
+        System.out.println(roomService.getCommentsByRoom(1L));
+    }
+
 
     @Order(5)
     @Test
@@ -139,7 +152,7 @@ class Cs30923FallProjectApplicationTests {
         System.out.println(teacherService.transRoom(200000001L, 200000005L));
         //todo 合并队伍
 
-
+        groupService.test();
 
     }
 
@@ -153,18 +166,9 @@ class Cs30923FallProjectApplicationTests {
     @Order(7)
     @Test
     void MsgTest() {
-        Msg msg = new Msg(null, 1L, 2L, "罗启航牛逼", new Timestamp(12315616L), 12);
+        Msg msg = new Msg(null,0, 1L, 2L, "罗启航牛逼", new Timestamp(12315616L), 12);
         msgService.saveMsg(msg);
         msgService.forwardMsg(msg);
-    }
-
-    @Order(4)
-    @Test
-    void RoomTest() {
-        System.out.println(roomService.getGroupStarList(2L));
-        System.out.println(roomService.getCommentsByRoom(2L));
-        System.out.println(roomService.getGroupStarList(1L));
-        System.out.println(roomService.getCommentsByRoom(1L));
     }
 
     @Order(8)

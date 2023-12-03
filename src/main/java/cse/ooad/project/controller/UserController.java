@@ -39,7 +39,7 @@ public class UserController {
                 return Result.success("success", students);
             }
             else {
-                List<Student> students = searchService.searchStudents();
+                // List<Student> students = searchService.searchStudents();
                 return Result.error("error");
             }
         }

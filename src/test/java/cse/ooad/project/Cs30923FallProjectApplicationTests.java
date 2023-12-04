@@ -3,34 +3,26 @@ package cse.ooad.project;
 import cse.ooad.project.model.*;
 import cse.ooad.project.repository.BuildingRepository;
 import cse.ooad.project.repository.CommentRepository;
-import cse.ooad.project.service.GroupService;
-import cse.ooad.project.service.LoginService;
-import cse.ooad.project.service.MsgService;
-import cse.ooad.project.service.RoomService;
-import cse.ooad.project.service.SearchService;
-import cse.ooad.project.service.StudentService;
-import cse.ooad.project.service.TeacherService;
-import cse.ooad.project.service.TimelineService;
+import cse.ooad.project.service.*;
 import cse.ooad.project.utils.StudentType;
+
 import java.io.File;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+@EnableCaching
 @SpringBootTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class Cs30923FallProjectApplicationTests {
@@ -61,16 +53,16 @@ class Cs30923FallProjectApplicationTests {
 
     @Autowired
     TimelineService timelineService;
-
-    @Autowired
-    private CommentRepository commentRepository;
+//
+//    @Autowired
+//    private CommentRepository commentRepository;
 
     @Autowired
     private DataSource dataSource;
 
     @Order(1)
     @Test
-    public void setUp() throws IOException, SQLException{
+    public void setUp() throws SQLException {
         System.out.println("setUp");
         //执行
         // 获取数据库连接
@@ -86,14 +78,16 @@ class Cs30923FallProjectApplicationTests {
     @Test
     void TeacherTest() {
         teacherService.batchSaveStudent(new File("src/test/resources/student.csv"));
-        teacherService.batchSaveRoom(new File("src/test/resources/university_data.csv"));
+        teacherService.batchSaveRoom(new File("src/test/resources/Rooms.csv"));
+
 
         Timeline timeline = new Timeline(null, 1, new Timestamp(10000L), new Timestamp(20000L),
-            new Timestamp(20000), new Timestamp(30000), new Timestamp(30000), new Timestamp(40000),
-            new Timestamp(40000), new Timestamp(50000));
-        teacherService.saveTimeline(timeline);
-    }
+                new Timestamp(20000), new Timestamp(30000), new Timestamp(30000), new Timestamp(40000),
+                new Timestamp(40000), new Timestamp(50000));
 
+        teacherService.saveTimeline(timeline);
+
+    }
 
     @Order(3)
     @Test
@@ -103,9 +97,9 @@ class Cs30923FallProjectApplicationTests {
         Student student = searchService.searchStudentById(200000001L);
         student.setIntro("我爱洗澡皮肤好好");
         student.setType(StudentType.MASTER_MALE.type);
-        studentService.changeIntroduce(student);
+        studentService.updateIntroduce(student);
         Comment comment = new Comment(null, "震惊", "西天取经", student.getStudentId()
-            , 2L, new Timestamp(15153L), true);
+                , 2L, new Timestamp(15153L), true);
         studentService.saveComment(comment);
         TimelineService.STATUS = 1;
         System.out.println(studentService.joinGroup(200000003L, 2L));
@@ -115,6 +109,16 @@ class Cs30923FallProjectApplicationTests {
 
 
     }
+
+    @Order(4)
+    @Test
+    void RoomTest() {
+        System.out.println(roomService.getGroupStarList(2L));
+        System.out.println(roomService.getCommentsByRoom(2L));
+        System.out.println(roomService.getGroupStarList(1L));
+        System.out.println(roomService.getCommentsByRoom(1L));
+    }
+
 
     @Order(5)
     @Test
@@ -148,7 +152,7 @@ class Cs30923FallProjectApplicationTests {
         System.out.println(teacherService.transRoom(200000001L, 200000005L));
         //todo 合并队伍
 
-
+        groupService.test();
 
     }
 
@@ -162,18 +166,9 @@ class Cs30923FallProjectApplicationTests {
     @Order(7)
     @Test
     void MsgTest() {
-        Msg msg = new Msg(null, 1L, 2L, "罗启航牛逼", new Timestamp(12315616L), 12);
+        Msg msg = new Msg(null,0, 1L, 2L, "罗启航牛逼", new Timestamp(12315616L), 12);
         msgService.saveMsg(msg);
         msgService.forwardMsg(msg);
-    }
-
-    @Order(4)
-    @Test
-    void RoomTest() {
-        System.out.println(roomService.getGroupStarList(2L));
-        System.out.println(roomService.getCommentsByRoom(2L));
-        System.out.println(roomService.getGroupStarList(1L));
-        System.out.println(roomService.getCommentsByRoom(1L));
     }
 
     @Order(8)
@@ -206,12 +201,25 @@ class Cs30923FallProjectApplicationTests {
         student.setAwakeTime(new Time(10,10, 10));
         student.setSleepTime(new Time(20,0,0));
         student.setIntro("我爱洗澡皮肤好好");
-        studentService.changeIntroduce(student);
-        System.out.println(searchService.searchStudents(1L, new Time(9,12,1), new Time(18, 1,5), 1L, "洗澡"));
+        studentService.updateIntroduce(student);
+        System.out.println("查学生");
+        System.out.println(searchService.searchStudents(1L, new Time(9,12,1), new Time(2, 1,5), 1L, "洗澡"));
         System.out.println(searchService.searchCommentById(1L));
         System.out.println(searchService.searchGroups(1L, new Time(9,12,1), new Time(22, 1,5), 1L, "洗澡"));
         System.out.println(searchService.searchMsgById(1L));
         System.out.println(searchService.searchStudents());
+    }
+
+    @Order(10)
+    @Test
+    void deleteTest(){
+        studentService.deleteComment(20001L, 200000001L);
+        teacherService.deleteStudent(200000003L);
+        teacherService.deleteFloor(1L);
+        teacherService.deleteBuilding(1L);
+        teacherService.deleteRegion(1L);
+        teacherService.deleteRoom(1L);
+
     }
 
 }

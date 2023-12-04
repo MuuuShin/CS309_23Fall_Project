@@ -15,10 +15,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
 
     List<Student> getStudentsByName(String name);
 
-    List<Student> getStudentsBySleepTimeLessThanAndAwakeTimeGreaterThanAndIntroContainingAndGenderAndType(
-        Time sleepTime, Time awakeTime, String intro,Long gender, Long type);
-
     Integer deleteByStudentId(Long id);
 
+    List<Student> getStudentsByIntroContainingAndGenderAndType(String intro,Long gender, Long type);
 
 }

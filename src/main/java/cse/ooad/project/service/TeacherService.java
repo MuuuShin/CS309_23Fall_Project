@@ -13,12 +13,9 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,12 +50,19 @@ public class TeacherService {
         return studentRepository.save(student);
     }
 
+
+    @Transactional
     public Boolean deleteStudent(Long id) {
+
         return studentRepository.deleteByStudentId(id) != 0;
     }
 
     public Student updateStudent(Student student) {
-        return studentRepository.save(student);
+        Student old = studentRepository.getStudentByStudentId(student.getStudentId());
+        old.setSleepTime(student.getSleepTime());
+        old.setAwakeTime(student.getAwakeTime());
+        old.setIntro(student.getIntro());
+        return studentRepository.save(old);
     }
 
     public Floor saveFloor(Floor floor) {
@@ -79,6 +83,8 @@ public class TeacherService {
         return regionRepository.save(region);
     }
 
+
+    @Transactional
     public Boolean deleteRegion(Long id) {
         return regionRepository.deleteByRegionId(id) != 0;
     }
@@ -95,6 +101,8 @@ public class TeacherService {
         return roomRepository.save(room);
     }
 
+
+    @Transactional
     public Boolean deleteRoom(Long id) {
          return roomRepository.deleteByRoomId(id) != 0;
     }
@@ -107,6 +115,8 @@ public class TeacherService {
         return buildingRepository.save(building);
     }
 
+
+    @Transactional
     public Boolean deleteBuilding(Long id) {
         return buildingRepository.removeByBuildingId(id) != 0;
     }

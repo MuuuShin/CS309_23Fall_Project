@@ -70,6 +70,9 @@ public class Room {
     @ManyToMany(mappedBy = "roomStarList", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Group> groupStarList;
 
+
+
+
     @Exclude
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)

@@ -18,5 +18,7 @@ public interface FloorRepository extends JpaRepository<Floor, Long> {
 
     Integer removeByFloorId(Long id);
 
+    List<Floor> findAllByBuildingIdIn(List<Long> buildingIds);
+
 
 }

@@ -214,20 +214,33 @@ class Cs30923FallProjectApplicationTests {
         System.out.println(searchService.searchStudents());
     }
 
+
     @Order(10)
     @Test
     void deleteTest() {
-        studentService.deleteComment(1L, 200000001L);
-        teacherService.deleteStudent(200000003L);
+        //studentService.deleteComment(1L, 200000001L);
+        //teacherService.deleteStudent(200000003L);
         System.out.println("delete");
-        teacherService.deleteRoom(1L);
+       //teacherService.deleteRoom(1L);
         System.out.println("delete");
-        teacherService.deleteFloor(1L);
+        //teacherService.deleteFloor(1L);
         System.out.println("delete");
-        teacherService.deleteBuilding(1L);
+        //teacherService.deleteBuilding(1L);
         teacherService.deleteRegion(1L);
-        teacherService.deleteRoom(1L);
+        //teacherService.deleteRoom(1L);
+    }
+
+    @Order(11)
+    @Test
+    void wsTest(){
 
     }
 
+    @Order(12)
+    @Test
+    void complexTest(){
+        System.out.println("test");
+    }
+
 }
+

@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,11 +72,21 @@ public class TeacherService {
     @Transactional
     public Boolean deleteFloor(Long id) {
         if (floorRepository.findById(id).isPresent()) {
-            for (Room room : floorRepository.findById(id).get().getRoomList()) {
-                boolean f=deleteRoom(room.getRoomId());
-                if(!f) return false;
-            }
+            List<Long> ids = new ArrayList<>();
+            ids.add(id);
+            List<Room> rooms = roomRepository.findAllWithGroupStarListByBuildingIds(ids);
+            System.out.println(rooms);
+            List<Group> groupList = new ArrayList<>();
+            rooms.forEach(t->{
+                List<Group> groups = t.getGroupStarList();
+                groups.forEach(e -> e.getRoomStarList().remove(t));
+                groupList.addAll(groups);
+            });
+            groupRepository.saveAll(groupList);
+            roomRepository.deleteAll(rooms);
         }
+        System.out.println("结束*******************");
+
         return floorRepository.removeByFloorId(id) != 0;
     }
 
@@ -91,10 +102,22 @@ public class TeacherService {
     @Transactional
     public Boolean deleteRegion(Long id) {
         if (regionRepository.findById(id).isPresent()) {
-            for (Building building : regionRepository.findById(id).get().getBuildingList()) {
-                boolean f=deleteBuilding(building.getBuildingId());
-                if(!f) return false;
-            }
+            List<Building> lists = regionRepository.findById(id).get().getBuildingList();
+            List<Long> ids = lists.stream().map(Building::getBuildingId).toList();
+            List<Floor> floors = floorRepository.findAllByBuildingIdIn(ids);
+            ids = floors.stream().map(Floor::getFloorId).toList();
+            List<Room> rooms = roomRepository.findAllWithGroupStarListByBuildingIds(ids);
+            List<Group> groupList = new ArrayList<>();
+            rooms.forEach(t->{
+                List<Group> groups = t.getGroupStarList();
+                groups.forEach(e -> e.getRoomStarList().remove(t));
+                groupList.addAll(groups);
+            });
+            groupRepository.saveAll(groupList);
+            roomRepository.deleteAll(rooms);
+            floorRepository.deleteAll(floors);
+            buildingRepository.deleteAll(lists);
+            regionRepository.deleteById(id);
         }
         return regionRepository.deleteByRegionId(id) != 0;
     }
@@ -118,10 +141,11 @@ public class TeacherService {
             return false;
         }
         List<Group> groupList = room.getGroupStarList();
+
         for (Group group : groupList) {
             group.getRoomStarList().remove(room);
-            groupRepository.save(group);
-        }
+
+        }groupRepository.saveAll(groupList);
         return true;
     }
 
@@ -145,10 +169,18 @@ public class TeacherService {
     @Transactional
     public Boolean deleteBuilding(Long id) {
         if (buildingRepository.findById(id).isPresent()) {
-            for (Floor floor : buildingRepository.findById(id).get().getFloorList()) {
-                boolean f=deleteFloor(floor.getFloorId());
-                if(!f) return false;
-            }
+            List<Floor> floors = floorRepository.getFloorsByBuildingId(id);
+            List<Long> ids = floors.stream().map(Floor::getFloorId).toList();
+            List<Room> rooms = roomRepository.findAllWithGroupStarListByBuildingIds(ids);
+            List<Group> groupList = new ArrayList<>();
+            rooms.forEach(t->{
+                List<Group> groups = t.getGroupStarList();
+                groups.forEach(e -> e.getRoomStarList().remove(t));
+                groupList.addAll(groups);
+            });
+            groupRepository.saveAll(groupList);
+            roomRepository.deleteAll(rooms);
+            floorRepository.deleteAll(floors);
         }
         return buildingRepository.removeByBuildingId(id) != 0;
     }

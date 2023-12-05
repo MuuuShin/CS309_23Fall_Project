@@ -208,6 +208,8 @@ class Cs30923FallProjectApplicationTests {
         studentService.updateIntroduce(student);
         System.out.println("查学生");
         System.out.println(searchService.searchStudents(1L, new Time(9, 12, 1), new Time(2, 1, 5), 1L, "洗澡"));
+        System.out.println(searchService.searchStudents(1L, new Time(10, 9, 1), new Time(2, 1, 5), 1L, "洗澡"));
+        System.out.println(searchService.searchStudents(1L, new Time(14, 9, 1), new Time(11, 1, 5), 1L, "洗澡"));
         System.out.println(searchService.searchCommentById(1L));
         System.out.println(searchService.searchGroups(1L, new Time(9, 12, 1), new Time(22, 1, 5), 1L, "洗澡"));
         System.out.println(searchService.searchMsgById(1L));
@@ -233,7 +235,8 @@ class Cs30923FallProjectApplicationTests {
     @Order(11)
     @Test
     void wsTest(){
-
+        Floor floor = new Floor();
+        System.out.println(floor.getFloorId());
     }
 
     @Order(12)

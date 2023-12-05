@@ -28,7 +28,6 @@ import java.util.Objects;
  *   <li>[映射]group: 若被选择，给出选择的群组。</li>
  *   <li>[映射]commentBase: 元评论。评论原理参见{@link Comment}</li>
  * </ul>
-
  */
 @Getter
 @Setter
@@ -68,7 +67,7 @@ public class Room {
 
     @Exclude
     @JsonIgnore
-    @ManyToMany(mappedBy = "roomStarList", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "roomStarList", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<Group> groupStarList;
 
     @Exclude
@@ -79,7 +78,7 @@ public class Room {
 
     @Exclude
     @JsonIgnore
-    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL) //orphanRemoval = false
+    @OneToOne(mappedBy = "room", cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, orphanRemoval = false)
     private Group group;
 
     @Override

@@ -66,7 +66,7 @@ public class Student {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "group_id", insertable = false, updatable = false)
+    @JoinColumn(name = "group_id", insertable = false, updatable = false, nullable = true)
     private Group group;
 
     @Override

@@ -58,12 +58,12 @@ public class Group {
     @Exclude
     @JsonIgnore
     @OneToOne
-    @JoinColumn(name = "room_id", insertable = false, updatable = false)
+    @JoinColumn(name = "room_id", insertable = false, updatable = false, nullable = true)
     private Room room;
 
     @Exclude
     @JsonIgnore
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = false, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "group", cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, orphanRemoval = false, fetch = FetchType.LAZY)
     private List<Student> memberList;
 
 

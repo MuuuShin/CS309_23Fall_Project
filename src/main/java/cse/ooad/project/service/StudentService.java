@@ -200,23 +200,24 @@ public class StudentService {
         msg.setType(MessageType.APPLY.typeCode);
         msgService.forwardMsg(msg);
         return true;
-        //todo 判断是否已经发送过申请
-        //todo 保存该申请
     }
 
     //获取申请消息列表
     public List<Msg> getApplyList(Long leaderId) {
-        //todo 添加按消息类型获得申请
         return msgRepository.getMsgsByDstIdAndStatusAndType(leaderId, MessageStatus.UNREAD.getStatusCode(), MessageType.APPLY.typeCode);
     }
 
 
     //处理申请
-    public boolean handleApply(Long msgId, boolean isAgree) {
+    public boolean handleApply(Long msgId, boolean isAgree, Long studentId) {
         Msg msg = msgRepository.getMsgByMsgId(msgId);
         if (msg == null) {
             return false;
         }
+        if (!Objects.equals(studentId, msg.getDstId())) {
+            return false;
+        }
+
         if (msg.getType() != MessageType.APPLY.typeCode) {
             return false;
         }

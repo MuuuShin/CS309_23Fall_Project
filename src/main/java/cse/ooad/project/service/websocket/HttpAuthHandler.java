@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import cse.ooad.project.model.Msg;
 import cse.ooad.project.repository.MsgRepository;
 import cse.ooad.project.service.MsgService;
+import cse.ooad.project.utils.MessageStatus;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,10 +37,11 @@ public class HttpAuthHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 
-        Object sessionId = session.getAttributes().get("session_id");
-        if (sessionId != null) {
+        String userId = session.getAttributes().get("session_id").toString();
+        if (userId != null) {
             // 用户连接成功，放入在线用户缓存
-            WsSessionManager.add(sessionId.toString(), session);
+            WsSessionManager.add(userId, session);
+            session.sendMessage(new TextMessage("server 发送给 " + userId + " 消息 " + "连接成功" + " " + LocalDateTime.now()));
         } else {
             throw new RuntimeException("用户登录已经失效!");
         }
@@ -57,10 +60,11 @@ public class HttpAuthHandler extends TextWebSocketHandler {
         String payload = message.getPayload();
         Object sessionId = session.getAttributes().get("session_id");
         //todo 发来的payload会是一个Msg的Json格式, 因此直接转换为Msg
-            /*Msg msg = gson.fromJson(payload, Msg.class);
-            msgRepository.save(msg);
-            System.out.println("server 接收到 " + sessionId + " 发送的 " + payload);*/
-        session.sendMessage(new TextMessage("server 发送给 " + sessionId + " 消息 " + payload + " " + LocalDateTime.now().toString()));
+        Msg msg = gson.fromJson(payload, Msg.class);
+        msg.setStatus(MessageStatus.UNREAD.getStatusCode());
+        msg.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        msgService.forwardMsg(msg);
+        System.out.println("server 接收到 " + sessionId + " 发送的 " + payload);
     }
 
 
@@ -74,6 +78,7 @@ public class HttpAuthHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         Object sessionId = session.getAttributes().get("session_id");
+        System.out.println(sessionId);
         if (sessionId != null) {
             System.out.println(sessionId + "断开连接");
             // 用户退出，移除缓存

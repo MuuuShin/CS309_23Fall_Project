@@ -3,6 +3,7 @@ package cse.ooad.project.controller;
 import cse.ooad.project.model.Student;
 import cse.ooad.project.model.Teacher;
 import cse.ooad.project.service.LoginService;
+import cse.ooad.project.service.websocket.WsSessionManager;
 import cse.ooad.project.utils.JwtUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +44,7 @@ public class AuthController {
             return Result.success("success", jwt);
         } else {
             Student result = loginService.loginStudent(username, password);
+
             if (result == null) {
                 log.info(username + "Invalid username or password");
                 return Result.error("Invalid username or password");

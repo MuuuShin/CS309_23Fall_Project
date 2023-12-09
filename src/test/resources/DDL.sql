@@ -93,6 +93,7 @@ create table if not exists public.groups
     room_id  bigint
         constraint groups_rooms_null_fk
             references public.rooms
+            ON DELETE SET NULL
 );
 
 alter table public.groups
@@ -107,7 +108,8 @@ create table if not exists public.students
     gender     smallint,
     group_id   bigint
         constraint students_groups_null_fk
-            references public.groups,
+            references public.groups
+            ON DELETE SET NULL,
     type       integer,
     awake_time time(6),
     sleep_time time(6),
@@ -175,3 +177,99 @@ create table if not exists public.passwords
 alter table public.passwords
     owner to postgres;
 
+
+CREATE OR REPLACE FUNCTION insert_room_data(
+    name_list text[],
+    type_list integer[],
+    intro_list text[],
+    floor_name_list text[],
+    building_name_list text[],
+    region_name_list text[]
+)
+    RETURNS int AS $$
+DECLARE
+    region1_id INT;
+    building1_id INT;
+    floor1_id INT;
+    room1_id INT;
+    comment1_id INT;
+BEGIN
+    FOR i IN 1..array_length(name_list, 1) LOOP
+            -- Check if region already exists
+            SELECT region_id INTO region1_id FROM regions WHERE name = region_name_list[i] LIMIT 1;
+
+            IF region1_id IS NULL THEN
+                -- Insert new region
+                INSERT INTO regions (name, intro)
+                VALUES (region_name_list[i], '')
+                RETURNING region_id INTO region1_id;
+            END IF;
+
+            -- Check if building already exists
+            SELECT building_id INTO building1_id FROM buildings WHERE name = building_name_list[i] AND region_id = region1_id LIMIT 1;
+
+            IF building1_id IS NULL THEN
+                -- Insert new building
+                INSERT INTO buildings (name, intro, region_id)
+                VALUES (building_name_list[i], '', region1_id)
+                RETURNING building_id INTO building1_id;
+            END IF;
+
+            -- Check if floor already exists
+            SELECT floor_id INTO floor1_id FROM floors WHERE name = floor_name_list[i] AND building_id = building1_id LIMIT 1;
+
+            IF floor1_id IS NULL THEN
+                -- Insert new floor
+                INSERT INTO floors (name, intro, building_id)
+                VALUES (floor_name_list[i], '', building1_id)
+                RETURNING floor_id INTO floor1_id;
+            END IF;
+
+            -- Check if room already exists
+            SELECT room_id INTO room1_id FROM rooms WHERE name = name_list[i] AND floor_id = floor1_id LIMIT 1;
+
+            IF room1_id IS NULL THEN
+                -- Insert new room
+                INSERT INTO rooms (name, type, intro, status, floor_id)
+                VALUES (name_list[i], type_list[i], intro_list[i], 0, floor1_id)
+                RETURNING room_id INTO room1_id;
+            ELSE
+                -- Update existing room
+                UPDATE rooms SET type = type_list[i], intro = intro_list[i], status = 0 WHERE room_id = room1_id;
+            END IF;
+
+            -- Insert Comment
+            INSERT INTO comments (user_id, post_id, title, creation_date, disabled)
+            VALUES (room1_id, 0, name_list[i], NOW(), false)
+            RETURNING comment_id INTO comment1_id;
+
+            -- Insert CommentId to Room
+            UPDATE rooms SET comment_base_id = comment1_id WHERE room_id = room1_id;
+
+        END LOOP;
+
+    RETURN 1;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+-- CREATE OR REPLACE FUNCTION insert_room_trigger()
+--     RETURNS TRIGGER AS $$
+-- BEGIN
+--     PERFORM insert_room_data(
+--             NEW.name::text[],
+--             NEW.type::integer[],
+--             NEW.intro::text[],
+--             NEW.floor_name::text[],
+--             NEW.building_name::text[],
+--             NEW.region_name::text[]
+--         );
+--
+--     RETURN NEW;
+-- END;
+-- $$ LANGUAGE plpgsql;
+
+-- CREATE TRIGGER insert_room_trigger
+--     BEFORE INSERT ON rooms
+--     FOR EACH ROW EXECUTE FUNCTION insert_room_trigger();

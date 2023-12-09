@@ -11,11 +11,13 @@ import cse.ooad.project.utils.RoomStatus;
 import jakarta.transaction.Transactional;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class GroupService {
 
     @Autowired
@@ -122,6 +124,7 @@ public class GroupService {
         Group group = groupRepository.getGroupByGroupId(groupId);
         Room room = roomRepository.getRoomsByRoomId(roomId);
       if (group == null|| room == null) {
+          log.info("group or room is null");
             return false;
         }
         Student lead = studentRepository.getStudentByStudentId(group.getLeader());
@@ -130,22 +133,25 @@ public class GroupService {
         int stage = timelineService.getStage(lead.getType());
         //判断房间类型对不对
         if ((room.getType() - 1) / 4 + 1 != lead.getType()) {
+            log.info("room type is not right");
             return false;
         }
         int roomCapacity = room.getType() % 4 == 0 ? 4 : room.getType() % 4;
         if (stage == 2) {
             //如果选房的人没有star
             if (!group.getRoomStarList().contains(room)) {
+                log.info("group has no star");
                 return false;
             }
             //房间已经被选了
             if (room.getStatus() != RoomStatus.UNSELECTED.statusCode) {
-
+                log.info("room has been selected");
                 return false;
             }
 
             //如果选房的人数不对
             if (group.getMemberList().size() != roomCapacity) {
+                log.info("group member number is not right");
                 return false;
             }
             //选房
@@ -155,6 +161,7 @@ public class GroupService {
             room.setStatus(RoomStatus.SELECTED.statusCode);
             roomRepository.save(room);
             groupRepository.save(group);
+            log.info("choose room success");
 
         }
         if (stage == 3) {
@@ -162,6 +169,7 @@ public class GroupService {
             //看有人没人
             if (roomMaster == null) {
                 if (group.getMemberList().size() > roomCapacity) {
+                    log.info("group member number is not right");
                     return false;
                 }
                 group.setRoomId(roomId);
@@ -170,13 +178,16 @@ public class GroupService {
                 room.setStatus(RoomStatus.SELECTED.statusCode);
                 roomRepository.save(room);
                 groupRepository.save(group);
+                log.info("choose room success");
                 return true;
 
             } else {
                 if (roomMaster.getMemberList().size() + group.getMemberList().size()
                     > roomCapacity) {
+                    log.info("group member number is not right");
                     return false;
                 }
+                log.info("combine groups");
                 return combineGroups(roomMaster.getGroupId(), group.getGroupId());
             }
 

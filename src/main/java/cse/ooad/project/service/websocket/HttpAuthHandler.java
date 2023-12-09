@@ -39,6 +39,7 @@ public class HttpAuthHandler extends TextWebSocketHandler {
         if (sessionId != null) {
             // 用户连接成功，放入在线用户缓存
             WsSessionManager.add(sessionId.toString(), session);
+            session.sendMessage(new TextMessage("server 发送给 " + sessionId + " 消息 " + "连接成功" + " " + LocalDateTime.now().toString()));
         } else {
             throw new RuntimeException("用户登录已经失效!");
         }

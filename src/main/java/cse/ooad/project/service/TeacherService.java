@@ -10,6 +10,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -355,6 +356,54 @@ public class TeacherService {
             roomRepository.saveAll(rooms);
             csvReader.close();
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void batchOutputStudent(){
+        List<Group> group = groupRepository.findAll();
+        HashMap<Student, String> map = new HashMap<>();
+        group.forEach(t->{
+            //把所有加入队伍了切队伍选定了房间的学生都放进去
+            if (t.getRoomId() == null){
+                return;
+            }else{
+                Room room = roomRepository.getRoomsByRoomId(t.getRoomId());
+                Floor floor = floorRepository.getFloorByFloorId(room.getFloorId());
+                Building building = buildingRepository.getBuildingByBuildingId(floor.getBuildingId());
+                Region region = regionRepository.getRegionByRegionId(building.getRegionId());
+                List<Student> students = t.getMemberList();
+                students.forEach(e->{
+                    map.put(e, region.getName()+","+building.getName()+","+floor.getName()+","+room.getName());
+                });
+            }
+        });
+        List<Student> students = studentRepository.findAll();
+        students.forEach(t->{
+            map.putIfAbsent(t, "未分配");
+        });
+        System.out.println(map);
+        students.sort((Comparator.comparing(Student::getAccount)));
+        try {
+            File file = new File("src/main/resources/output.csv");
+            if (!file.exists()) {
+                 file.createNewFile();
+            }
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
+            bufferedWriter.write("学号,姓名,宿舍");
+            bufferedWriter.newLine();
+            students.forEach(t -> {
+                try {
+                    bufferedWriter.write(t.getAccount() + "," + t.getName() + "," + map.get(t));
+                    bufferedWriter.newLine();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            bufferedWriter.flush();
+            bufferedWriter.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

@@ -243,6 +243,10 @@ class Cs30923FallProjectApplicationTests {
     @Test
     void complexTest(){
         System.out.println("test");
+        TimelineService.STATUS = 3;
+        TimelineService.timestamp = 0;
+        System.out.println(groupService.chooseRoom(1L, 2127L));
+        teacherService.batchOutputStudent();
     }
 
 }

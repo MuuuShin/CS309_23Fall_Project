@@ -8,6 +8,7 @@ import cse.ooad.project.repository.StudentRepository;
 import cse.ooad.project.service.websocket.WsSessionManager;
 import cse.ooad.project.model.Student;
 import cse.ooad.project.utils.MessageStatus;
+import cse.ooad.project.utils.MessageType;
 import java.sql.Timestamp;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ public class MsgService {
             msg.setSrcId(0L);
             msg.setDstId(t.getStudentId());
             msg.setBody(content);
+            msg.setType(MessageType.SYSTEM.typeCode);
             msg.setStatus(MessageStatus.UNREAD.getStatusCode());
             msg.setTimestamp(new Timestamp(System.currentTimeMillis()));
             forwardMsg(msg);

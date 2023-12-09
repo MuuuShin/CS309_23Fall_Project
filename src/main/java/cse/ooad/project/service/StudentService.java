@@ -207,7 +207,7 @@ public class StudentService {
     //获取申请消息列表
     public List<Msg> getApplyList(Long leaderId) {
         //todo 添加按消息类型获得申请
-        return msgRepository.getMsgsByDstIdAndStatus(leaderId, MessageStatus.UNREAD.getStatusCode());
+        return msgRepository.getMsgsByDstIdAndStatusAndType(leaderId, MessageStatus.UNREAD.getStatusCode(), MessageType.APPLY.typeCode);
     }
 
 
@@ -215,6 +215,9 @@ public class StudentService {
     public boolean handleApply(Long msgId, boolean isAgree) {
         Msg msg = msgRepository.getMsgByMsgId(msgId);
         if (msg == null) {
+            return false;
+        }
+        if (msg.getType() != MessageType.APPLY.typeCode) {
             return false;
         }
         if (msg.getStatus() != MessageStatus.UNREAD.getStatusCode()) {
@@ -228,7 +231,6 @@ public class StudentService {
             }else {
                 return false;
             }
-
         }
         msg.setStatus(MessageStatus.READ_AND_REJECTED.getStatusCode());
         msgRepository.save(msg);

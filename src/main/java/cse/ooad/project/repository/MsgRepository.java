@@ -17,4 +17,6 @@ public interface MsgRepository extends JpaRepository<Msg, Long> {
 
 
     Msg getMsgByMsgId(Long msgId);
+
+    List<Msg> getMsgsByDstId(Long DistId);
 }

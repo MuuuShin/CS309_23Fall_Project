@@ -129,15 +129,20 @@ public class TeamController {
     }
 
 
-    @PostMapping("/{teamId}/join")
-    public Result<String> joinTeam(@PathVariable("teamId") String teamId, @RequestHeader("Authorization") String token) {
+    @PostMapping("/join")
+    public Result<String> joinTeam(@RequestHeader("Authorization") String token, @RequestBody Map<String, Object> JsonData) {
+        String leaderId = (String) JsonData.get("leaderId");
+        String message = (String) JsonData.get("message");
+
         Claims claims;
         try {
             claims = JwtUtils.parseJWT(token);
         } catch (Exception e) {
             return Result.error("fail");
         }
-        boolean success = studentService.joinGroup(Long.parseLong(claims.get("id").toString()), Long.parseLong(teamId));
+//        boolean success = studentService.joinGroup(Long.parseLong(claims.get("id").toString()), Long.parseLong(teamId));
+
+        boolean success = studentService.sendApply(Long.parseLong(claims.get("id").toString()), Long.parseLong(leaderId), message);
         if (success) {
             return Result.success("success", null);
         } else {
@@ -297,7 +302,7 @@ public class TeamController {
     }
 
 
-    @PostMapping("/teams/accept")
+    @PostMapping("/accept")
     public Result<String> acceptTeam(@RequestHeader("Authorization") String token, @RequestBody Map<String, Object> JsonData) {
         Claims claims;
         try {
@@ -306,9 +311,10 @@ public class TeamController {
             return Result.error("not login");
         }
         String userId = claims.get("id").toString();
-        String teamId = (String) JsonData.get("teamId");
+        String msgId = (String) JsonData.get("msgId");
         String isAccepted = (String) JsonData.get("isAccepted");
-        boolean success = studentService.handleApply(Long.parseLong(userId), isAccepted.equals("1"), Long.parseLong(teamId));
+        boolean success = studentService.handleApply(Long.parseLong(msgId), isAccepted.equals("1"), Long.parseLong(userId));
+//        log.warn("hhhhhh");
         if (success) {
             return Result.success("success", null);
         } else {

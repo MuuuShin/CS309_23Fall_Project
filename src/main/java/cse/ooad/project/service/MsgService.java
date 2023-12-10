@@ -51,12 +51,12 @@ public class MsgService {
     }
 
     public void forwardMsg(Msg msg) {
-        String session = WsSessionManager.USER_POOL.get(msg.getDstId());
         try {
             //在线就转发消息
-            if (session != null) {
-                WebSocketSession webSocketSession = WsSessionManager.get(session);
+            if (msg != null) {
+                WebSocketSession webSocketSession = WsSessionManager.get(msg.getDstId().toString());
                 if (webSocketSession != null) {
+                    System.out.println("转发信息"+msg.getBody()+"给"+msg.getDstId());
                     webSocketSession.sendMessage(new TextMessage(gson.toJson(msg)));
                     msg.setStatus(MessageStatus.READ.getStatusCode());
                 }
@@ -66,5 +66,9 @@ public class MsgService {
             e.printStackTrace();
         }
         msgRepository.save(msg);
+    }
+
+    public List<Msg> getMsgByDistId(Long distId) {
+        return msgRepository.getMsgsByDstId(distId);
     }
 }

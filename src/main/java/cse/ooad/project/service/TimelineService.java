@@ -16,7 +16,7 @@ public class TimelineService {
 
 
     //测试用的
-    public static int STATUS = 0;
+    public static int STATUS = 3;
     public static int timestamp = 0;
 
     public int getStage(int type){

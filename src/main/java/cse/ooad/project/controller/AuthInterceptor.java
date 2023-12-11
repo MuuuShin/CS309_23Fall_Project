@@ -27,7 +27,13 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Scheduled(fixedRate = 60 * 60 * 1000)
     public void clearBlackList() {
-        blackList.clear();
+       for (String jwt : blackList) {
+           try {
+               JwtUtils.parseJWT(jwt);
+           } catch (Exception e) {
+               blackList.remove(jwt);
+           }
+       }
     }
 
     @Override

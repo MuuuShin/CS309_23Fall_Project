@@ -13,8 +13,10 @@ public interface MsgRepository extends JpaRepository<Msg, Long> {
 
     List<Msg> getMsgsBySrcIdAndDstId(Long srcId, Long DistId);
 
-    List<Msg> getMsgsByDstIdAndStatus(Long DistId, Integer status);
+    List<Msg> getMsgsByDstIdAndStatusAndType(Long DistId, Integer status, Integer type);
 
 
     Msg getMsgByMsgId(Long msgId);
+
+    List<Msg> getMsgsByDstId(Long DistId);
 }

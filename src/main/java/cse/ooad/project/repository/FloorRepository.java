@@ -13,10 +13,12 @@ public interface FloorRepository extends JpaRepository<Floor, Long> {
 
     List<Floor> getFloorsByBuildingId(Long id);
 
-    Floor getFloorByName(String name);
+    Floor getFloorByFloorId(Long floorId);
 
 
     Integer removeByFloorId(Long id);
+
+    List<Floor> findAllByBuildingIdIn(List<Long> buildingIds);
 
 
 }

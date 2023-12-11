@@ -10,10 +10,12 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,11 +73,21 @@ public class TeacherService {
     @Transactional
     public Boolean deleteFloor(Long id) {
         if (floorRepository.findById(id).isPresent()) {
-            for (Room room : floorRepository.findById(id).get().getRoomList()) {
-                boolean f=deleteRoom(room.getRoomId());
-                if(!f) return false;
-            }
+            List<Long> ids = new ArrayList<>();
+            ids.add(id);
+            List<Room> rooms = roomRepository.findAllWithGroupStarListByBuildingIds(ids);
+            System.out.println(rooms);
+            List<Group> groupList = new ArrayList<>();
+            rooms.forEach(t->{
+                List<Group> groups = t.getGroupStarList();
+                groups.forEach(e -> e.getRoomStarList().remove(t));
+                groupList.addAll(groups);
+            });
+            groupRepository.saveAll(groupList);
+            roomRepository.deleteAll(rooms);
         }
+        System.out.println("结束*******************");
+
         return floorRepository.removeByFloorId(id) != 0;
     }
 
@@ -91,10 +103,23 @@ public class TeacherService {
     @Transactional
     public Boolean deleteRegion(Long id) {
         if (regionRepository.findById(id).isPresent()) {
-            for (Building building : regionRepository.findById(id).get().getBuildingList()) {
-                boolean f=deleteBuilding(building.getBuildingId());
-                if(!f) return false;
-            }
+            List<Building> lists = regionRepository.findById(id).get().getBuildingList();
+            List<Long> ids = lists.stream().map(Building::getBuildingId).toList();
+            List<Floor> floors = floorRepository.findAllByBuildingIdIn(ids);
+            ids = floors.stream().map(Floor::getFloorId).toList();
+            List<Room> rooms = roomRepository.findAllWithGroupStarListByBuildingIds(ids);
+            List<Group> groupList = new ArrayList<>();
+            rooms.forEach(t->{
+                List<Group> groups = t.getGroupStarList();
+                groups.forEach(e -> e.getRoomStarList().remove(t));
+                groupList.addAll(groups);
+            });
+            groupRepository.saveAll(groupList);
+            roomRepository.deleteAll(rooms);
+            floorRepository.deleteAll(floors);
+            buildingRepository.deleteAll(lists);
+            regionRepository.deleteById(id);
+            System.out.println(rooms.size());
         }
         return regionRepository.deleteByRegionId(id) != 0;
     }
@@ -118,10 +143,11 @@ public class TeacherService {
             return false;
         }
         List<Group> groupList = room.getGroupStarList();
+
         for (Group group : groupList) {
             group.getRoomStarList().remove(room);
-            groupRepository.save(group);
-        }
+
+        }groupRepository.saveAll(groupList);
         return true;
     }
 
@@ -145,10 +171,18 @@ public class TeacherService {
     @Transactional
     public Boolean deleteBuilding(Long id) {
         if (buildingRepository.findById(id).isPresent()) {
-            for (Floor floor : buildingRepository.findById(id).get().getFloorList()) {
-                boolean f=deleteFloor(floor.getFloorId());
-                if(!f) return false;
-            }
+            List<Floor> floors = floorRepository.getFloorsByBuildingId(id);
+            List<Long> ids = floors.stream().map(Floor::getFloorId).toList();
+            List<Room> rooms = roomRepository.findAllWithGroupStarListByBuildingIds(ids);
+            List<Group> groupList = new ArrayList<>();
+            rooms.forEach(t->{
+                List<Group> groups = t.getGroupStarList();
+                groups.forEach(e -> e.getRoomStarList().remove(t));
+                groupList.addAll(groups);
+            });
+            groupRepository.saveAll(groupList);
+            roomRepository.deleteAll(rooms);
+            floorRepository.deleteAll(floors);
         }
         return buildingRepository.removeByBuildingId(id) != 0;
     }
@@ -326,12 +360,58 @@ public class TeacherService {
             e.printStackTrace();
         }
     }
-
-
     /**
      * 获取宿舍选择情况
      */
-    public File getAllStudentStatus(int type) {
-        return null;
+    @Transactional
+    public void batchOutputStudent(){
+        List<Group> group = groupRepository.findAll();
+        HashMap<Student, String> map = new HashMap<>();
+        group.forEach(t->{
+            //把所有加入队伍了切队伍选定了房间的学生都放进去
+            if (t.getRoomId() == null){
+                return;
+            }else{
+                Room room = roomRepository.getRoomsByRoomId(t.getRoomId());
+                Floor floor = floorRepository.getFloorByFloorId(room.getFloorId());
+                Building building = buildingRepository.getBuildingByBuildingId(floor.getBuildingId());
+                Region region = regionRepository.getRegionByRegionId(building.getRegionId());
+                List<Student> students = t.getMemberList();
+                students.forEach(e->{
+                    map.put(e, region.getName()+","+building.getName()+","+floor.getName()+","+room.getName());
+                });
+            }
+        });
+        List<Student> students = studentRepository.findAll();
+        students.forEach(t->{
+            map.putIfAbsent(t, "未分配");
+        });
+        System.out.println(map);
+        students.sort((Comparator.comparing(Student::getAccount)));
+        try {
+            File file = new File("src/main/resources/output.csv");
+            if (!file.exists()) {
+                 file.createNewFile();
+            }
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
+            bufferedWriter.write("学号,姓名,宿舍");
+            bufferedWriter.newLine();
+            students.forEach(t -> {
+                try {
+                    bufferedWriter.write(t.getAccount() + "," + t.getName() + "," + map.get(t));
+                    bufferedWriter.newLine();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            bufferedWriter.flush();
+            bufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
+
+
+
 }

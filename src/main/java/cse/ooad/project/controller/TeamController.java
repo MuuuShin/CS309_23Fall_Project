@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.relational.core.sql.In;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Time;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +40,7 @@ public class TeamController {
 
 
     @PostMapping("/trans-room")
-    public Result<String> transRoom(@RequestBody Map<String, Object> JsonData){
+    public Result<String> transRoom(@RequestBody Map<String, Object> JsonData) {
         String studentId1 = (String) JsonData.get("studentId1");
         String studentId2 = (String) JsonData.get("studentId2");
         boolean success = teacherService.transRoom(Long.parseLong(studentId1), Long.parseLong(studentId2));
@@ -128,15 +129,20 @@ public class TeamController {
     }
 
 
-    @PostMapping("/{teamId}/join")
-    public Result<String> joinTeam(@PathVariable("teamId") String teamId, @RequestHeader("Authorization") String token) {
+    @PostMapping("/join")
+    public Result<String> joinTeam(@RequestHeader("Authorization") String token, @RequestBody Map<String, Object> JsonData) {
+        String leaderId = (String) JsonData.get("leaderId");
+        String message = (String) JsonData.get("message");
+
         Claims claims;
         try {
             claims = JwtUtils.parseJWT(token);
         } catch (Exception e) {
             return Result.error("fail");
         }
-        boolean success = studentService.joinGroup(Long.parseLong(claims.get("id").toString()), Long.parseLong(teamId));
+//        boolean success = studentService.joinGroup(Long.parseLong(claims.get("id").toString()), Long.parseLong(teamId));
+
+        boolean success = studentService.sendApply(Long.parseLong(claims.get("id").toString()), Long.parseLong(leaderId), message);
         if (success) {
             return Result.success("success", null);
         } else {
@@ -230,7 +236,6 @@ public class TeamController {
     }
 
 
-
     @GetMapping("")
     public Result<List<Group>> getAllTeamInfo(@RequestBody Map<String, Object> JsonData, @RequestHeader("Authorization") String token) {
         Integer offset = (Integer) JsonData.get("offset");
@@ -262,8 +267,55 @@ public class TeamController {
             return Result.error("fail");
         }
 
-        Group group  = studentService.createGroup(Long.parseLong(claims.get("id").toString()), teamName);
+        Group group = studentService.createGroup(Long.parseLong(claims.get("id").toString()), teamName);
         if (group != null) {
+            return Result.success("success", null);
+        } else {
+            return Result.error("fail");
+        }
+    }
+
+    @GetMapping("/teams/finduser/{sleeptime}/{awaketime}/{query}")
+    public Result<List<Group>> findUser(@PathVariable("sleeptime") String sleeptime, @PathVariable("awaketime") String awaketime, @PathVariable("query") String query, @RequestHeader("Authorization") String token) {
+        log.info("find team");
+        Time awakeTime = Time.valueOf(awaketime);
+        Time sleepTime = Time.valueOf(sleeptime);
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("not login");
+        }
+        String userId = claims.get("id").toString();
+        Student student = searchService.searchStudentById(Long.parseLong(userId));
+        Long gender = Long.parseLong(String.valueOf(student.getGender()));
+        Long type = Long.parseLong(String.valueOf(student.getType()));
+        List<Group> groups = searchService.searchGroups(gender, awakeTime, sleepTime, type, query);
+
+        if (groups != null) {
+            return Result.success("success", groups);
+        }
+
+        return Result.error("fail");
+
+
+    }
+
+
+    @PostMapping("/accept")
+    public Result<String> acceptTeam(@RequestHeader("Authorization") String token, @RequestBody Map<String, Object> JsonData) {
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("not login");
+        }
+        String userId = claims.get("id").toString();
+        String msgId = (String) JsonData.get("msgId");
+        String isAccepted = (String) JsonData.get("isAccepted");
+        boolean success = studentService.handleApply(Long.parseLong(msgId), isAccepted.equals("1"), Long.parseLong(userId));
+//        log.warn("hhhhhh");
+        if (success) {
             return Result.success("success", null);
         } else {
             return Result.error("fail");

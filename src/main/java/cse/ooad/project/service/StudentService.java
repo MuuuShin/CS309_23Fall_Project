@@ -11,16 +11,20 @@ import cse.ooad.project.repository.MsgRepository;
 import cse.ooad.project.repository.RegionRepository;
 import cse.ooad.project.repository.StudentRepository;
 import cse.ooad.project.utils.MessageStatus;
+import cse.ooad.project.utils.MessageType;
 import cse.ooad.project.utils.RoomType;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 public class StudentService {
 
     @Autowired
@@ -98,6 +102,7 @@ public class StudentService {
         Student student = studentRepository.getStudentByStudentId(studentId);
         Group group = groupRepository.getGroupByGroupId(groupId);
         int stage = timelineService.getStage(student.getType());
+        log.warn("hhh,wolaola");
 
         // 第一个阶段可以 第三个阶段可以
         if (stage != 1 && stage != 3) {
@@ -105,12 +110,15 @@ public class StudentService {
         }
         Student leader = studentRepository.getStudentByStudentId(group.getLeader());
         if (Objects.equals(leader.getType(), student.getType())) {
+            log.warn("leader type is equal to student type");
             //判断人数合不合适
             if (group.getMemberList().size() == 4) {
+                log.warn("group is full");
                 return false;
             }
             //判断有没有加入队伍
             if (student.getGroup() != null) {
+                log.warn("student has joined a group");
                 return false;
             }
             msgService.sendSystemMsg(group.getMemberList(), student.getName() + "加入了队伍");
@@ -121,6 +129,7 @@ public class StudentService {
             studentRepository.save(student);
             return true;
         }
+        log.warn("leader type is not equal to student type");
         return false;
         //todo 系统发送加入队伍成功/失败消息 针对加入的这个人和队伍里其他人 发送的消息应该不一样
     }
@@ -165,6 +174,7 @@ public class StudentService {
 
 
     //发送入队申请
+    @Transactional
     public boolean sendApply(Long studentId, Long leaderId, String message) {
         Msg msg = new Msg();
         Student src = studentRepository.getStudentByStudentId(studentId);
@@ -178,42 +188,66 @@ public class StudentService {
         if (src.getGroup() != null){
             return false;
         }
+        //队伍满员
         if(group.getMemberList().size() == 4) {
             return false;
         }
         //如果队伍选了房间且已经满员
-        return group.getRoom() == null
-            || RoomType.valueOf(group.getRoom().getType() + "").getCapacity()
-            != group.getMemberList().size();
-        //todo 判断是否已经发送过申请
-        //todo 保存该申请
+        if (group.getRoom() != null && RoomType.valueOf(group.getRoom().getType() + "").getCapacity()
+            == group.getMemberList().size()) {
+            return false;
+        }
+        //已经处于队伍中
+        if (group.getMemberList().contains(src)) {
+            return false;
+        }
+        msg.setStatus(MessageStatus.UNREAD.getStatusCode());
+        msg.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        msg.setBody(message);
+        msg.setSrcId(src.getStudentId());
+        msg.setDstId(leader.getStudentId());
+        msg.setType(MessageType.APPLY.typeCode);
+        msgService.forwardMsg(msg);
+        return true;
     }
 
     //获取申请消息列表
-    public List<Msg> getApplyList(Long groupId) {
-        //todo 添加按消息类型获得申请
-        return msgRepository.getMsgsByDstIdAndStatus(groupId, MessageStatus.UNREAD.getStatusCode());
+    public List<Msg> getApplyList(Long leaderId) {
+        return msgRepository.getMsgsByDstIdAndStatusAndType(leaderId, MessageStatus.UNREAD.getStatusCode(), MessageType.APPLY.typeCode);
     }
 
 
     //处理申请
-    public boolean handleApply(Long msgId, boolean isAgree) {
+    @Transactional
+    public boolean handleApply(Long msgId, boolean isAgree, Long studentId) {
         Msg msg = msgRepository.getMsgByMsgId(msgId);
+
         if (msg == null) {
+            log.warn("msg is null");
             return false;
         }
-        if (msg.getStatus() != MessageStatus.UNREAD.getStatusCode()) {
+        if (!Objects.equals(studentId, msg.getDstId())) {
+            log.warn("studentId is not equal to dstId");
+            return false;
+        }
+
+        if (msg.getType() != MessageType.APPLY.typeCode) {
+            log.warn("msg type is not apply");
+            return false;
+        }
+        if (msg.getStatus() == MessageStatus.READ_AND_REJECTED.getStatusCode()||msg.getStatus() == MessageStatus.READ_AND_ACCEPTED.getStatusCode()) {
             return false;
         }
         if (isAgree) {
-            if (joinGroup(msg.getSrcId(), msg.getDstId())){
+            if (joinGroup(msg.getSrcId(), studentRepository.getStudentByStudentId(msg.getDstId()).getGroupId())){
+                log.warn("join group success");
                 msg.setStatus(MessageStatus.READ_AND_ACCEPTED.getStatusCode());
                 msgRepository.save(msg);
                 return true;
             }else {
+                log.warn("join group failed");
                 return false;
             }
-
         }
         msg.setStatus(MessageStatus.READ_AND_REJECTED.getStatusCode());
         msgRepository.save(msg);

@@ -1,5 +1,8 @@
 package cse.ooad.project.service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Time;
@@ -10,50 +13,36 @@ public class StudentTimeMatch {
 
 
     public static Long TimeMatch(Time awakeTime1, Time sleepTime1, Time awakeTime2, Time sleepTime2) {
-        //先把Time转换为Long，如果睡觉时间在起床时间之后，则给睡觉时间减去上24小时的Long的修正，然后计算两个时间段的重合度
-        long awakeTime1Long = awakeTime1.getTime();
-        long sleepTime1Long = sleepTime1.getTime();
-        long sleepTime2Long = sleepTime2.getTime();
-        long awakeTime2Long = awakeTime2.getTime();
-        awakeTime1Long += 86400000;
-        awakeTime2Long += 86400000;
-
-        Time noon = new Time(12, 0, 0);
-
-        if (sleepTime2Long <= noon.getTime()) {
-            sleepTime2Long += 86400000;
+        Collection<Long> timeIndex1 = getSleepTimeIndex(awakeTime1, sleepTime1);
+        Collection<Long> timeIndex2 = getSleepTimeIndex(awakeTime2, sleepTime2);
+        return (long) timeIndex1.stream().filter(timeIndex2::contains).toList().size();
+    }
+    //输入一个起床时间和一个睡觉时间，讲一天24小时按15个分钟划分为96个时间段，返回一个集合，如果这个时间段在起床时间和睡觉时间之间，则加入这个集合，集合中的每个元素代表一个时间段的索引，
+    private static Collection<Long> getSleepTimeIndex(Time awakeTime, Time sleepTime) {
+        long zeroTime = new Time(0,0,0).getTime();
+        long lastTime = new Time(23,59,59).getTime();
+        Collection<Long> timeIndex = new ArrayList<>();
+        long awakeTimeLong = awakeTime.getTime();
+        long sleepTimeLong = sleepTime.getTime();
+        if (sleepTimeLong < awakeTimeLong) {
+            long baseTime = sleepTimeLong - sleepTimeLong%900000;
+            while (baseTime < awakeTimeLong) {
+                timeIndex.add(baseTime/900000);
+                baseTime += 900000;
+            }
+        }else {
+            long baseTime = zeroTime;
+            while (baseTime < awakeTimeLong) {
+                timeIndex.add(baseTime/900000);
+                baseTime += 900000;
+            }
+            baseTime = sleepTimeLong - sleepTimeLong%900000;
+            while (baseTime < lastTime) {
+                timeIndex.add(baseTime/900000);
+                baseTime += 900000;
+            }
         }
-        if (sleepTime1Long <= noon.getTime()) {
-            sleepTime1Long += 86400000;
-        }
-
-
-        long startTime1 = sleepTime1Long; // 第一个时间段的开始时间
-        long endTime1 = awakeTime1Long;   // 第一个时间段的结束时间
-        long startTime2 = sleepTime2Long; // 第二个时间段的开始时间
-        long endTime2 = awakeTime2Long;   // 第二个时间段的结束时间
-
-        // 找到最晚开始时间
-        long latestStart = Math.max(startTime1, startTime2);
-
-        // 找到最早结束时间
-        long earliestEnd = Math.min(endTime1, endTime2);
-
-        // 检查是否有交集
-        if(latestStart < earliestEnd) {
-            // 存在交集
-            long intersectionStart = latestStart; // 交集的开始时间
-            long intersectionEnd = earliestEnd;   // 交集的结束时间
-
-            log.warn(intersectionEnd - intersectionStart + "");
-
-            return intersectionEnd - intersectionStart;
-            // 这里可以根据需要处理交集
-        }
-
-
-
-        return 0L;
+        return timeIndex;
     }
 
 }

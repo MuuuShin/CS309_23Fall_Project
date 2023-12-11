@@ -8,6 +8,7 @@ import cse.ooad.project.repository.StudentRepository;
 import cse.ooad.project.service.websocket.WsSessionManager;
 import cse.ooad.project.model.Student;
 import cse.ooad.project.utils.MessageStatus;
+import cse.ooad.project.utils.MessageType;
 import java.sql.Timestamp;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ public class MsgService {
             msg.setSrcId(0L);
             msg.setDstId(t.getStudentId());
             msg.setBody(content);
+            msg.setType(MessageType.SYSTEM.typeCode);
             msg.setStatus(MessageStatus.UNREAD.getStatusCode());
             msg.setTimestamp(new Timestamp(System.currentTimeMillis()));
             forwardMsg(msg);
@@ -49,14 +51,14 @@ public class MsgService {
     }
 
     public void forwardMsg(Msg msg) {
-        String session = WsSessionManager.USER_POOL.get(msg.getDstId());
         try {
             //在线就转发消息
-            if (session != null) {
-                WebSocketSession webSocketSession = WsSessionManager.get(session);
+            if (msg != null) {
+                WebSocketSession webSocketSession = WsSessionManager.get(msg.getDstId().toString());
                 if (webSocketSession != null) {
+                    System.out.println("转发信息"+msg.getBody()+"给"+msg.getDstId());
                     webSocketSession.sendMessage(new TextMessage(gson.toJson(msg)));
-                    msg.setStatus(MessageStatus.Read.getStatusCode());
+                    msg.setStatus(MessageStatus.READ.getStatusCode());
                 }
             }
         } catch (Exception e) {
@@ -64,5 +66,9 @@ public class MsgService {
             e.printStackTrace();
         }
         msgRepository.save(msg);
+    }
+
+    public List<Msg> getMsgByDistId(Long distId) {
+        return msgRepository.getMsgsByDstId(distId);
     }
 }

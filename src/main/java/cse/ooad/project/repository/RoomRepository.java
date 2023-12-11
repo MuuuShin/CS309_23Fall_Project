@@ -33,6 +33,12 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     List<GroupStarListProjection> getGroupStarListByRoomId(Long id);
 
+    List<Room> findAllByFloorIdIn(List<Long> floorIds);
+
+
+    @Query("SELECT r FROM Room r JOIN FETCH r.groupStarList WHERE r.floorId IN :ids")
+    List<Room> findAllWithGroupStarListByBuildingIds(@Param("ids") List<Long> ids);
+
 //    GroupStarListProjection1 getGroupByRoomId(Long id);
 
     @Transactional

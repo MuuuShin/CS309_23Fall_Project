@@ -1,5 +1,6 @@
-package cse.ooad.project.service.websocket;
+package cse.ooad.project.config;
 
+import cse.ooad.project.service.websocket.HttpAuthHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -13,7 +14,7 @@ public class WebsocketConfig implements WebSocketConfigurer {
     @Autowired
     private HttpAuthHandler httpAuthHandler;
     @Autowired
-    private Interceptor Interceptor;
+    private cse.ooad.project.service.websocket.Interceptor Interceptor;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {

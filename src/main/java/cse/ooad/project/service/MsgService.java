@@ -67,4 +67,8 @@ public class MsgService {
         }
         msgRepository.save(msg);
     }
+
+    public List<Msg> getMsgByDistId(Long distId) {
+        return msgRepository.getMsgsByDstId(distId);
+    }
 }

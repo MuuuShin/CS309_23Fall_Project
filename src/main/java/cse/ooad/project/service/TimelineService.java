@@ -45,4 +45,7 @@ public class TimelineService {
     public Timeline getTimelineByType(int type){
         return timelineRepository.getTimelineByType(type);
     }
+
+
+
 }

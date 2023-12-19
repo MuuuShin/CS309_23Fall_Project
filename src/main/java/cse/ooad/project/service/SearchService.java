@@ -121,6 +121,22 @@ public class SearchService {
         return roomRepository.getRoomsByFloorId(id);
     }
 
+    public List<Room> searchRoomByBuildingId(Long id) {
+        List<Floor> floors = floorRepository.getFloorsByBuildingId(id);
+        List<Room> rooms = new ArrayList<>();
+        floors.forEach(t -> rooms.addAll(roomRepository.getRoomsByFloorId(t.getFloorId())));
+        return rooms;
+    }
+
+    public List<Room> searchRoomByRegionId(Long id) {
+        List<Building> buildings = buildingRepository.getBuildingsByRegionId(id);
+        List<Room> rooms = new ArrayList<>();
+        buildings.forEach(t -> rooms.addAll(searchRoomByBuildingId(t.getBuildingId())));
+        return rooms;
+    }
+
+
+
     public List<Group> searchAllGroup(Integer page, Integer size){
         Pageable pageable = PageRequest.of(page, size);
         return groupRepository.findAll(pageable).getContent();

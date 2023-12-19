@@ -165,7 +165,9 @@ public class StudentService {
     }
 
 
+
     //发送入队申请
+    @Transactional
     public boolean sendApply(Long studentId, Long leaderId, String message) {
         Msg msg = new Msg();
         Student src = studentRepository.getStudentByStudentId(studentId);
@@ -221,7 +223,7 @@ public class StudentService {
         if (msg.getType() != MessageType.APPLY.typeCode) {
             return false;
         }
-        if (msg.getStatus() != MessageStatus.UNREAD.getStatusCode()) {
+        if (msg.getStatus() == MessageStatus.READ_AND_REJECTED.getStatusCode()||msg.getStatus() == MessageStatus.READ_AND_ACCEPTED.getStatusCode()) {
             return false;
         }
         if (isAgree) {
@@ -229,8 +231,6 @@ public class StudentService {
                 msg.setStatus(MessageStatus.READ_AND_ACCEPTED.getStatusCode());
                 msgRepository.save(msg);
                 return true;
-            }else {
-                return false;
             }
         }
         msg.setStatus(MessageStatus.READ_AND_REJECTED.getStatusCode());

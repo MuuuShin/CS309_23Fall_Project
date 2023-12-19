@@ -119,6 +119,7 @@ public class TeacherService {
             floorRepository.deleteAll(floors);
             buildingRepository.deleteAll(lists);
             regionRepository.deleteById(id);
+            System.out.println(rooms.size());
         }
         return regionRepository.deleteByRegionId(id) != 0;
     }
@@ -359,7 +360,10 @@ public class TeacherService {
             e.printStackTrace();
         }
     }
-
+    /**
+     * 获取宿舍选择情况
+     */
+    @Transactional
     public void batchOutputStudent(){
         List<Group> group = groupRepository.findAll();
         HashMap<Student, String> map = new HashMap<>();
@@ -409,10 +413,5 @@ public class TeacherService {
     }
 
 
-    /**
-     * 获取宿舍选择情况
-     */
-    public File getAllStudentStatus(int type) {
-        return null;
-    }
+
 }

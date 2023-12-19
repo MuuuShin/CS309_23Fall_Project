@@ -80,8 +80,8 @@ class Cs30923FallProjectApplicationTests {
     @Test
     void TeacherTest() {
         teacherService.batchSaveStudent(new File("src/test/resources/student.csv"));
-        //teacherService.batchSaveRoom(new File("src/test/resources/Rooms.csv"));
-        teacherService.batchSaveRoomNew(new File("src/test/resources/university_data.csv"));
+        //teacherService.batchSaveRoomNew(new File("src/test/resources/Rooms.csv"));
+        teacherService.batchSaveRoom(new File("src/test/resources/university_data.csv"));
 
         Timeline timeline = new Timeline(null, 1, new Timestamp(10000L), new Timestamp(20000L),
                 new Timestamp(20000), new Timestamp(30000), new Timestamp(30000), new Timestamp(40000),
@@ -228,7 +228,7 @@ class Cs30923FallProjectApplicationTests {
         //teacherService.deleteFloor(1L);
         System.out.println("delete");
         //teacherService.deleteBuilding(1L);
-        teacherService.deleteRegion(1L);
+        //teacherService.deleteRegion(1L);
         //teacherService.deleteRoom(1L);
     }
 

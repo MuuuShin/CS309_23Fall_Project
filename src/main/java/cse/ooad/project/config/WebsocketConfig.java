@@ -23,5 +23,4 @@ public class WebsocketConfig implements WebSocketConfigurer {
             .addInterceptors(Interceptor)
             .setAllowedOrigins("*");
     }
-
 }

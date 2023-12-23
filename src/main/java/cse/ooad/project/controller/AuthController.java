@@ -6,10 +6,12 @@ import cse.ooad.project.service.LoginService;
 import cse.ooad.project.service.websocket.WsSessionManager;
 import cse.ooad.project.utils.JwtUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -23,7 +25,7 @@ public class AuthController {
     private LoginService loginService;
 
     @PostMapping("/login")
-    public Result<String> login(@RequestBody Map<String, Object> jsonMap) {
+    public Result<List<Object>> login(@RequestBody Map<String, Object> jsonMap) {
         String username = (String) jsonMap.get("username");
         String password = (String) jsonMap.get("password");
         String isTeacherStr = (String) jsonMap.get("isTeacher");
@@ -41,7 +43,8 @@ public class AuthController {
             claims.put("isTeacher", true);
             String jwt = JwtUtils.generateToken(claims);
             log.info(result.getTeacherId() + "Login successfully");
-            return Result.success("success", jwt);
+            List<Object> list = List.of(jwt, result);
+            return Result.success("success", list);
         } else {
             Student result = loginService.loginStudent(username, password);
 
@@ -55,7 +58,8 @@ public class AuthController {
             claims.put("isTeacher", false);
             String jwt = JwtUtils.generateToken(claims);
             log.info(result.getStudentId() + "Login successfully");
-            return Result.success("success", jwt);
+            List<Object> list = List.of(jwt, result);
+            return Result.success("success", list);
         }
 
     }

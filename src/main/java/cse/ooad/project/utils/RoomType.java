@@ -23,4 +23,17 @@ public enum RoomType {
     public int getCapacity(){
         return type % 4 == 0 ? 4 : type % 4;
     }
+
+    public int getStudentType(){
+        return (type -  1) / 4 + 1;
+    }
+
+    public static RoomType valueOf(int type){
+        for(RoomType roomType : RoomType.values()){
+            if (roomType.type == type){
+                return roomType;
+            }
+        }
+        return null;
+    }
 }

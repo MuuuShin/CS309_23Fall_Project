@@ -12,11 +12,10 @@ import cse.ooad.project.repository.RoomRepository;
 import cse.ooad.project.repository.StudentRepository;
 import cse.ooad.project.repository.TeacherRepository;
 import cse.ooad.project.repository.TimelineRepository;
+import cse.ooad.project.utils.StudentTimeMatch;
 import java.sql.Time;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -79,9 +78,6 @@ public class SearchService {
         return students;
     }
 
-    public List<Student> searchStudents(){
-        return studentRepository.findAll();
-    }
 
 
     /**
@@ -105,19 +101,19 @@ public class SearchService {
         return groupList;
     }
 
-    public List<Region> searchRegion() {
+    public List<Region> searchAllRegion() {
         return regionRepository.findAll();
     }
 
-    public List<Building> searchBuilding(Long id) {
+    public List<Building> searchBuildingByRegion(Long id) {
         return buildingRepository.getBuildingsByRegionId(id);
     }
 
-    public List<Floor> searchFloor(Long id) {
+    public List<Floor> searchFloorByFloor(Long id) {
         return floorRepository.getFloorsByBuildingId(id);
     }
 
-    public List<Room> searchRoom(Long id) {
+    public List<Room> searchRoomByFloor(Long id) {
         return roomRepository.getRoomsByFloorId(id);
     }
 
@@ -147,39 +143,39 @@ public class SearchService {
         return studentRepository.getStudentsByName(name);
     }
 
-    public Student searchStudentById(Long id){
+    public Student searchStudentByStudentId(Long id){
         return studentRepository.getStudentByStudentId(id);
     }
 
-    public Group searchGroupById(Long id){
+    public Group searchGroupByGroupId(Long id){
         return groupRepository.getGroupByGroupId(id);
     }
 
-    public Region searchRegionById(Long id){
+    public Region searchRegionByRegionId(Long id){
         return regionRepository.findById(id).orElse(null);
     }
 
-    public Msg searchMsgById(Long id){
+    public Msg searchMsgByMsgId(Long id){
         return msgRepository.findById(id).orElse(null);
     }
 
-    public Room searchRoomById(Long id){
+    public Room searchRoomByRoomId(Long id){
         return roomRepository.findById(id).orElse(null);
     }
 
-    public Teacher searchTeacherById(Long id){
+    public Teacher searchTeacherByTeacherId(Long id){
         return teacherRepository.findById(id).orElse(null);
     }
 
-    public Floor searchFloorById(Long id){
+    public Floor searchFloorByFloorId(Long id){
         return floorRepository.findById(id).orElse(null);
     }
 
-    public Building searchBuildingById(Long id){
+    public Building searchBuildingByBuildingId(Long id){
         return buildingRepository.findById(id).orElse(null);
     }
 
-    public Comment searchCommentById(Long id){
+    public Comment searchCommentByCommentId(Long id){
         return commentRepository.findById(id).orElse(null);
     }
 

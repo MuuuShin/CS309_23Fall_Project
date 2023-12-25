@@ -34,7 +34,7 @@ public class UserController {
         try {
             Claims claims = JwtUtils.parseJWT(token);
             if (claims.get("isTeacher").equals(true)) {
-                List<Student> students = searchService.searchStudents();
+                List<Student> students = studentService.findAllStudents();
 //                List<Student> students = null;
                 return Result.success("success", students);
             }
@@ -130,7 +130,7 @@ public class UserController {
             return Result.error("not login");
         }
         String userId = claims.get("id").toString();
-        Student student = searchService.searchStudentById(Long.parseLong(userId));
+        Student student = searchService.searchStudentByStudentId(Long.parseLong(userId));
         Long gender = Long.parseLong(String.valueOf(student.getGender()));
         Long type = Long.parseLong(String.valueOf(student.getType()));
         List<Student> students = searchService.searchStudents(gender, awakeTime, sleepTime, type, query);

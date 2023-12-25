@@ -29,13 +29,15 @@ public class MsgService {
     @Autowired
     Gson gson;
 
-    public Msg saveMsg(Msg msg) {
-        forwardMsg(msg);
-        return msgRepository.save(msg);
-
-    }
 
 
+
+
+    /**
+     * 批量发送系统消息
+     * @param students 学生列表
+     * @param content 消息内容
+     */
     public void sendSystemMsg(List<Student> students, String content){
         students.forEach(t->{
             Msg msg = new Msg();
@@ -45,12 +47,15 @@ public class MsgService {
             msg.setType(MessageType.SYSTEM.typeCode);
             msg.setStatus(MessageStatus.UNREAD.getStatusCode());
             msg.setTimestamp(new Timestamp(System.currentTimeMillis()));
-            forwardMsg(msg);
+            saveAndForwardMsg(msg);
         });
 
     }
-
-    public void forwardMsg(Msg msg) {
+    /**
+     * 保存消息，同时转发消息
+     * @param msg 消息
+     */
+    public void saveAndForwardMsg(Msg msg) {
         try {
             //在线就转发消息
             if (msg != null) {
@@ -60,14 +65,20 @@ public class MsgService {
                     webSocketSession.sendMessage(new TextMessage(gson.toJson(msg)));
                     msg.setStatus(MessageStatus.READ.getStatusCode());
                 }
+                msgRepository.save(msg);
             }
         } catch (Exception e) {
             System.out.println("转发信息失败");
             e.printStackTrace();
         }
-        msgRepository.save(msg);
+
     }
 
+    /**
+     * 获取消息列表
+     * @param distId 接收者id
+     * @return 消息列表
+     */
     public List<Msg> getMsgByDistId(Long distId) {
         return msgRepository.getMsgsByDstId(distId);
     }

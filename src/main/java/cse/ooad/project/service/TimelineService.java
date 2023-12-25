@@ -19,15 +19,20 @@ public class TimelineService {
     public static int STATUS = 3;
     public static int timestamp = 0;
 
+    /**
+     * 根据学生类型获取当前阶段
+     * @param type 学生类型
+     * @return 当前阶段
+     */
     public int getStage(int type){
         Timeline timeline = timelineRepository.getTimelineByType(type);
 
-        //Timestamp nowTime = new Timestamp(new Date().getTime());
+        Timestamp nowTime = new Timestamp(new Date().getTime());
         //测试的时候用的
         if (timestamp == 0){
             return STATUS;
         }
-        Timestamp nowTime = new Timestamp(timestamp);
+        //Timestamp nowTime = new Timestamp(timestamp);
         //return STATUS;
         if (nowTime.before(timeline.getBeginTime1()))
             return 0;
@@ -42,7 +47,12 @@ public class TimelineService {
         return 5;
     }
 
-    public Timeline getTimelineByType(int type){
+    /**
+     * 根据学生类型获取时间段
+     * @param type 学生类型
+     * @return 时间段
+     */
+    public Timeline getTimelineByStudentType(int type){
         return timelineRepository.getTimelineByType(type);
     }
 

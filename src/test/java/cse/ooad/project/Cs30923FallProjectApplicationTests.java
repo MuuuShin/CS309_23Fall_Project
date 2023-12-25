@@ -2,7 +2,6 @@ package cse.ooad.project;
 
 import cse.ooad.project.model.*;
 import cse.ooad.project.repository.BuildingRepository;
-import cse.ooad.project.repository.CommentRepository;
 import cse.ooad.project.service.*;
 import cse.ooad.project.utils.StudentType;
 
@@ -96,7 +95,7 @@ class Cs30923FallProjectApplicationTests {
     void StudentTest() {
         System.out.println(studentService.createGroup(200000001L, "冒险小虎队"));
         System.out.println(studentService.createGroup(200000002L, "多多探险队"));
-        Student student = searchService.searchStudentById(200000001L);
+        Student student = searchService.searchStudentByStudentId(200000001L);
         student.setIntro("我爱洗澡皮肤好好");
         student.setType(StudentType.MASTER_MALE.type);
         studentService.updateIntroduce(student);
@@ -139,7 +138,7 @@ class Cs30923FallProjectApplicationTests {
         System.out.println(groupService.getGroupsList());
         System.out.println(groupService.chooseRoom(2L, 1L));
         TimelineService.STATUS = 3;
-        Group group1 = searchService.searchStudentById(200000001L).getGroup();
+        Group group1 = searchService.searchStudentByStudentId(200000001L).getGroup();
         System.out.println(groupService.getMemberList(group1.getGroupId()));
         System.out.println(studentService.memberLeave(200000001L));
         System.out.println(groupService.getMemberList(group1.getGroupId()));
@@ -154,7 +153,6 @@ class Cs30923FallProjectApplicationTests {
         studentService.createGroup(200000005L, "飞天茅台9999");
         System.out.println(groupService.changeLeader(2L, 200000004L));
         System.out.println(teacherService.transRoom(200000001L, 200000005L));
-        //todo 合并队伍
 
         groupService.test();
 
@@ -171,8 +169,7 @@ class Cs30923FallProjectApplicationTests {
     @Test
     void MsgTest() {
         Msg msg = new Msg(null, 0, 1L, 2L, "罗启航牛逼", new Timestamp(12315616L), 12);
-        msgService.saveMsg(msg);
-        msgService.forwardMsg(msg);
+        msgService.saveAndForwardMsg(msg);
     }
 
     @Order(8)
@@ -193,15 +190,15 @@ class Cs30923FallProjectApplicationTests {
     @Order(9)
     @Test
     void SearchTest() {
-        Region region = searchService.searchRegionById(1L);
+        Region region = searchService.searchRegionByRegionId(1L);
         System.out.println(region);
-        List<Building> building = searchService.searchBuilding(1L);
+        List<Building> building = searchService.searchBuildingByRegion(1L);
         System.out.println(building);
-        List<Floor> floors = searchService.searchFloor(1L);
+        List<Floor> floors = searchService.searchFloorByFloor(1L);
         System.out.println(floors);
-        List<Room> rooms = searchService.searchRoom(1L);
+        List<Room> rooms = searchService.searchRoomByFloor(1L);
         System.out.println(rooms);
-        Student student = searchService.searchStudentById(200000001L);
+        Student student = searchService.searchStudentByStudentId(200000001L);
         student.setAwakeTime(new Time(10, 10, 10));
         student.setSleepTime(new Time(20, 0, 0));
         student.setIntro("我爱洗澡皮肤好好");
@@ -210,10 +207,9 @@ class Cs30923FallProjectApplicationTests {
         System.out.println(searchService.searchStudents(1L, new Time(9, 12, 1), new Time(2, 1, 5), 1L, "洗澡"));
         System.out.println(searchService.searchStudents(1L, new Time(10, 9, 1), new Time(2, 1, 5), 1L, "洗澡"));
         System.out.println(searchService.searchStudents(1L, new Time(14, 9, 1), new Time(11, 1, 5), 1L, "洗澡"));
-        System.out.println(searchService.searchCommentById(1L));
+        System.out.println(searchService.searchCommentByCommentId(1L));
         System.out.println(searchService.searchGroups(1L, new Time(9, 12, 1), new Time(22, 1, 5), 1L, "洗澡"));
-        System.out.println(searchService.searchMsgById(1L));
-        System.out.println(searchService.searchStudents());
+        System.out.println(searchService.searchMsgByMsgId(1L));
     }
 
 

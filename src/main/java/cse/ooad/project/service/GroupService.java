@@ -196,6 +196,12 @@ public class GroupService {
         return false;
     }
 
+    /**
+     *
+     * @param id 传入的队伍id
+     * @return 返回队伍的成员列表
+     */
+
     @Transactional
     public List<Student> getMemberList(Long id) {
         Group group = groupRepository.getGroupByGroupId(id);
@@ -205,11 +211,23 @@ public class GroupService {
         return students;
     }
 
+    /**
+
+     * @return 返回所有队伍
+     */
+
     public List<Group> getGroupsList() {
         return groupRepository.findAll();
     }
 
 
+
+    /**
+     * 修改队伍的leader
+     * @param groupId 传入的队伍id
+     * @param studentId 传入的学生id
+     * @return 返回是否成功
+     */
     @Transactional
     public Boolean changeLeader(Long groupId, Long studentId) {
         Group group = groupRepository.getGroupByGroupId(groupId);
@@ -222,6 +240,13 @@ public class GroupService {
         return false;
     }
 
+
+    /**
+     * 判断是否队伍领导
+     * @param groupId 传入的队伍id
+     * @param studentId 传入的学生id
+     * @return 返回是否这个队伍的leader
+     */
     public Boolean isLeader(Long groupId, Long studentId) {
         Group group = groupRepository.getGroupByGroupId(groupId);
         return group.getLeader().equals(studentId);
@@ -252,6 +277,12 @@ public class GroupService {
     }
 
 
+    /**
+     *
+     * 获取队伍的star列表
+     * @param id 传入的队伍id
+     * @return 返回队伍的star列表
+     */
 
     @Transactional
     public List<Room> getStarList(Long id) {

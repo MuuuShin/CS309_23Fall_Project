@@ -16,16 +16,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
-import org.hibernate.Hibernate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 动态定时任务, 用于阶段三的时候，随机把房间分配给队伍
+
+ */
 @Component
 @Transactional
 public class DynamicTask {
@@ -48,13 +50,19 @@ public class DynamicTask {
     @Autowired
     private RoomRepository roomRepository;
 
+    /**
+     * 开启定时任务, 从数据库获取所有timelines
+     */
     public void startCron() {
         Collection<Timeline> timelines = timelineRepository.findAll();
-        timelines.forEach(t -> list.add(threadPoolTaskScheduler.schedule(new myTask(t.getType()), new CronTrigger(getCron(t.getEndTime3())))));
+        timelines.forEach(t -> list.add(threadPoolTaskScheduler.schedule(new RandomInsertRoomInStage3Task(t.getType()), new CronTrigger(getCron(t.getEndTime3())))));
         System.out.println(Thread.currentThread().getName());
 
     }
 
+    /**
+     * 更新定时用户
+     */
     public void update() {
         list.forEach(t -> t.cancel(true));
         list.clear();
@@ -63,8 +71,8 @@ public class DynamicTask {
 
     /**
      * 日期转化为cron表达式
-     * @param date
-     * @return
+     * @param date 日期
+     * @return cron表达式
      */
     public static String getCron(Date date) {
         String dateFormat = "ss mm HH dd MM ?";
@@ -72,19 +80,21 @@ public class DynamicTask {
         return sdf.format(date);
     }
 
-    private class myTask implements Runnable {
-        private Integer name;
+    private class RandomInsertRoomInStage3Task implements Runnable {
+        private final Integer name;
 
 
 
-        myTask(Integer name) {
+        RandomInsertRoomInStage3Task(Integer name) {
             this.name = name;
         }
 
+        /**
+         * 任务执行体, 阶段三的时候，随机把房间分配给队伍
+         */
         @Override
         @Transactional
         public void run() {
-            //todo 把人都random进去
             System.out.println("test" + name);
             List<Student> students = studentRepository.findAll();
             List<Group> groups = groupRepository.findAllWithMembers();

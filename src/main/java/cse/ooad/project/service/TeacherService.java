@@ -6,6 +6,7 @@ import com.opencsv.CSVReader;
 import cse.ooad.project.model.*;
 import cse.ooad.project.repository.*;
 
+import cse.ooad.project.utils.DynamicTask;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
@@ -44,19 +45,35 @@ public class TeacherService {
     @Autowired
     private GroupRepository groupRepository;
 
+    @Autowired
+    private DynamicTask dynamicTask;
 
+    /**
+     * 添加学生
+     * @param student 学生
+     * @return 修改后的学生
+     */
     public Student saveStudent(Student student) {
-        //todo: password
         return studentRepository.save(student);
     }
 
 
+    /**
+     * 删除学生
+     * @param id 学生id
+     * @return 是否删除成功
+     */
     @Transactional
     public Boolean deleteStudent(Long id) {
-
         return studentRepository.deleteByStudentId(id) != 0;
     }
 
+
+    /**
+     * 更新学生信息，包括密码，但是不包括个人介绍，起床时间，睡觉时间
+     * @param student 学生
+     * @return 修改后的学生
+     */
     public Student updateStudent(Student student) {
         Student old = studentRepository.getStudentByStudentId(student.getStudentId());
         old.setSleepTime(student.getSleepTime());
@@ -65,11 +82,21 @@ public class TeacherService {
         return studentRepository.save(old);
     }
 
+    /**
+     * 添加Floor
+     * @param floor 楼层
+     * @return 修改后的楼层
+     */
     public Floor saveFloor(Floor floor) {
         return floorRepository.save(floor);
     }
 
 
+    /**
+     * 删除楼层，同时删除楼层下的所有房间
+     * @param id 楼层id
+     * @return 是否删除成功
+     */
     @Transactional
     public Boolean deleteFloor(Long id) {
         if (floorRepository.findById(id).isPresent()) {
@@ -86,19 +113,33 @@ public class TeacherService {
             groupRepository.saveAll(groupList);
             roomRepository.deleteAll(rooms);
         }
-        System.out.println("结束*******************");
 
         return floorRepository.removeByFloorId(id) != 0;
     }
 
+    /**
+     * 更新楼层信息
+     * @param floor 楼层
+     * @return 修改后的楼层
+     */
     public Floor updateFloor(Floor floor) {
         return floorRepository.save(floor);
     }
 
+    /**
+     * 添加Region
+     * @param region 区域
+     * @return 修改后的区域
+     */
     public Region saveRegion(Region region) {
         return regionRepository.save(region);
     }
 
+    /**
+     * 删除区域，同时删除区域下的所有楼层和房间
+     * @param id 区域id
+     * @return 是否删除成功
+     */
 
     @Transactional
     public Boolean deleteRegion(Long id) {
@@ -124,18 +165,40 @@ public class TeacherService {
         return regionRepository.deleteByRegionId(id) != 0;
     }
 
+    /**
+     * 更新区域信息
+     * @param region 区域
+     * @return 修改后的区域
+     */
+
     public Region updateRegion(Region region) {
         return regionRepository.save(region);
     }
 
+    /**
+     * 添加房间
+     * @param room 房间
+     * @return 修改后的房间
+     */
     public Room saveRoom(Room room) {
         return roomRepository.save(room);
     }
+
+    /**
+     * 更新房间信息
+     * @param room 房间
+     * @return 修改后的房间
+     */
 
     public Room updateRoom(Room room) {
         return roomRepository.save(room);
     }
 
+    /**
+     * 删除房间的收藏队伍，因为队伍里面有收藏
+     * @param roomId
+     * @return
+     */
     @Transactional
     public Boolean deleteRoomStarList(Long roomId) {
         Room room = roomRepository.getRoomsByRoomId(roomId);
@@ -151,6 +214,11 @@ public class TeacherService {
         return true;
     }
 
+    /**
+     * 删除房间，同时删除房间的收藏队伍
+     * @param id 房间id
+     * @return 是否删除成功
+     */
     @Transactional
     public Boolean deleteRoom(Long id) {
         if (deleteRoomStarList(id)) {
@@ -159,14 +227,30 @@ public class TeacherService {
         return false;
     }
 
+    /**
+     * 添加建筑
+     * @param building 建筑
+     * @return 保存的建筑
+     */
+
     public Building saveBuilding(Building building) {
         return buildingRepository.save(building);
     }
 
+    /**
+     * 更新建筑信息
+     * @param building 建筑
+     * @return 修改后的建筑
+     */
     public Building updateBuilding(Building building) {
         return buildingRepository.save(building);
     }
 
+    /**
+     * 删除建筑，同时删除建筑下的所有楼层和房间
+     * @param id 建筑id
+     * @return 是否删除成功
+     */
 
     @Transactional
     public Boolean deleteBuilding(Long id) {
@@ -187,11 +271,24 @@ public class TeacherService {
         return buildingRepository.removeByBuildingId(id) != 0;
     }
 
+    /**
+     * 添加时间线
+     * @param timeline 时间线
+     * @return 修改后的时间线
+     */
     public Timeline saveTimeline(Timeline timeline) {
-        return timelineRepository.save(timeline);
+        Timeline timeline1 = timelineRepository.save(timeline);
+        dynamicTask.update();
+        return timeline1;
     }
 
 
+    /**
+     * 以学生为单位调换宿舍
+     * @param id1 学生1
+     * @param id2 学生2
+     * @return 是否调换成功
+     */
     //以学生为单位调换宿舍
     public Boolean transRoom(Long id1, Long id2) {
         Student student1 = studentRepository.getStudentByStudentId(id1);
@@ -224,6 +321,10 @@ public class TeacherService {
         return true;
     }
 
+    /**
+     * 批量导入学生
+     * @param file 文件的head分别是Studentid ,Name,Gender,Account,Password,Type，其中的studentId实际上没有用上
+     */
     public void batchSaveStudent(File file) {
         try {
             DataInputStream in = new DataInputStream(new FileInputStream(file));
@@ -255,6 +356,11 @@ public class TeacherService {
     }
 
 
+    /**
+     * 批量导入宿舍信息，把操作集中在数据库上，效果不太好
+     *
+     * @param file
+     */
     public void batchSaveRoomNew(File file) {
         try {
             DataInputStream in = new DataInputStream(new FileInputStream(file));
@@ -293,6 +399,11 @@ public class TeacherService {
         }
     }
 
+    /**
+     * 批量导入宿舍信息，把操作集中在Service里，效果好一点
+     *
+     * @param file
+     */
     public void batchSaveRoom(File file) {
         try {
             DataInputStream in = new DataInputStream(new FileInputStream(file));
@@ -362,9 +473,10 @@ public class TeacherService {
     }
     /**
      * 获取宿舍选择情况
+     * 返回一个csv文件，head为学号,姓名,宿舍
      */
     @Transactional
-    public void batchOutputStudent(){
+    public File batchOutputStudent(){
         List<Group> group = groupRepository.findAll();
         HashMap<Student, String> map = new HashMap<>();
         group.forEach(t->{
@@ -410,6 +522,7 @@ public class TeacherService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return new File("src/main/resources/output.csv");
     }
 
 

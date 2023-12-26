@@ -23,13 +23,8 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     interface GroupStarListProjection {
         Group getGroupStarList();
-
     }
-//    todo 对应的代码
-//    interface GroupStarListProjection1 {
-//        List<Group> getGroupStarList();
-//
-//    }
+
 
     List<GroupStarListProjection> getGroupStarListByRoomId(Long id);
 

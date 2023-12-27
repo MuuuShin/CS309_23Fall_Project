@@ -19,7 +19,7 @@ import java.util.Set;
 
 @Slf4j
 @Component
-@CrossOrigin
+@CrossOrigin("*")
 public class AuthInterceptor implements HandlerInterceptor {
 
 

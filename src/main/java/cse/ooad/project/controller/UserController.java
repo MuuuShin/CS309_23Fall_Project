@@ -51,16 +51,7 @@ public class UserController {
 //        return Result.success("success", students);
     }
 
-    @GetMapping("/users/{name}")
-    public Result<List<Student>> getUserByUsername(@PathVariable("name") String name) {
-        log.info("get user by name");
-        log.info("name: {}", name);
-        List<Student> student = searchService.searchStudentByName(name);
-        if (student != null) {
-            return Result.success("success", student);
-        }
-        return Result.error("error");
-    }
+
 
     @DeleteMapping("/users/{id}")
     public Result<String> deleteUserById(@PathVariable("id") String id, @RequestHeader("Authorization") String token) {
@@ -140,18 +131,32 @@ public class UserController {
         }
         return Result.error("error");
 
-
     }
 
 
-    @GetMapping("/users/{id}")
-    public Result<Student> getUserById(@PathVariable("id") String id) {
+    @GetMapping(path = "/users", params = "id")
+    public Result<Student> getUserById(@RequestParam(name = "id") String id) {
         log.info("get user by id");
+        log.info("id: {}", id);
         Student student = searchService.searchStudentByStudentId(Long.parseLong(id));
+        log.info("student: {}", student);
         if (student != null) {
             return Result.success("success", student);
         }
         return Result.error("error");
     }
+
+    @GetMapping(path = "/users", params = "name")
+    public Result<List<Student>> getUserByUsername(@RequestParam(name = "name") String name) {
+        log.info("get user by name");
+        log.info("name: {}", name);
+        List<Student> student = searchService.searchStudentByName(name);
+        if (student != null) {
+            return Result.success("success", student);
+        }
+        return Result.error("error");
+    }
+
+
 
 }

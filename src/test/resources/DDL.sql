@@ -90,6 +90,7 @@ create table if not exists public.groups
         primary key,
     name     varchar(255),
     leader   bigint,
+    intro    varchar(255),
     room_id  bigint
         constraint groups_rooms_null_fk
             references public.rooms
@@ -113,7 +114,8 @@ create table if not exists public.students
     type       integer,
     awake_time time(6),
     sleep_time time(6),
-    account    varchar(255)
+    account    varchar(255),
+    img_url    varchar(255)
 );
 
 alter table public.students

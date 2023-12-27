@@ -43,7 +43,9 @@ public class Group {
     @Basic
     @Column(name = "room_id")
     private Long roomId;
-
+    @Basic
+    @Column(name = "intro")
+    private String intro;
     /* 映射实体 */
 
     @Exclude
@@ -72,11 +74,11 @@ public class Group {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Group group = (Group) o;
-        return Objects.equals(groupId, group.groupId) && Objects.equals(name, group.name) && Objects.equals(leader, group.leader) && Objects.equals(roomId, group.roomId);
+        return Objects.equals(groupId, group.groupId) && Objects.equals(name, group.name) && Objects.equals(leader, group.leader) && Objects.equals(roomId, group.roomId) && Objects.equals(intro, group.intro);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(groupId, name, leader, roomId);
+        return Objects.hash(groupId, name, leader, roomId, intro);
     }
 }

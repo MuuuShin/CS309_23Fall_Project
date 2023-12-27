@@ -76,6 +76,10 @@ public class GroupService {
      */
     @Transactional
     public boolean starRoom(Long groupId, Long roomId) {
+        //已经存在
+        if(groupRepository.getGroupByGroupId(groupId).getRoomStarList().contains(roomRepository.getRoomsByRoomId(roomId))){
+            return false;
+        }
         Group group = groupRepository.getGroupByGroupId(groupId);
         Room room = roomRepository.getRoomsByRoomId(roomId);
         int stage = timelineService.getStage(

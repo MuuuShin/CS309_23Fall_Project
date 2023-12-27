@@ -61,7 +61,9 @@ public class Student {
     @Basic
     @Column(name = "account")
     private String account;
-
+    @Basic
+    @Column(name = "img_url")
+    private String imgURL;
     /* 映射实体 */
 
     @JsonIgnore
@@ -74,11 +76,20 @@ public class Student {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Student student = (Student) o;
-        return Objects.equals(studentId, student.studentId) && Objects.equals(name, student.name) && Objects.equals(intro, student.intro) && Objects.equals(gender, student.gender) && Objects.equals(groupId, student.groupId) && Objects.equals(type, student.type) && Objects.equals(awakeTime, student.awakeTime) && Objects.equals(sleepTime, student.sleepTime) && Objects.equals(account, student.account);
+        return Objects.equals(studentId, student.studentId) &&
+                Objects.equals(name, student.name) &&
+                Objects.equals(intro, student.intro) &&
+                Objects.equals(gender, student.gender) &&
+                Objects.equals(groupId, student.groupId) &&
+                Objects.equals(type, student.type) &&
+                Objects.equals(awakeTime, student.awakeTime) &&
+                Objects.equals(sleepTime, student.sleepTime) &&
+                Objects.equals(account, student.account) &&
+                Objects.equals(imgURL, student.imgURL);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(studentId, name, intro, gender, groupId, type, awakeTime, sleepTime, account);
+        return Objects.hash(studentId, name, intro, gender, groupId, type, awakeTime, sleepTime, account, imgURL);
     }
 }

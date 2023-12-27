@@ -78,6 +78,9 @@ public class StudentService {
     @Transactional
     public Group createGroup(Long id, String name) {
         Student student = studentRepository.getStudentByStudentId(id);
+        if(student == null){
+            return null;
+        }
         if (student.getGroup() != null){
             return null;
         }

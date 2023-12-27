@@ -296,5 +296,15 @@ public class GroupService {
         return rooms;
     }
 
+    public boolean updateGroupIntro(Long id, String intro){
+        Group group = groupRepository.getGroupByGroupId(id);
+        if(group == null){
+            return false;
+        }
+        group.setIntro(intro);
+        groupRepository.save(group);
+        return true;
+    }
+
 
 }

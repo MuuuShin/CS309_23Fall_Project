@@ -76,7 +76,7 @@ public class StudentService {
      * @param name 队伍名
      */
     @Transactional
-    public Group createGroup(Long id, String name) {
+    public Group createGroup(Long id, String name, String intro) {
         Student student = studentRepository.getStudentByStudentId(id);
         if(student == null){
             return null;
@@ -87,7 +87,7 @@ public class StudentService {
         Group group = new Group();
         group.setName(name);
         group.setMemberList(new ArrayList<>());
-
+        group.setIntro(intro);
         group.setLeader(id);
         group.getMemberList().add(student);
         group = groupRepository.save(group);

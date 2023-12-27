@@ -161,7 +161,7 @@ public class TeamController {
         if (!isLeader) {
             return Result.error("not leader");
         }
-        //TODO 传入roomId
+        //TODO 浼犲叆roomId
         boolean success = groupService.unStarRoom(Long.parseLong(teamId), Long.parseLong(roomId));
         if (success) {
             return Result.success("success", null);
@@ -260,6 +260,7 @@ public class TeamController {
     @PostMapping("")
     public Result<String> createTeam(@RequestBody Map<String, Object> JsonData, @RequestHeader("Authorization") String token) {
         String teamName = (String) JsonData.get("name");
+        String introduction = (String) JsonData.get("intro");
         Claims claims;
         try {
             claims = JwtUtils.parseJWT(token);
@@ -267,13 +268,14 @@ public class TeamController {
             return Result.error("fail");
         }
 
-        Group group = studentService.createGroup(Long.parseLong(claims.get("id").toString()), teamName);
+        Group group = studentService.createGroup(Long.parseLong(claims.get("id").toString()), teamName, introduction);
         if (group != null) {
             return Result.success("success", null);
         } else {
             return Result.error("fail");
         }
     }
+
 
     @GetMapping("/teams/finduser/{sleeptime}/{awaketime}/{query}")
     public Result<List<Group>> findTeam(@PathVariable("sleeptime") String sleeptime, @PathVariable("awaketime") String awaketime, @PathVariable("query") String query, @RequestHeader("Authorization") String token) {
@@ -321,6 +323,28 @@ public class TeamController {
             return Result.error("fail");
         }
     }
+    @PutMapping("/{teamId}")
+    public Result<String> updateTeam(@RequestBody Map<String, Object> JsonData, @RequestHeader("Authorization") String token) {
+        String introduction = (String) JsonData.get("intro");
+        String teamId = (String) JsonData.get("teamId");
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("not login");
+        }
+        boolean isLeader = groupService.isLeader(Long.parseLong(teamId), Long.parseLong(claims.get("id").toString()));
+        if (!isLeader) {
+            return Result.error("not leader");
+        }
+        boolean success = groupService.updateGroupIntro(Long.parseLong(teamId), introduction);
+        if (success) {
+            return Result.success("success", null);
+        } else {
+            return Result.error("fail");
+        }
+    }
+
 
 
 }

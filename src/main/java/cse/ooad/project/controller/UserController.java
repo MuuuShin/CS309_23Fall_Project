@@ -51,8 +51,8 @@ public class UserController {
 //        return Result.success("success", students);
     }
 
-    @GetMapping("/users/{name}")
-    public Result<List<Student>> getUserByUsername(@PathVariable("name") String name) {
+    @GetMapping("/users")
+    public Result<List<Student>> getUserByUsername(@RequestParam("name") String name) {
         log.info("get user by name");
         log.info("name: {}", name);
         List<Student> student = searchService.searchStudentByName(name);

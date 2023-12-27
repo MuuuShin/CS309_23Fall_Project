@@ -143,4 +143,15 @@ public class UserController {
 
     }
 
+
+    @GetMapping("/users")
+    public Result<Student> getUserById(@RequestParam("id") String id) {
+        log.info("get user by id");
+        Student student = searchService.searchStudentByStudentId(Long.parseLong(id));
+        if (student != null) {
+            return Result.success("success", student);
+        }
+        return Result.error("error");
+    }
+
 }

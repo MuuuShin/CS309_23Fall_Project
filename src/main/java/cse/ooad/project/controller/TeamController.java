@@ -276,7 +276,7 @@ public class TeamController {
     }
 
     @GetMapping("/teams/finduser/{sleeptime}/{awaketime}/{query}")
-    public Result<List<Group>> findUser(@PathVariable("sleeptime") String sleeptime, @PathVariable("awaketime") String awaketime, @PathVariable("query") String query, @RequestHeader("Authorization") String token) {
+    public Result<List<Group>> findTeam(@PathVariable("sleeptime") String sleeptime, @PathVariable("awaketime") String awaketime, @PathVariable("query") String query, @RequestHeader("Authorization") String token) {
         log.info("find team");
         Time awakeTime = Time.valueOf(awaketime);
         Time sleepTime = Time.valueOf(sleeptime);

@@ -25,10 +25,10 @@ public class Config implements WebMvcConfigurer {
     private AuthInterceptor authInterceptor;
 
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry){
-        registry.addMapping("/**").allowedOrigins("*").allowedOriginPatterns("*").allowedMethods("GET","POST","PUT","DELETE").maxAge(3600);
-    }
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry){
+//        registry.addMapping("/**").allowedOrigins("*").allowedOriginPatterns("*").allowedMethods("GET","POST","PUT","DELETE").maxAge(3600);
+//    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

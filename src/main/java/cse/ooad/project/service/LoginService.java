@@ -21,8 +21,16 @@ public class LoginService {
     @Autowired
     PasswordRepository passwordRepository;
 
-    public Student loginStudent(String account, String password) {
 
+
+    /**
+     * 学生登录
+     * @param account 账号
+     * @param password 密码
+     * @return
+     */
+    public Student loginStudent(String account, String password) {
+        System.out.println("account: " + account + " password: " + password);
         Student student = studentRepository.getStudentByAccount(account);
         if (student != null) {
             String paw = passwordRepository.findPasswordByAccount(account).getPassword();
@@ -34,6 +42,12 @@ public class LoginService {
         return null;
     }
 
+    /**
+     * 老师登录
+     * @param account 账号
+     * @param password 密码
+     * @return
+     */
     public Teacher loginTeacher(String account, String password) {
         Teacher teacher = teacherRepository.getTeacherByAccount(account);
         if (teacher != null) {

@@ -1,4 +1,4 @@
-package cse.ooad.project.service;
+package cse.ooad.project.utils;
 
 import java.util.ArrayList;
 import java.util.Collection;

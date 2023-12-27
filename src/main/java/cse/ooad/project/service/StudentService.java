@@ -17,14 +17,11 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Slf4j
 public class StudentService {
 
     @Autowired
@@ -48,6 +45,11 @@ public class StudentService {
     private RegionRepository regionRepository;
 
 
+    /**
+     * 修改学生的个人介绍，这个介绍会被用在搜索上
+     * @param student 修改的具体内容有：introduce，awakeTime，sleepTime
+     * @return
+     */
     public Student updateIntroduce(Student student) {
         Student old = studentRepository.getStudentByStudentId(student.getStudentId());
         student.setGender(old.getGender());
@@ -59,12 +61,19 @@ public class StudentService {
         return studentRepository.save(student);
     }
 
-    public Student changePassword(Student student) {
+    /**
+     * 修改学生的密码
+     * @param student
+     * @return
+     */
+    public Student updatePassword(Student student, String oldPassword) {
         return studentRepository.save(student);
     }
 
     /**
      * 传入一个学生id和队伍名，由这个学生来创建队伍，一开始只有他一个人在队里
+     * @param id 学生id
+     * @param name 队伍名
      */
     @Transactional
     public Group createGroup(Long id, String name) {
@@ -81,7 +90,6 @@ public class StudentService {
         group = groupRepository.save(group);
         student.setGroupId(group.getGroupId());
         studentRepository.save(student);
-        //todo 系统发送创建队伍成功消息
         msgService.sendSystemMsg(group.getMemberList(), "你创建了队伍" + group.getName());
         return group;
 
@@ -90,48 +98,46 @@ public class StudentService {
     /**
      * 会判断学生类型、队伍人数来决定能否加入
      *
-     * @param studentId
-     * @param groupId
-     * @return
+     * @param studentId 学生id
+     * @param groupId  队伍id
+     * @return 是否加入成功
      */
 
     @Transactional
     public boolean joinGroup(Long studentId, Long groupId) {
-        //todo 更加详细的测试这个方法
+
         //获得阶段
         Student student = studentRepository.getStudentByStudentId(studentId);
         Group group = groupRepository.getGroupByGroupId(groupId);
         int stage = timelineService.getStage(student.getType());
-        log.warn("hhh,wolaola");
-
+        ArrayList<Student> list = new ArrayList<>();
+        list.add(student);
         // 第一个阶段可以 第三个阶段可以
         if (stage != 1 && stage != 3) {
+            msgService.sendSystemMsg(list,"你加入队伍" + group.getName()+ "失败, 当前阶段不允许加入队伍" );
             return false;
         }
         Student leader = studentRepository.getStudentByStudentId(group.getLeader());
         if (Objects.equals(leader.getType(), student.getType())) {
-            log.warn("leader type is equal to student type");
             //判断人数合不合适
             if (group.getMemberList().size() == 4) {
-                log.warn("group is full");
+                msgService.sendSystemMsg(list,"你加入队伍" + group.getName()+ "失败, 队伍人数已满" );
                 return false;
             }
             //判断有没有加入队伍
             if (student.getGroup() != null) {
-                log.warn("student has joined a group");
+                msgService.sendSystemMsg(list,"你加入队伍" + group.getName()+ "失败, 你已经加入了一个队伍" );
                 return false;
             }
             msgService.sendSystemMsg(group.getMemberList(), student.getName() + "加入了队伍");
             student.setGroupId(groupId);
-            ArrayList<Student> list = new ArrayList<>();
-            list.add(student);
+
             msgService.sendSystemMsg(list, "你加入了队伍" + group.getName());
             studentRepository.save(student);
             return true;
         }
-        log.warn("leader type is not equal to student type");
+        msgService.sendSystemMsg(list,"你加入队伍" + group.getName()+ "失败, 你的类型和队伍类型不匹配" );
         return false;
-        //todo 系统发送加入队伍成功/失败消息 针对加入的这个人和队伍里其他人 发送的消息应该不一样
     }
 
     /**
@@ -156,6 +162,13 @@ public class StudentService {
         return true;
     }
 
+    /**
+     * 发送聊天信息
+     *
+     * @param srcId   发送者id
+     * @param sendToId 接收者id
+     * @param message 信息内容
+     */
     public void sendMessage(Long srcId, Long sendToId, String message) {
         Msg msg = new Msg();
         Student src = studentRepository.getStudentByStudentId(srcId);
@@ -165,14 +178,39 @@ public class StudentService {
         msg.setBody(message);
         msg.setSrcId(src.getStudentId());
         msg.setDstId(sendTo.getStudentId());
-        msgService.forwardMsg(msg);
+        msgService.saveAndForwardMsg(msg);
     }
 
+    /**
+     * 获取聊天信息列表
+     *
+     * @param id   学生id
+     * @param toId 对方id
+     * @return 聊天信息列表
+     */
     public List<Msg> getMsgList(Long id, Long toId) {
         return msgRepository.getMsgsBySrcIdAndDstId(id, toId);
     }
 
+    /**
+     * 获取所有学生
+     *
+     * @return 学生列表
+     */
+    public List<Student> findAllStudents(){
+        return studentRepository.findAll();
+    }
 
+
+    /**
+     * 发送入队申请
+     *
+     * @param studentId 学生id
+     * @param leaderId  队长id
+     * @param message   申请信息
+     *
+     * @return 学生信息
+     */
     //发送入队申请
     @Transactional
     public boolean sendApply(Long studentId, Long leaderId, String message) {
@@ -207,10 +245,16 @@ public class StudentService {
         msg.setSrcId(src.getStudentId());
         msg.setDstId(leader.getStudentId());
         msg.setType(MessageType.APPLY.typeCode);
-        msgService.forwardMsg(msg);
+        msgService.saveAndForwardMsg(msg);
         return true;
     }
 
+    /**
+     * 获取申请消息列表，只有队长才能获取
+     *
+     * @param leaderId 队长id
+     * @return 申请消息列表
+     */
     //获取申请消息列表
     public List<Msg> getApplyList(Long leaderId) {
         return msgRepository.getMsgsByDstIdAndStatusAndType(leaderId, MessageStatus.UNREAD.getStatusCode(), MessageType.APPLY.typeCode);
@@ -218,35 +262,34 @@ public class StudentService {
 
 
     //处理申请
-    @Transactional
+
+    /**
+     * 处理申请
+     * @param msgId 申请消息id
+     * @param isAgree 是否同意
+     * @param studentId 学生id,这个id是处理消息的学生的id
+     * @return
+     */
     public boolean handleApply(Long msgId, boolean isAgree, Long studentId) {
         Msg msg = msgRepository.getMsgByMsgId(msgId);
-
         if (msg == null) {
-            log.warn("msg is null");
             return false;
         }
         if (!Objects.equals(studentId, msg.getDstId())) {
-            log.warn("studentId is not equal to dstId");
             return false;
         }
 
         if (msg.getType() != MessageType.APPLY.typeCode) {
-            log.warn("msg type is not apply");
             return false;
         }
         if (msg.getStatus() == MessageStatus.READ_AND_REJECTED.getStatusCode()||msg.getStatus() == MessageStatus.READ_AND_ACCEPTED.getStatusCode()) {
             return false;
         }
         if (isAgree) {
-            if (joinGroup(msg.getSrcId(), studentRepository.getStudentByStudentId(msg.getDstId()).getGroupId())){
-                log.warn("join group success");
+            if (joinGroup(msg.getSrcId(), msg.getDstId())){
                 msg.setStatus(MessageStatus.READ_AND_ACCEPTED.getStatusCode());
                 msgRepository.save(msg);
                 return true;
-            }else {
-                log.warn("join group failed");
-                return false;
             }
         }
         msg.setStatus(MessageStatus.READ_AND_REJECTED.getStatusCode());
@@ -255,12 +298,22 @@ public class StudentService {
     }
 
 
-
+    /**
+     * 进行评论评论
+     * @param comment 评论
+     * @return 评论
+     */
     public Comment saveComment(Comment comment) {
         commentRepository.save(comment);
         return comment;
     }
 
+    /**
+     * 删除评论，只有老师和自己能删除
+     * @param id 评论id
+     * @param userId 用户id
+     * @return 是否删除成功
+     */
     public Boolean deleteComment(Long id, Long userId) {
         Comment comment = commentRepository.getCommentByCommentId(id);
         boolean isTeacher = userId < 2 * 100000000;

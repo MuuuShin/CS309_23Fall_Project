@@ -43,7 +43,7 @@ public class RoomController {
     @GetMapping("/{roomId}")
     public Result<Room> getRoomInfo(@PathVariable("roomId") String roomId) {
         log.info("get room info");
-        Room room = searchService.searchRoomById(Long.parseLong(roomId));
+        Room room = searchService.searchRoomByRoomId(Long.parseLong(roomId));
         return Result.success("success", room);
     }
 
@@ -71,14 +71,14 @@ public class RoomController {
     @GetMapping("/regions")
     public Result<List<Region>> getRegions() {
         log.info("get regions");
-        List<Region> regions = searchService.searchRegion();
+        List<Region> regions = searchService.searchAllRegion();
         return Result.success("success", regions);
     }
 
     @GetMapping("/regions/{regionid}/dormitories")
     public Result<List<Building>> getDormitoriesByRegion(@PathVariable("regionid") String region) {
         log.info("get dormitories by region");
-        List<Building> dormitories = searchService.searchBuilding(Long.parseLong(region));
+        List<Building> dormitories = searchService.searchBuildingByRegion(Long.parseLong(region));
         log.info(dormitories.toString());
 //        List<Building> dormitories = null; //TODO: 还哦没改完
         return Result.success("success", dormitories);
@@ -88,7 +88,7 @@ public class RoomController {
     @GetMapping("/dormitories/{dormitoryid}/floors")
     public Result<List<Floor>> getFloorsByDormitory(@PathVariable("dormitoryid") String dormitoryid) {
         log.info("get floors by dormitory");
-        List<Floor> floors = searchService.searchFloor(Long.parseLong(dormitoryid));
+        List<Floor> floors = searchService.searchFloorByFloor(Long.parseLong(dormitoryid));
 //        List<Floor> floors = null; //TODO: 还哦没改完
         return Result.success("success", floors);
     }
@@ -96,7 +96,7 @@ public class RoomController {
     @GetMapping("/floors/{floorid}/rooms")
     public Result<List<Room>> getRoomsByFloor(@PathVariable("floorid") String floorid) {
         log.info("get rooms by floor");
-        List<Room> rooms = searchService.searchRoom(Long.parseLong(floorid));
+        List<Room> rooms = searchService.searchRoomByFloor(Long.parseLong(floorid));
 //        List<Room> rooms = null; //TODO: 还哦没改完
         return Result.success("success", rooms);
     }
@@ -104,7 +104,7 @@ public class RoomController {
     @GetMapping("/rooms/{id}")
     public Result<Room> getRoomById(@PathVariable("id") String id) {
         log.info("get room by id");
-        Room room = searchService.searchRoomById(Long.parseLong(id));
+        Room room = searchService.searchRoomByRoomId(Long.parseLong(id));
         return Result.success("success", room);
     }
 
@@ -166,9 +166,6 @@ public class RoomController {
         boolean delete = studentService.deleteComment(Long.parseLong(id), userId);
         return delete ? Result.success("success", null) : Result.error("fail");
     }
-
-
-
 
 
 

@@ -5,7 +5,6 @@ import cse.ooad.project.model.Timeline;
 import cse.ooad.project.service.SearchService;
 import cse.ooad.project.service.TeacherService;
 import cse.ooad.project.service.TimelineService;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +30,7 @@ public class SelectionTimeController {
     public Result<Timeline> getSelectionTime(@PathVariable("type") String type) {
         log.info(type);
         //TODO: get selection time
-        Timeline selectionTime = timelineService.getTimelineByType(Integer.parseInt(type));
+        Timeline selectionTime = timelineService.getTimelineByStudentType(Integer.parseInt(type));
 
         return Result.success("get selection time", selectionTime);
     }

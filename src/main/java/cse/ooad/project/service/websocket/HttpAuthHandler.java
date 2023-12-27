@@ -49,7 +49,7 @@ public class HttpAuthHandler extends TextWebSocketHandler {
             msgs.forEach(t -> {
                 try {
                     if (t.getStatus() == MessageStatus.UNREAD.getStatusCode()){
-                        msgService.forwardMsg(t);
+                        msgService.saveAndForwardMsg(t);
                     }
 
                 } catch (Exception e) {
@@ -80,7 +80,7 @@ public class HttpAuthHandler extends TextWebSocketHandler {
         Msg msg = gson.fromJson(payload, Msg.class);
         msg.setStatus(MessageStatus.UNREAD.getStatusCode());
         msg.setTimestamp(new Timestamp(System.currentTimeMillis()));
-        msgService.forwardMsg(msg);
+        msgService.saveAndForwardMsg(msg);
         System.out.println("server 接收到 " + sessionId + " 发送的 " + payload);
     }
 

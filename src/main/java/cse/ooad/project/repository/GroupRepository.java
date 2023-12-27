@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -24,7 +25,8 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     Group getGroupByRoomId(Long id);
 
 
-
+    @Query("SELECT g FROM Group g JOIN FETCH g.memberList")
+    List<Group> findAllWithMembers();
 
 
 }

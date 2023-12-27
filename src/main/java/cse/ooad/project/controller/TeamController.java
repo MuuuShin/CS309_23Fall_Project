@@ -1,7 +1,6 @@
 package cse.ooad.project.controller;
 
 
-
 import cse.ooad.project.model.Group;
 import cse.ooad.project.model.Room;
 import cse.ooad.project.model.Student;
@@ -13,7 +12,6 @@ import cse.ooad.project.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.relational.core.sql.In;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Time;
@@ -227,7 +225,7 @@ public class TeamController {
 
     @GetMapping("/{teamId}")
     public Result<Group> getTeamInfo(@PathVariable("teamId") String teamId) {
-        Group teamInfo = searchService.searchGroupById(Long.parseLong(teamId));
+        Group teamInfo = searchService.searchGroupByGroupId(Long.parseLong(teamId));
         if (teamInfo != null) {
             return Result.success("success", teamInfo);
         }
@@ -237,10 +235,12 @@ public class TeamController {
 
 
     @GetMapping("")
-    public Result<List<Group>> getAllTeamInfo(@RequestBody Map<String, Object> JsonData, @RequestHeader("Authorization") String token) {
-        Integer offset = (Integer) JsonData.get("offset");
-        Integer size = (Integer) JsonData.get("size");
-
+    public Result<List<Group>> getAllTeamInfo(@RequestParam(name = "offset", required = false, defaultValue = "-1") Integer offset,
+                                              @RequestParam(name = "size", required = false, defaultValue = "-1") Integer size,
+                                              @RequestHeader("Authorization") String token) {
+//        Integer offset = (Integer) JsonData.get("offset");
+//        Integer size = (Integer) JsonData.get("size");
+        log.info(offset + " " + size);
         if (offset == null || size == null) {
             return Result.error("fail");
         }
@@ -287,7 +287,7 @@ public class TeamController {
             return Result.error("not login");
         }
         String userId = claims.get("id").toString();
-        Student student = searchService.searchStudentById(Long.parseLong(userId));
+        Student student = searchService.searchStudentByStudentId(Long.parseLong(userId));
         Long gender = Long.parseLong(String.valueOf(student.getGender()));
         Long type = Long.parseLong(String.valueOf(student.getType()));
         List<Group> groups = searchService.searchGroups(gender, awakeTime, sleepTime, type, query);
@@ -321,11 +321,6 @@ public class TeamController {
             return Result.error("fail");
         }
     }
-
-
-
-
-
 
 
 }

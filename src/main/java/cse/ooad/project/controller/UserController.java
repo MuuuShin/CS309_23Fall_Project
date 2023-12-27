@@ -51,8 +51,8 @@ public class UserController {
 //        return Result.success("success", students);
     }
 
-    @GetMapping("/users")
-    public Result<List<Student>> getUserByUsername(@RequestParam("name") String name) {
+    @GetMapping("/users/{name}")
+    public Result<List<Student>> getUserByUsername(@PathVariable("name") String name) {
         log.info("get user by name");
         log.info("name: {}", name);
         List<Student> student = searchService.searchStudentByName(name);
@@ -144,8 +144,8 @@ public class UserController {
     }
 
 
-    @GetMapping("/users")
-    public Result<Student> getUserById(@RequestParam("id") String id) {
+    @GetMapping("/users/{id}")
+    public Result<Student> getUserById(@PathVariable("id") String id) {
         log.info("get user by id");
         Student student = searchService.searchStudentByStudentId(Long.parseLong(id));
         if (student != null) {

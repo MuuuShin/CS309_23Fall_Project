@@ -29,38 +29,61 @@ public class AuthController {
         System.out.println(jsonMap);
         String username = (String) jsonMap.get("username");
         String password = (String) jsonMap.get("password");
-        boolean isTeacher = false;
-//        boolean isTeacher = (boolean) jsonMap.get("isTeacher");
-        if (isTeacher) {
-            Teacher result = loginService.loginTeacher(username, password);
-            if (result == null) {
-                log.info(username + " Invalid username or password");
-                return Result.error("Invalid username or password");
-            }
+        Teacher teacher = loginService.loginTeacher(username, password);
+        Student student = loginService.loginStudent(username, password);
+        if (teacher != null) {
+            log.info(teacher.getTeacherId() + "Login successfully");
             Map<String, Object> claims = new HashMap<>();
-            claims.put("id", result.getTeacherId());
+            claims.put("id", teacher.getTeacherId());
             claims.put("username", username);
-            claims.put("isTeacher", true);
+            claims.put("isTeacher", "1");
             String jwt = JwtUtils.generateToken(claims);
-            log.info(result.getTeacherId() + "Login successfully");
-            List<Object> list = List.of(jwt, result);
-            return Result.success("success", list);
-        } else {
-            Student result = loginService.loginStudent(username, password);
-
-            if (result == null) {
-                log.info(username + "Invalid username or password");
-                return Result.error("Invalid username or password");
-            }
-            Map<String, Object> claims = new HashMap<>();
-            claims.put("id", result.getStudentId());
-            claims.put("username", username);
-            claims.put("isTeacher", false);
-            String jwt = JwtUtils.generateToken(claims);
-            log.info(result.getStudentId() + "Login successfully");
-            List<Object> list = List.of(jwt, result);
+            List<Object> list = List.of(jwt, teacher);
             return Result.success("success", list);
         }
+        if (student != null) {
+            log.info(student.getStudentId() + "Login successfully");
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("id", student.getStudentId());
+            claims.put("username", username);
+            claims.put("isTeacher", "0");
+            String jwt = JwtUtils.generateToken(claims);
+            List<Object> list = List.of(jwt, student);
+            return Result.success("success", list);
+        }
+        log.info(username + " Invalid username or password");
+        return Result.error("Invalid username or password");
+
+//        if (isTeacher) {
+//            Teacher result = loginService.loginTeacher(username, password);
+//            if (result == null) {
+//                log.info(username + " Invalid username or password");
+//                return Result.error("Invalid username or password");
+//            }
+//            Map<String, Object> claims = new HashMap<>();
+//            claims.put("id", result.getTeacherId());
+//            claims.put("username", username);
+//            claims.put("isTeacher", true);
+//            String jwt = JwtUtils.generateToken(claims);
+//            log.info(result.getTeacherId() + "Login successfully");
+//            List<Object> list = List.of(jwt, result);
+//            return Result.success("success", list);
+//        } else {
+//            Student result = loginService.loginStudent(username, password);
+//
+//            if (result == null) {
+//                log.info(username + "Invalid username or password");
+//                return Result.error("Invalid username or password");
+//            }
+//            Map<String, Object> claims = new HashMap<>();
+//            claims.put("id", result.getStudentId());
+//            claims.put("username", username);
+//            claims.put("isTeacher", false);
+//            String jwt = JwtUtils.generateToken(claims);
+//            log.info(result.getStudentId() + "Login successfully");
+//            List<Object> list = List.of(jwt, result);
+//            return Result.success("success", list);
+//        }
 
     }
 

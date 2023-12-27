@@ -1,7 +1,6 @@
 package cse.ooad.project.controller;
 
 
-
 import cse.ooad.project.model.Group;
 import cse.ooad.project.model.Room;
 import cse.ooad.project.model.Student;
@@ -236,10 +235,12 @@ public class TeamController {
 
 
     @GetMapping("")
-    public Result<List<Group>> getAllTeamInfo(@RequestBody Map<String, Object> JsonData, @RequestHeader("Authorization") String token) {
-        Integer offset = (Integer) JsonData.get("offset");
-        Integer size = (Integer) JsonData.get("size");
-
+    public Result<List<Group>> getAllTeamInfo(@RequestParam(name = "offset", required = false, defaultValue = "-1") Integer offset,
+                                              @RequestParam(name = "size", required = false, defaultValue = "-1") Integer size,
+                                              @RequestHeader("Authorization") String token) {
+//        Integer offset = (Integer) JsonData.get("offset");
+//        Integer size = (Integer) JsonData.get("size");
+        log.info(offset + " " + size);
         if (offset == null || size == null) {
             return Result.error("fail");
         }
@@ -320,11 +321,6 @@ public class TeamController {
             return Result.error("fail");
         }
     }
-
-
-
-
-
 
 
 }

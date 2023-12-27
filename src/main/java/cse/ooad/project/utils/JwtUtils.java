@@ -12,7 +12,7 @@ public class JwtUtils {
 
     private static final String key = "aisdhakssjdas";
 
-    private static final long ttl = 60L * 60 * 100000;
+    private static final long ttl = Integer.MAX_VALUE;
 
     public static String generateToken(Map<String, Object> claims) {
         return Jwts.builder()

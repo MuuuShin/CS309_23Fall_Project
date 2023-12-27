@@ -43,7 +43,9 @@ public class AuthInterceptor implements HandlerInterceptor {
 //        String regexRegister="^/register$";
         String regexLogout="^/logout$";
         String jwt = request.getHeader("Authorization");
-
+        if ("OPTIONS".equals(request.getMethod().toUpperCase())){
+            return true;
+        }
         log.info("Authorization: {}", jwt);
 
         if (url.matches(regexLogin)){

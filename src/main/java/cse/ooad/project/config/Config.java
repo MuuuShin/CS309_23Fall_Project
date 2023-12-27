@@ -11,16 +11,24 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Slf4j
 @Configuration
+@CrossOrigin("*")
 public class Config implements WebMvcConfigurer {
 
     @Autowired
     private AuthInterceptor authInterceptor;
 
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry){
+        registry.addMapping("/**").allowedOrigins("*").allowedOriginPatterns("*").allowedMethods("GET","POST","PUT","DELETE").maxAge(3600);
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

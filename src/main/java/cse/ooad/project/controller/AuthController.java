@@ -26,10 +26,10 @@ public class AuthController {
 
     @PostMapping("/login")
     public Result<List<Object>> login(@RequestBody Map<String, Object> jsonMap) {
+        System.out.println(jsonMap);
         String username = (String) jsonMap.get("username");
         String password = (String) jsonMap.get("password");
-        String isTeacherStr = (String) jsonMap.get("isTeacher");
-        boolean isTeacher = isTeacherStr.equals("true");
+        boolean isTeacher = false;
 //        boolean isTeacher = (boolean) jsonMap.get("isTeacher");
         if (isTeacher) {
             Teacher result = loginService.loginTeacher(username, password);

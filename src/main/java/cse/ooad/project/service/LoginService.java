@@ -30,6 +30,7 @@ public class LoginService {
      * @return
      */
     public Student loginStudent(String account, String password) {
+        System.out.println("account: " + account + " password: " + password);
         Student student = studentRepository.getStudentByAccount(account);
         if (student != null) {
             String paw = passwordRepository.findPasswordByAccount(account).getPassword();

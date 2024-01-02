@@ -303,6 +303,25 @@ public class StudentService {
         return true;
     }
 
+
+    public boolean transRoomApply(Long studentId, Long studentId2, String message){
+        Msg msg = new Msg();
+        Student src = studentRepository.getStudentByStudentId(studentId);
+        Student dst = studentRepository.getStudentByStudentId(studentId2);
+        if (src.getGroup()==null&&dst.getGroup()==null){
+            return false;
+        }
+
+        msg.setStatus(MessageStatus.UNREAD.getStatusCode());
+        msg.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        msg.setBody(message);
+        msg.setSrcId(src.getStudentId());
+        msg.setDstId(studentId2);
+        msg.setType(MessageType.isTran.typeCode);
+        msgService.saveAndForwardMsg(msg);
+        return true;
+    }
+
     /**
      * 获取申请消息列表，只有队长才能获取
      *
@@ -311,7 +330,9 @@ public class StudentService {
      */
     //获取申请消息列表
     public List<Msg> getApplyList(Long leaderId) {
-        return msgRepository.getMsgsByDstIdAndStatusAndType(leaderId, MessageStatus.UNREAD.getStatusCode(), MessageType.APPLY.typeCode);
+        List<Msg> msgs = msgRepository.getMsgsByDstIdAndStatusAndType(leaderId, MessageStatus.UNREAD.getStatusCode(), MessageType.isTran.typeCode);
+        msgs.addAll(msgRepository.getMsgsByDstIdAndStatusAndType(leaderId, MessageStatus.UNREAD.getStatusCode(), MessageType.APPLY.typeCode));
+        return msgs;
     }
 
 
@@ -333,14 +354,21 @@ public class StudentService {
             return false;
         }
 
-        if (msg.getType() != MessageType.APPLY.typeCode) {
+        if (msg.getType() != MessageType.APPLY.typeCode&&msg.getType() != MessageType.isTran.typeCode) {
             return false;
         }
         if (msg.getStatus() == MessageStatus.READ_AND_REJECTED.getStatusCode()||msg.getStatus() == MessageStatus.READ_AND_ACCEPTED.getStatusCode()) {
             return false;
         }
-        if (isAgree) {
+        if (isAgree&&msg.getType() == MessageType.APPLY.typeCode) {
             if (joinGroup(msg.getSrcId(), msg.getDstId())){
+                msg.setStatus(MessageStatus.READ_AND_ACCEPTED.getStatusCode());
+                msgRepository.save(msg);
+                return true;
+            }
+        }
+        else if (isAgree) {
+            if (transRoom(msg.getSrcId(), msg.getDstId())){
                 msg.setStatus(MessageStatus.READ_AND_ACCEPTED.getStatusCode());
                 msgRepository.save(msg);
                 return true;
@@ -350,6 +378,40 @@ public class StudentService {
         msgRepository.save(msg);
         return false;
     }
+
+    public Boolean transRoom(Long id1, Long id2) {
+        Student student1 = studentRepository.getStudentByStudentId(id1);
+        Student student2 = studentRepository.getStudentByStudentId(id2);
+        if (!Objects.equals(student1.getType(), student2.getType())) {
+            return false;
+        }
+
+        Group group1 = student1.getGroup();
+        Group group2 = student2.getGroup();
+
+        if(group1 == null || group2 == null){
+            return false;
+        }
+
+        if (group1 != null) {
+            student2.setGroupId(group1.getGroupId());
+            if (Objects.equals(group1.getLeader(), student1.getStudentId())) {
+                group1.setLeader(student2.getStudentId());
+            }
+        }
+        if (group2 != null) {
+            student1.setGroupId(group2.getGroupId());
+            if (Objects.equals(group2.getLeader(), student2.getStudentId())) {
+                group2.setLeader(student1.getStudentId());
+            }
+        }
+        studentRepository.save(student1);
+        studentRepository.save(student2);
+        groupRepository.save(group1);
+        groupRepository.save(group2);
+        return true;
+    }
+
 
 
     /**

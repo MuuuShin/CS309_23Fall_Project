@@ -73,22 +73,6 @@ public class SearchService {
      * @return 返回学生列表
      */
 
-//    public List<Student> searchStudents(Long gender, Time awakeTime, Time sleepTime, Long type,
-//        String intro) {
-//        //首先获取所有的符合介绍匹配的上、类型相同的学生
-//        List<Student> students = studentRepository.getStudentsByIntroContainingAndGenderAndType(intro, gender, type);
-//        //然后调用StudentTimeMatch内的方法获取匹配程度排序返还要求的学生
-//        students = students.stream().filter(t -> t.getAwakeTime() != null && t.getSleepTime() != null).
-//            filter(t ->
-//            StudentTimeMatch.TimeMatch(t.getAwakeTime(), t.getSleepTime(), awakeTime, sleepTime) != 0).
-//            sorted((o1, o2) -> {
-//                long o1Long = StudentTimeMatch.TimeMatch(o1.getAwakeTime(), o1.getSleepTime(), awakeTime, sleepTime);
-//                long o2Long = StudentTimeMatch.TimeMatch(o2.getAwakeTime(), o2.getSleepTime(), awakeTime, sleepTime);
-//            return Long.compare(o1Long, o2Long);
-//            }).collect(Collectors.toList());
-//        return students;
-//    }
-
     public List<Student> searchStudents(Long gender, Time awakeTime, Time sleepTime, Long type,
         String intro) {
         //啥都不填，啥都不反回
@@ -178,11 +162,14 @@ public class SearchService {
         return buildingRepository.getBuildingsByRegionId(id);
     }
 
+
+//    @Cacheable(value = "floors", key = "#id")
     public List<Floor> searchFloorByFloor(Long id) {
         return floorRepository.getFloorsByBuildingId(id);
     }
 
     @Transactional
+//    @Cacheable(value = "rooms", key = "#id")
     public List<Room> searchRoomByFloor(Long id) {
         return roomRepository.getRoomsByFloorId(id);
     }
@@ -267,6 +254,16 @@ public class SearchService {
         return timelineRepository.findById(id).orElse(null);
     }
 
+    @Transactional
+    public List<Building> searchBuildByRegionIdAndDeleteRoom(Long regionId, Long studentType){
+        List<Building> buildings = searchBuildingByRegion(regionId);
+        buildings.forEach(t -> {
+            t.getFloorList().forEach(f -> {
+                f.setRoomList(f.getRoomList().stream().toList());
+            });
+        });
+        return buildings;
+    }
 
 
 }

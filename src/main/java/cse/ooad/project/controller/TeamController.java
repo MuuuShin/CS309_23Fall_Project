@@ -184,7 +184,7 @@ public class TeamController {
         if (!isLeader) {
             return Result.error("not leader");
         }
-        //TODO 浼犲叆roomId
+        //TODO 传入roomId
         boolean success = groupService.unStarRoom(Long.parseLong(teamId), Long.parseLong(roomId));
         if (success) {
             return Result.success("success", null);
@@ -298,7 +298,7 @@ public class TeamController {
     }
 
 
-    @GetMapping("/teams/finduser/{sleeptime}/{awaketime}/{query}")
+    @GetMapping("/teams/findteam/{sleeptime}/{awaketime}/{query}")
     public Result<List<Group>> findTeam(@PathVariable("sleeptime") String sleeptime, @PathVariable("awaketime") String awaketime, @PathVariable("query") String query, @RequestHeader("Authorization") String token) {
         log.info("find team");
         System.out.println(sleeptime);

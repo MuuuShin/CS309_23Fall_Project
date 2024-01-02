@@ -12,6 +12,8 @@ import cse.ooad.project.repository.MsgRepository;
 import cse.ooad.project.repository.PasswordRepository;
 import cse.ooad.project.repository.RegionRepository;
 import cse.ooad.project.repository.StudentRepository;
+import cse.ooad.project.model.*;
+import cse.ooad.project.repository.*;
 import cse.ooad.project.utils.MessageStatus;
 import cse.ooad.project.utils.MessageType;
 import cse.ooad.project.utils.RoomType;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -247,6 +250,7 @@ public class StudentService {
      *
      * @return 学生列表
      */
+
     public List<Student> findAllStudents(){
         return studentRepository.findAll();
     }
@@ -389,15 +393,15 @@ public class StudentService {
         return false;
     }
 
-    public boolean updatePassword(Long id,Long oldPassword, Long password, boolean isTeacher) {
-        if (!isTeacher&&!passwordRepository.findPasswordByAccount(id.toString()).getPassword().equals(oldPassword.toString())) {
+
+
+    public boolean updatePassword(String account,String oldPassword, String password, boolean isTeacher) {
+        if (!isTeacher&&!passwordRepository.findPasswordByAccount(account).getPassword().equals(oldPassword)) {
             return false;
         }
-        passwordRepository.save(new Password(id.toString(), password.toString()));
+        Password pass = new Password(account, password);
+        passwordRepository.save(pass);
         return true;
     }
-
-
-
 }
 

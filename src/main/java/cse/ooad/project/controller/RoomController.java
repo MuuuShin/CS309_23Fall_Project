@@ -13,6 +13,8 @@ import cse.ooad.project.service.StudentService;
 import cse.ooad.project.service.TeacherService;
 import cse.ooad.project.utils.JwtUtils;
 import cse.ooad.project.utils.RoomType;
+import cse.ooad.project.utils.RoomType;
+import cse.ooad.project.utils.StudentType;
 import io.jsonwebtoken.Claims;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +33,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -57,7 +62,7 @@ public class RoomController {
 //        return Result.success("success", rooms);
 //    }
 
-    @GetMapping("/{roomId}")
+    @GetMapping("/rooms/{roomId}")
     public Result<Room> getRoomInfo(@PathVariable("roomId") String roomId) {
         log.info("get room info");
         Room room = searchService.searchRoomByRoomId(Long.parseLong(roomId));
@@ -162,8 +167,7 @@ public class RoomController {
     }
 
     @PostMapping("/rooms/comments")
-    public Result<String> addComment(@RequestBody Comment comment,
-        @RequestHeader("Authorization") String token) {
+    public Result<String> addComment(@RequestBody Comment comment, @RequestHeader("Authorization") String token) {
         Claims claims;
         try {
             claims = JwtUtils.parseJWT(token);
@@ -178,8 +182,7 @@ public class RoomController {
     }
 
     @DeleteMapping("/rooms/comments/{id}")
-    public Result<String> deleteCommentById(@PathVariable("id") String id,
-        @RequestHeader("Authorization") String token) {
+    public Result<String> deleteCommentById(@PathVariable("id") String id, @RequestHeader("Authorization") String token) {
         log.info("delete comment by id");
         Claims claims;
         try {
@@ -191,7 +194,6 @@ public class RoomController {
         boolean delete = studentService.deleteComment(Long.parseLong(id), userId);
         return delete ? Result.success("success", null) : Result.error("fail");
     }
-
 
 
 

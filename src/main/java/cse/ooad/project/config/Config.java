@@ -30,11 +30,11 @@ public class Config implements WebMvcConfigurer {
 //        registry.addMapping("/**").allowedOrigins("*").allowedOriginPatterns("*").allowedMethods("GET","POST","PUT","DELETE").maxAge(3600);
 //    }
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-
-        registry.addInterceptor(authInterceptor).addPathPatterns("/**").excludePathPatterns("/login" , "/register");
-    }
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry) {
+//
+//        registry.addInterceptor(authInterceptor).addPathPatterns("/**").excludePathPatterns("/login" , "/register");
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

@@ -6,8 +6,8 @@ create table if not exists public.regions
     intro     varchar(255)
 );
 
-alter table public.regions
-    owner to postgres;
+-- alter table public.regions
+--     owner to postgres;
 
 create table if not exists public.buildings
 (
@@ -20,8 +20,8 @@ create table if not exists public.buildings
             references public.regions
 );
 
-alter table public.buildings
-    owner to postgres;
+-- alter table public.buildings
+--     owner to postgres;
 
 create table if not exists public.floors
 (
@@ -34,8 +34,8 @@ create table if not exists public.floors
             references public.buildings
 );
 
-alter table public.floors
-    owner to postgres;
+-- alter table public.floors
+--     owner to postgres;
 
 create table if not exists public.rooms
 (
@@ -53,8 +53,8 @@ create table if not exists public.rooms
     img_url         varchar(255)
 );
 
-alter table public.rooms
-    owner to postgres;
+-- alter table public.rooms
+--     owner to postgres;
 
 create table if not exists public.teachers
 (
@@ -65,8 +65,8 @@ create table if not exists public.teachers
     account    varchar(255)
 );
 
-alter table public.teachers
-    owner to postgres;
+-- alter table public.teachers
+--     owner to postgres;
 
 create table if not exists public.comments
 (
@@ -81,8 +81,8 @@ create table if not exists public.comments
     disabled      boolean
 );
 
-alter table public.comments
-    owner to postgres;
+-- alter table public.comments
+--     owner to postgres;
 
 create table if not exists public.groups
 (
@@ -97,8 +97,8 @@ create table if not exists public.groups
             ON DELETE SET NULL
 );
 
-alter table public.groups
-    owner to postgres;
+-- alter table public.groups
+--     owner to postgres;
 
 create table if not exists public.students
 (
@@ -118,8 +118,8 @@ create table if not exists public.students
     img_url    varchar(255)
 );
 
-alter table public.students
-    owner to postgres;
+-- alter table public.students
+--     owner to postgres;
 
 create table if not exists public.group_stars
 (
@@ -133,8 +133,8 @@ create table if not exists public.group_stars
         primary key (group_id, room_id)
 );
 
-alter table public.group_stars
-    owner to postgres;
+-- alter table public.group_stars
+--     owner to postgres;
 
 create table if not exists public.timelines
 (
@@ -151,8 +151,8 @@ create table if not exists public.timelines
     end_time4   timestamp(0)
 );
 
-alter table public.timelines
-    owner to postgres;
+-- alter table public.timelines
+--     owner to postgres;
 
 create table if not exists public.msgs
 (
@@ -166,8 +166,8 @@ create table if not exists public.msgs
     status    integer
 );
 
-alter table public.msgs
-    owner to postgres;
+-- alter table public.msgs
+--     owner to postgres;
 
 create table if not exists public.passwords
 (
@@ -176,8 +176,8 @@ create table if not exists public.passwords
     password varchar(255)
 );
 
-alter table public.passwords
-    owner to postgres;
+-- alter table public.passwords
+--     owner to postgres;
 
 
 CREATE OR REPLACE FUNCTION insert_room_data(

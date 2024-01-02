@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Time;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -28,30 +29,41 @@ public class UserController {
     @Autowired
     private SearchService searchService;
 
+
+    @GetMapping("/users/getid")
+    public Result<String> getId(@RequestHeader("Authorization") String token) {
+        log.info("get id");
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("not login");
+        }
+        String userId = claims.get("id").toString();
+        return Result.success("success", userId);
+    }
+
     @GetMapping("/users")
     public Result<List<Student>> getAllUsers(@RequestHeader("Authorization") String token) {
 
         log.info("get all users");
         try {
             Claims claims = JwtUtils.parseJWT(token);
-            if (claims.get("isTeacher").equals(true)) {
+            if (claims.get("isTeacher").equals("1")) {
                 List<Student> students = studentService.findAllStudents();
 //                List<Student> students = null;
                 return Result.success("success", students);
-            }
-            else {
+            } else {
                 // List<Student> students = searchService.searchStudents();
                 return Result.error("error");
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return Result.error("error");
         }
 
 
 //        return Result.success("success", students);
     }
-
 
 
     @DeleteMapping("/users/{id}")
@@ -67,7 +79,7 @@ public class UserController {
 
     @PutMapping("/users")
     public Result<String> updateUserById(@RequestBody Student student) {
-        log.info("update user by id");
+        log.info("update user by id" + student);
         //TODO 有问题
         Student s = teacherService.updateStudent(student);
 //        boolean b = false;
@@ -93,6 +105,7 @@ public class UserController {
             return Result.error("id not match");
         }
         String userId = claims.get("id").toString();
+
         if (!userId.equals(id)) {
             return Result.error("fail");
         }
@@ -161,6 +174,37 @@ public class UserController {
         return Result.error("error");
     }
 
+    @PutMapping("/users/{id}/password")
+    public Result<String> updatePassword(@PathVariable("id") String id, @RequestBody Map<String, String> JsonData, @RequestHeader("Authorization") String token) {
+        String password = JsonData.get("password");
+        String oldPassword = JsonData.get("oldPassword");
+        log.info("update password");
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("id not match");
+        }
+        String userId = claims.get("id").toString();
+        String isTeacher = claims.get("isTeacher").toString();
+        if (!userId.equals(id) && isTeacher.equals("0")) {
+            return Result.error("fail");
+        }
+
+        Student student = searchService.searchStudentByStudentId(Long.parseLong(id));
+        String account = student.getAccount();
+
+        boolean b;
+        if (isTeacher.equals("1")) {
+            b = studentService.updatePassword(account, null, password, true);
+        } else {
+            b = studentService.updatePassword(account, oldPassword, password, false);
+        }
+        if (b) {
+            return Result.success("success", null);
+        }
+        return Result.error("error");
 
 
+    }
 }

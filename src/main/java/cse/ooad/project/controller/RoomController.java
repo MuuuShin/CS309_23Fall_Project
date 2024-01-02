@@ -7,12 +7,15 @@ import cse.ooad.project.service.SearchService;
 import cse.ooad.project.service.StudentService;
 import cse.ooad.project.service.TeacherService;
 import cse.ooad.project.utils.JwtUtils;
+import cse.ooad.project.utils.RoomType;
+import cse.ooad.project.utils.StudentType;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -40,7 +43,7 @@ public class RoomController {
 //        return Result.success("success", rooms);
 //    }
 
-    @GetMapping("/{roomId}")
+    @GetMapping("/rooms/{roomId}")
     public Result<Room> getRoomInfo(@PathVariable("roomId") String roomId) {
         log.info("get room info");
         Room room = searchService.searchRoomByRoomId(Long.parseLong(roomId));
@@ -124,7 +127,7 @@ public class RoomController {
     }
 
     @PostMapping("/rooms")
-    public Result<String> addRoom(@RequestBody Room room, @RequestParam("image") MultipartFile image) {
+    public Result<String> addRoom(@RequestBody Room room, @RequestParam(name = "image", required = false) MultipartFile image) {
         log.info("add room");
         teacherService.saveRoom(room);
         return Result.success("success", null);
@@ -166,6 +169,7 @@ public class RoomController {
         boolean delete = studentService.deleteComment(Long.parseLong(id), userId);
         return delete ? Result.success("success", null) : Result.error("fail");
     }
+
 
 
 

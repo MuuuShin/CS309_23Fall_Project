@@ -17,10 +17,13 @@ import java.util.List;
 import java.util.Objects;
 
 import java.util.stream.Collectors;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class TeacherService {
 
@@ -76,10 +79,16 @@ public class TeacherService {
      */
     public Student updateStudent(Student student) {
         Student old = studentRepository.getStudentByStudentId(student.getStudentId());
-        old.setSleepTime(student.getSleepTime());
-        old.setAwakeTime(student.getAwakeTime());
-        old.setIntro(student.getIntro());
-        return studentRepository.save(old);
+
+//        old.setSleepTime(student.getSleepTime());
+//        old.setAwakeTime(student.getAwakeTime());
+//        old.setIntro(student.getIntro());
+        log.info("update student" + old);
+        student.setSleepTime(old.getSleepTime());
+        student.setAwakeTime(old.getAwakeTime());
+        student.setIntro(old.getIntro());
+        student.setGroupId(old.getGroupId());
+        return studentRepository.save(student);
     }
 
     /**
@@ -490,7 +499,7 @@ public class TeacherService {
                 Region region = regionRepository.getRegionByRegionId(building.getRegionId());
                 List<Student> students = t.getMemberList();
                 students.forEach(e->{
-                    map.put(e, region.getName()+","+building.getName()+","+floor.getName()+","+room.getName());
+                    map.put(e, region.getName()+building.getName()+floor.getName()+room.getName());
                 });
             }
         });
@@ -501,7 +510,7 @@ public class TeacherService {
         System.out.println(map);
         students.sort((Comparator.comparing(Student::getAccount)));
         try {
-            File file = new File("src/main/resources/output.csv");
+            File file = new File("output.csv");
             if (!file.exists()) {
                  file.createNewFile();
             }
@@ -513,16 +522,16 @@ public class TeacherService {
                     bufferedWriter.write(t.getAccount() + "," + t.getName() + "," + map.get(t));
                     bufferedWriter.newLine();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    log.error("batch output error", e);
                 }
             });
 
             bufferedWriter.flush();
             bufferedWriter.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("batch output error", e);
         }
-        return new File("src/main/resources/output.csv");
+        return new File("output.csv");
     }
 
 

@@ -6,14 +6,18 @@ import cse.ooad.project.service.TeacherService;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @RestController
@@ -72,5 +76,21 @@ public class BatchController {
 //        }
 //        return Result.error("error");
         return Result.success("success", null);
+    }
+
+    @GetMapping("/users/export")
+    public ResponseEntity<Resource> exportUser() throws IOException {
+        log.info("export user");
+        File file = teacherService.batchOutputStudent();
+        String filepath = file.getAbsolutePath();
+        // 创建资源对象
+        Resource resource =  new FileSystemResource(filepath);
+        // 设置响应头，控制浏览器下载该文件
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment;filename=" + URLEncoder.encode("output.csv",
+                StandardCharsets.UTF_8));
+        headers.set("content-length", String.valueOf(resource.contentLength()));
+        // 返回响应实体
+        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
 }

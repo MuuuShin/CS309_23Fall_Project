@@ -1,15 +1,8 @@
 package cse.ooad.project.service;
 
 
-import cse.ooad.project.model.Comment;
-import cse.ooad.project.model.Group;
-import cse.ooad.project.model.Msg;
-import cse.ooad.project.model.Student;
-import cse.ooad.project.repository.CommentRepository;
-import cse.ooad.project.repository.GroupRepository;
-import cse.ooad.project.repository.MsgRepository;
-import cse.ooad.project.repository.RegionRepository;
-import cse.ooad.project.repository.StudentRepository;
+import cse.ooad.project.model.*;
+import cse.ooad.project.repository.*;
 import cse.ooad.project.utils.MessageStatus;
 import cse.ooad.project.utils.MessageType;
 import cse.ooad.project.utils.RoomType;
@@ -18,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +37,8 @@ public class StudentService {
     MsgRepository msgRepository;
     @Autowired
     private RegionRepository regionRepository;
+    @Autowired
+    private PasswordRepository passwordRepository;
 
 
     /**
@@ -76,7 +72,7 @@ public class StudentService {
      * @param name 队伍名
      */
     @Transactional
-    public Group createGroup(Long id, String name) {
+    public Group createGroup(Long id, String name, String intro) {
         Student student = studentRepository.getStudentByStudentId(id);
         if(student == null){
             return null;
@@ -87,7 +83,7 @@ public class StudentService {
         Group group = new Group();
         group.setName(name);
         group.setMemberList(new ArrayList<>());
-
+        group.setIntro(intro);
         group.setLeader(id);
         group.getMemberList().add(student);
         group = groupRepository.save(group);
@@ -200,6 +196,7 @@ public class StudentService {
      *
      * @return 学生列表
      */
+
     public List<Student> findAllStudents(){
         return studentRepository.findAll();
     }
@@ -343,5 +340,14 @@ public class StudentService {
     }
 
 
+
+    public boolean updatePassword(String account,String oldPassword, String password, boolean isTeacher) {
+        if (!isTeacher&&!passwordRepository.findPasswordByAccount(account).getPassword().equals(oldPassword)) {
+            return false;
+        }
+        Password pass = new Password(account, password);
+        passwordRepository.save(pass);
+        return true;
+    }
 }
 

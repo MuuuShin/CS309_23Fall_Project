@@ -12,12 +12,18 @@ import cse.ooad.project.repository.RoomRepository;
 import cse.ooad.project.repository.StudentRepository;
 import cse.ooad.project.repository.TeacherRepository;
 import cse.ooad.project.repository.TimelineRepository;
+import cse.ooad.project.utils.RoomType;
 import cse.ooad.project.utils.StudentTimeMatch;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -93,13 +99,36 @@ public class SearchService {
     public List<Group> searchGroups(Long gender, Time awakeTime, Time sleepTime,
         Long type, String intro) {
         List<Student> students = searchStudents(gender, awakeTime, sleepTime, type, intro);
-        List<Group> groupList = new ArrayList<>();
+        List<Group> groupsSet = groupRepository.findGroupsByIntroContainingOrNameContaining(intro, intro);
+        System.out.println(students.size());
+        Set<Group> groupList = new HashSet<>();
         students.forEach(t -> {
             if (t.getGroup() != null&&!groupList.contains(t.getGroup())&&t.getGroup().getMemberList().size()<4){
                 groupList.add(t.getGroup());
             }});
-        return groupList;
+        groupList.addAll(groupsSet);
+        //选出名字或者介绍中包含关键字的队伍
+        List<Group> containIntro = groupList.stream().filter(t -> t.getIntro().contains(intro) || t.getName().contains(intro)).toList();
+        List<Group> noContainIntro = groupList.stream().filter(t -> !t.getIntro().contains(intro) && !t.getName().contains(intro)).toList();
+        containIntro = getGroupsSortByTime(awakeTime, sleepTime, containIntro);
+        noContainIntro = getGroupsSortByTime(awakeTime, sleepTime, noContainIntro);
+        ArrayList<Group> groups = new ArrayList<>(containIntro);
+        groups.addAll(noContainIntro);
+        return groups;
     }
+
+    private List<Group> getGroupsSortByTime(Time awakeTime, Time sleepTime,
+        List<Group> containIntro) {
+        containIntro = containIntro.stream().sorted((o1, o2) -> {
+            long o1Long;
+            long o2Long;
+            o1Long = o1.getMemberList().stream().mapToLong(t -> StudentTimeMatch.TimeMatch(t.getAwakeTime(), t.getSleepTime(), awakeTime, sleepTime)).sum()/o1.getMemberList().size();
+            o2Long = o2.getMemberList().stream().mapToLong(t -> StudentTimeMatch.TimeMatch(t.getAwakeTime(), t.getSleepTime(), awakeTime, sleepTime)).sum()/o2.getMemberList().size();
+            return Long.compare(o2Long, o1Long);
+        }).toList();
+        return containIntro;
+    }
+
 
     public List<Region> searchAllRegion() {
         return regionRepository.findAll();
@@ -109,10 +138,13 @@ public class SearchService {
         return buildingRepository.getBuildingsByRegionId(id);
     }
 
+
+//    @Cacheable(value = "floors", key = "#id")
     public List<Floor> searchFloorByFloor(Long id) {
         return floorRepository.getFloorsByBuildingId(id);
     }
 
+//    @Cacheable(value = "rooms", key = "#id")
     public List<Room> searchRoomByFloor(Long id) {
         return roomRepository.getRoomsByFloorId(id);
     }
@@ -143,6 +175,7 @@ public class SearchService {
         return studentRepository.getStudentsByName(name);
     }
 
+//    @Cacheable(value = "students", key = "#id")
     public Student searchStudentByStudentId(Long id){
         return studentRepository.getStudentByStudentId(id);
     }
@@ -183,6 +216,16 @@ public class SearchService {
         return timelineRepository.findById(id).orElse(null);
     }
 
+    @Transactional
+    public List<Building> searchBuildByRegionIdAndDeleteRoom(Long regionId, Long studentType){
+        List<Building> buildings = searchBuildingByRegion(regionId);
+        buildings.forEach(t -> {
+            t.getFloorList().forEach(f -> {
+                f.setRoomList(f.getRoomList().stream().toList());
+            });
+        });
+        return buildings;
+    }
 
 
 }

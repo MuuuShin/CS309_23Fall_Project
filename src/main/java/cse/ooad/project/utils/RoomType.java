@@ -1,7 +1,9 @@
 package cse.ooad.project.utils;
 
 
+import lombok.Getter;
 
+@Getter
 public enum RoomType {
 
 
@@ -14,10 +16,6 @@ public enum RoomType {
     public int type;
     RoomType(int type){
         this.type = type;
-    }
-
-    public int getType() {
-        return type;
     }
 
     public int getCapacity(){

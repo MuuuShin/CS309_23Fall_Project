@@ -80,7 +80,7 @@ class Cs30923FallProjectApplicationTests {
     void TeacherTest() {
         teacherService.batchSaveStudent(new File("src/test/resources/student.csv"));
         //teacherService.batchSaveRoomNew(new File("src/test/resources/Rooms.csv"));
-        teacherService.batchSaveRoom(new File("src/test/resources/university_data.csv"));
+        teacherService.batchSaveRoomNew(new File("src/test/resources/university_data.csv"));
 
         Timeline timeline = new Timeline(null, 1, new Timestamp(10000L), new Timestamp(20000L),
                 new Timestamp(20000), new Timestamp(30000), new Timestamp(30000), new Timestamp(40000),
@@ -93,8 +93,8 @@ class Cs30923FallProjectApplicationTests {
     @Order(3)
     @Test
     void StudentTest() {
-        System.out.println(studentService.createGroup(200000001L, "冒险小虎队"));
-        System.out.println(studentService.createGroup(200000002L, "多多探险队"));
+        System.out.println(studentService.createGroup(200000001L, "冒险小虎队","不冒险的小虎队"));
+        System.out.println(studentService.createGroup(200000002L, "多多探险队","不探险的多多队"));
         Student student = searchService.searchStudentByStudentId(200000001L);
         student.setIntro("我爱洗澡皮肤好好");
         student.setType(StudentType.MASTER_MALE.type);
@@ -142,7 +142,7 @@ class Cs30923FallProjectApplicationTests {
         System.out.println(groupService.getMemberList(group1.getGroupId()));
         System.out.println(studentService.memberLeave(200000001L));
         System.out.println(groupService.getMemberList(group1.getGroupId()));
-        System.out.println(studentService.createGroup(200000003L, "冒险小虎队1984"));
+        System.out.println(studentService.createGroup(200000003L, "冒险小虎队1984","1984大冒险"));
 
         System.out.println(groupService.chooseRoom(2L, 1L));
         System.out.println(groupService.chooseRoom(1L, 1L));
@@ -150,7 +150,7 @@ class Cs30923FallProjectApplicationTests {
         //修改队长
         Student student = new Student(null, "白", "不爱洗澡皮肤好好", (short) 1, null, 1, null, null, "12110433", null,null);
         teacherService.saveStudent(student);
-        studentService.createGroup(200000005L, "飞天茅台9999");
+        studentService.createGroup(200000005L, "飞天茅台9999", "奖项科技天下第一");
         System.out.println(groupService.changeLeader(2L, 200000004L));
         System.out.println(teacherService.transRoom(200000001L, 200000005L));
 
@@ -162,7 +162,6 @@ class Cs30923FallProjectApplicationTests {
     @Test
     void LoginTest() {
         System.out.println(loginService.loginStudent("12151515", "1546465465"));
-
     }
 
     @Order(7)

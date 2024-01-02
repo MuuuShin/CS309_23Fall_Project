@@ -9,6 +9,7 @@ import cse.ooad.project.service.websocket.WsSessionManager;
 import cse.ooad.project.model.Student;
 import cse.ooad.project.utils.MessageStatus;
 import cse.ooad.project.utils.MessageType;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,6 +81,42 @@ public class MsgService {
 
     }
 
+
+    public void saveMsg(Msg msg) {
+        try {
+            if (msg != null) {
+                WebSocketSession webSocketSession = WsSessionManager.get(msg.getDstId().toString());
+                if (webSocketSession != null) {
+                    System.out.println("转发信息" + msg.getBody() + "给" + msg.getDstId());
+                    msg.setStatus(MessageStatus.READ.getStatusCode());
+                }
+                msgRepository.save(msg);
+            }
+        } catch (Exception e) {
+            System.out.println("转发信息失败");
+            e.printStackTrace();
+        }
+    }
+
+
+    public void sendMsg(Msg msg) {
+        try {
+            WebSocketSession webSocketSession = WsSessionManager.get(msg.getDstId().toString());
+            if (webSocketSession != null) {
+                System.out.println("发信息" + msg.getBody() + "给" + msg.getDstId());
+                webSocketSession.sendMessage(new TextMessage(gson.toJson(msg)));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public int hasUnreadMsgNum(Long studentId) {
+        return msgRepository.countByDstIdAndStatus(studentId, MessageStatus.UNREAD.getStatusCode());
+    }
+
+
     /**
      * 获取消息列表
      * @param distId 接收者id
@@ -88,4 +125,10 @@ public class MsgService {
     public List<Msg> getMsgByDistId(Long distId) {
         return msgRepository.getMsgsByDstId(distId);
     }
+
+    public List<Msg> getMsgBySrcId(Long srcId) {
+        return msgRepository.getMsgsBySrcId(srcId);
+    }
+
+
 }

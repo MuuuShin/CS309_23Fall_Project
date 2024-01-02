@@ -1,12 +1,16 @@
 package cse.ooad.project.controller;
 
 
+import cse.ooad.project.model.Msg;
 import cse.ooad.project.model.Student;
+import cse.ooad.project.service.MsgService;
 import cse.ooad.project.service.SearchService;
 import cse.ooad.project.service.StudentService;
 import cse.ooad.project.service.TeacherService;
 import cse.ooad.project.utils.JwtUtils;
+import cse.ooad.project.utils.MessageStatus;
 import io.jsonwebtoken.Claims;
+import java.util.Comparator;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +32,9 @@ public class UserController {
 
     @Autowired
     private SearchService searchService;
+
+    @Autowired
+    private MsgService messageService;
 
 
     @GetMapping("/users/getid")
@@ -204,7 +211,36 @@ public class UserController {
             return Result.success("success", null);
         }
         return Result.error("error");
-
-
     }
+
+    @GetMapping(path = "/user/msgs")
+    public Result<List<Msg>> getMsgs(@RequestHeader("Authorization") String token) {
+        log.info("get msgs");
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("token error");
+        }
+        Long userId = Long.parseLong(claims.get("id").toString());
+
+        List<Msg> msgs =  messageService.getMsgByDistId(userId);
+        List<Msg> msgs1 = messageService.getMsgBySrcId(userId);
+        msgs.addAll(msgs1);
+        msgs.sort(Comparator.comparing(Msg::getTimestamp));
+        Result<List<Msg>> res=Result.success("success", msgs);
+
+        msgs.forEach(t -> {
+            try {
+                if (t.getStatus() == MessageStatus.UNREAD.getStatusCode()) {
+                    messageService.saveMsg(t);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        return res;
+    }
+
 }

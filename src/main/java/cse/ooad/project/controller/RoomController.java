@@ -195,6 +195,40 @@ public class RoomController {
         return delete ? Result.success("success", null) : Result.error("fail");
     }
 
+    @GetMapping("/rooms/favorite/{roomId}")
+    public Result<Object> favoriteRoom(@PathVariable("roomId") String roomId, @RequestHeader("Authorization") String token) {
+        log.info("favorite room");
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("token error");
+        }
+        Long userId = Long.parseLong(claims.get("id").toString());
+        List<Group> favorite = roomService.getGroupStarList(Long.parseLong(roomId));
+//        return favorite ? Result.success("success", null) : Result.error("fail");
+        return Result.success("success", favorite);
+    }
+
+    @GetMapping("/rooms/info/{roomId}")
+    public Result<Object> getRoomInfo(@PathVariable("roomId") String roomId, @RequestHeader("Authorization") String token) {
+        log.info("get room info");
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("token error");
+        }
+        Long userId = Long.parseLong(claims.get("id").toString());
+        Object room = roomService.getFullRoomInfo(Long.parseLong(roomId));
+        if (room == null) {
+            return Result.error("fail");
+        }
+        return Result.success("success", room);
+
+    }
+
+
 
 
 }

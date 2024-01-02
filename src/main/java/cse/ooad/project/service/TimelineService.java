@@ -17,7 +17,7 @@ public class TimelineService {
 
     //测试用的
     public static int STATUS = 3;
-    public static int timestamp = 0;
+    public static int timestamp = 1;
 
     /**
      * 根据学生类型获取当前阶段
@@ -29,9 +29,9 @@ public class TimelineService {
 
         Timestamp nowTime = new Timestamp(new Date().getTime());
         //测试的时候用的
-//        if (timestamp == 0){
-//            return STATUS;
-//        }
+        if (timestamp == 0){
+            return STATUS;
+        }
         //Timestamp nowTime = new Timestamp(timestamp);
         //return STATUS;
         if (nowTime.before(timeline.getBeginTime1()))

@@ -66,6 +66,8 @@ class Cs30923FallProjectApplicationTests {
         System.out.println("setUp");
         //执行
         // 获取数据库连接
+        TimelineService.timestamp = 0;
+
         try (Connection connection = dataSource.getConnection()) {
             ScriptUtils.executeSqlScript(connection, new ClassPathResource("drop.sql"));
             // 使用 Spring 的 ScriptUtils 执行 SQL 文件

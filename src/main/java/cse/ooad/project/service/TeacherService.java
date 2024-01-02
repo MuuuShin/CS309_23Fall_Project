@@ -190,6 +190,13 @@ public class TeacherService {
      * @return 修改后的房间
      */
     public Room saveRoom(Room room) {
+        Comment comment = new Comment();
+        //comment.setUserId(room.getRoomId());
+        comment.setPostId(0L);
+        comment.setTitle(room.getName());
+        comment.setCreationTime(new Timestamp(System.currentTimeMillis()));
+        comment = commentRepository.save(comment);
+        room.setCommentBaseId(comment.getCommentId());
         return roomRepository.save(room);
     }
 
@@ -309,6 +316,10 @@ public class TeacherService {
         Group group1 = student1.getGroup();
         Group group2 = student2.getGroup();
 
+        if(group1 == null || group2 == null){
+            return false;
+        }
+
         if (group1 != null) {
             student2.setGroupId(group1.getGroupId());
             if (Objects.equals(group1.getLeader(), student1.getStudentId())) {
@@ -321,8 +332,6 @@ public class TeacherService {
                 group2.setLeader(student1.getStudentId());
             }
         }
-        student1.setGroupId(group2.getGroupId());
-        student2.setGroupId(group1.getGroupId());
         studentRepository.save(student1);
         studentRepository.save(student2);
         groupRepository.save(group1);

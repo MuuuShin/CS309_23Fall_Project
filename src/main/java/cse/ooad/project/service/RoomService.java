@@ -1,18 +1,24 @@
 package cse.ooad.project.service;
 
 
+import cse.ooad.project.model.Building;
 import cse.ooad.project.model.Comment;
+import cse.ooad.project.model.Floor;
 import cse.ooad.project.model.Group;
+import cse.ooad.project.model.Region;
 import cse.ooad.project.model.Room;
 import cse.ooad.project.repository.CommentRepository;
 import cse.ooad.project.repository.RoomRepository;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.info.ProjectInfoProperties.Build;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -70,5 +76,19 @@ public class RoomService {
         return commentList;
     }
 
+        @Transactional
+        public Map<String,String> getFullRoomInfo(Long id){
+            Room room = roomRepository.getRoomsByRoomId(id);
+            Floor floor = room.getFloor();
+            Building building = floor.getBuilding();
+            Region region = building.getRegion();
+            Map<String,String> map = new HashMap<>();
+            map.put("region",region.getName());
+            map.put("building",building.getName());
+            map.put("floor",floor.getName());
+            map.put("room",room.getName());
+            map.put("roomid",room.getRoomId()+"");
+            return map;
+        }
 
 }

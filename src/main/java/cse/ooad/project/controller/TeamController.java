@@ -159,11 +159,13 @@ public class TeamController {
         try {
             claims = JwtUtils.parseJWT(token);
         } catch (Exception e) {
+            System.out.println("jwt error");
             return Result.error("fail");
         }
 //        boolean success = studentService.joinGroup(Long.parseLong(claims.get("id").toString()), Long.parseLong(teamId));
 
         boolean success = studentService.sendApply(Long.parseLong(claims.get("id").toString()), Long.parseLong(leaderId), message);
+        System.out.println(success);
         if (success) {
             return Result.success("success", null);
         } else {
@@ -343,6 +345,7 @@ public class TeamController {
         String msgId = (String) JsonData.get("msgId");
         String isAccepted = (String) JsonData.get("isAccepted");
         boolean success = studentService.handleApply(Long.parseLong(msgId), isAccepted.equals("1"), Long.parseLong(userId));
+        System.out.println(success);
         if (success) {
             return Result.success("success", null);
         } else {

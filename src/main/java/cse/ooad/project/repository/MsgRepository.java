@@ -25,5 +25,5 @@ public interface MsgRepository extends JpaRepository<Msg, Long> {
 
     int countByDstIdAndStatus(Long DistId, Integer status);
 
-
+    List<Msg> getMsgsByDstIdAndSrcIdAndStatus(Long userId, Long oppoId, int statusCode);
 }

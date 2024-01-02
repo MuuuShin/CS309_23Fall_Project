@@ -24,8 +24,6 @@ public class Interceptor implements HandshakeInterceptor {
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
         WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
 
-
-
         System.out.println("握手开始");
         String sessionId;
         URL url = request.getURI().toURL();
@@ -36,7 +34,7 @@ public class Interceptor implements HandshakeInterceptor {
             String[] split1 = t.split("=");
             map.put(split1[0], split1[1]);
         });
-        sessionId = map.get("sessionid");
+        sessionId = map.get("session_id");
         if (sessionId == null) {
             return false;
         }
@@ -44,6 +42,7 @@ public class Interceptor implements HandshakeInterceptor {
         try {
             claims = JwtUtils.parseJWT(sessionId);
             attributes.put("session_id", claims.get("id"));
+            System.out.println("握手成功");
             return true;
         }catch (Exception e){
             e.printStackTrace();

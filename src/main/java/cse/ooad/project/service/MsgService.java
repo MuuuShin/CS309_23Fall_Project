@@ -131,4 +131,12 @@ public class MsgService {
     }
 
 
+    public boolean updateMsgStatus(Long userId, Long oppoId) {
+        List<Msg> msgs = msgRepository.getMsgsByDstIdAndSrcIdAndStatus(userId, oppoId, MessageStatus.UNREAD.getStatusCode());
+        msgs.forEach(t->{
+            t.setStatus(MessageStatus.READ.getStatusCode());
+            msgRepository.save(t);
+        });
+        return true;
+    }
 }

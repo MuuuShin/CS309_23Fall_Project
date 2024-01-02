@@ -201,8 +201,12 @@ public class StudentService {
                 return true;
             }
             //如果不是最后一个人
+            if(Objects.equals(group.getMemberList().get(0).getStudentId(), id)){
+                group.setLeader(group.getMemberList().get(1).getStudentId());
+            }else{
+                group.setLeader(group.getMemberList().get(0).getStudentId());
+            }
             group.getMemberList().remove(student);
-            group.setLeader(group.getMemberList().get(1).getStudentId());
             groupRepository.save(group);
             student.setGroupId(null);
             studentRepository.save(student);
@@ -340,7 +344,7 @@ public class StudentService {
             return false;
         }
         if (isAgree) {
-            if (joinGroup(msg.getSrcId(), msg.getDstId())){
+            if (joinGroup(msg.getSrcId(), studentRepository.getStudentByStudentId(studentId).getGroupId())) {
                 msg.setStatus(MessageStatus.READ_AND_ACCEPTED.getStatusCode());
                 msgRepository.save(msg);
                 return true;
@@ -348,7 +352,7 @@ public class StudentService {
         }
         msg.setStatus(MessageStatus.READ_AND_REJECTED.getStatusCode());
         msgRepository.save(msg);
-        return false;
+        return true;
     }
 
 

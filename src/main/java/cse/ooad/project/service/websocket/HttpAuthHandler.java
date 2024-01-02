@@ -1,14 +1,17 @@
 package cse.ooad.project.service.websocket;
 
 import com.google.gson.Gson;
+import cse.ooad.project.controller.Result;
 import cse.ooad.project.model.Msg;
 import cse.ooad.project.repository.MsgRepository;
 import cse.ooad.project.service.MsgService;
 import cse.ooad.project.utils.MessageStatus;
+
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -18,7 +21,6 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 @Component
 public class HttpAuthHandler extends TextWebSocketHandler {
-
 
 
     @Autowired
@@ -44,21 +46,25 @@ public class HttpAuthHandler extends TextWebSocketHandler {
             // 用户连接成功，放入在线用户缓存
             WsSessionManager.add(userId, session);
             //发送所有未读消息
-            List<Msg> msgs = msgService.getMsgByDistId(Long.valueOf(userId));
-            msgs.sort(Comparator.comparing(Msg::getTimestamp));
-            msgs.forEach(t -> {
-                try {
-                    if (t.getStatus() == MessageStatus.UNREAD.getStatusCode()){
-                        msgService.saveAndForwardMsg(t);
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-
-
+//            msgs.sort(Comparator.comparing(Msg::getTimestamp));
+//            msgs.forEach(t -> {
+//                try {
+//                    if (t.getStatus() == MessageStatus.UNREAD.getStatusCode()){
+//                        msgService.saveAndForwardMsg(t);
+//                    }
+//
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            });
+            System.out.println("server 连接成功");
             session.sendMessage(new TextMessage("server 发送给 " + userId + " 消息 " + "连接成功" + " " + LocalDateTime.now()));
+
+            int num = msgService.hasUnreadMsgNum(Long.valueOf(userId));
+            UnreadMsg unreadMsg = new UnreadMsg();
+            unreadMsg.unreadMsgNum = num;
+            session.sendMessage(new TextMessage(gson.toJson(unreadMsg)));
+
         } else {
             throw new RuntimeException("用户登录已经失效!");
         }
@@ -103,5 +109,7 @@ public class HttpAuthHandler extends TextWebSocketHandler {
         }
     }
 
-
+    class UnreadMsg {
+        int unreadMsgNum;
+    }
 }

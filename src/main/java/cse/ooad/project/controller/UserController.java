@@ -10,8 +10,10 @@ import cse.ooad.project.service.TeacherService;
 import cse.ooad.project.utils.JwtUtils;
 import cse.ooad.project.utils.MessageStatus;
 import io.jsonwebtoken.Claims;
+
 import java.util.Comparator;
 import java.util.Objects;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -136,8 +138,8 @@ public class UserController {
         Time awakeTime = Time.valueOf(awaketime);
         Time sleepTime = Time.valueOf(sleeptime);
         Claims claims;
-        if (Objects.equals(query, " ")){
-            query="";
+        if (Objects.equals(query, " ")) {
+            query = "";
         }
         try {
             claims = JwtUtils.parseJWT(token);
@@ -224,23 +226,29 @@ public class UserController {
         }
         Long userId = Long.parseLong(claims.get("id").toString());
 
-        List<Msg> msgs =  messageService.getMsgByDistId(userId);
+        List<Msg> msgs = messageService.getMsgByDistId(userId);
         List<Msg> msgs1 = messageService.getMsgBySrcId(userId);
         msgs.addAll(msgs1);
         msgs.sort(Comparator.comparing(Msg::getTimestamp));
-        Result<List<Msg>> res=Result.success("success", msgs);
-
-        msgs.forEach(t -> {
-            try {
-                if (t.getStatus() == MessageStatus.UNREAD.getStatusCode()) {
-                    messageService.saveMsg(t);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-
-        return res;
+        return Result.success("success", msgs);
     }
 
+    @PostMapping(path = "/user/msgs")
+    public Result<String> updateMsgStatus(@RequestBody Map<String, String> JsonData, @RequestHeader("Authorization") String token) {
+        log.info("update msg status");
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("token error");
+        }
+        Long userId = Long.parseLong(claims.get("id").toString());
+        Long oppoId = Long.parseLong(JsonData.get("oppoId"));
+        boolean res = messageService.updateMsgStatus(userId, oppoId);
+        if (res) {
+            return Result.success("success", null);
+        } else {
+            return Result.error("error");
+        }
+    }
 }

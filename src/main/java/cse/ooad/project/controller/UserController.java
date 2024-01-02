@@ -7,6 +7,7 @@ import cse.ooad.project.service.StudentService;
 import cse.ooad.project.service.TeacherService;
 import cse.ooad.project.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -115,6 +116,9 @@ public class UserController {
         Time awakeTime = Time.valueOf(awaketime);
         Time sleepTime = Time.valueOf(sleeptime);
         Claims claims;
+        if (Objects.equals(query, " ")){
+            query="";
+        }
         try {
             claims = JwtUtils.parseJWT(token);
         } catch (Exception e) {

@@ -1,19 +1,36 @@
 package cse.ooad.project.controller;
 
 
-import cse.ooad.project.model.*;
+import cse.ooad.project.model.Building;
+import cse.ooad.project.model.Comment;
+import cse.ooad.project.model.Floor;
+import cse.ooad.project.model.Group;
+import cse.ooad.project.model.Region;
+import cse.ooad.project.model.Room;
 import cse.ooad.project.service.RoomService;
 import cse.ooad.project.service.SearchService;
 import cse.ooad.project.service.StudentService;
 import cse.ooad.project.service.TeacherService;
 import cse.ooad.project.utils.JwtUtils;
+import cse.ooad.project.utils.RoomType;
 import io.jsonwebtoken.Claims;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -86,7 +103,8 @@ public class RoomController {
 
 
     @GetMapping("/dormitories/{dormitoryid}/floors")
-    public Result<List<Floor>> getFloorsByDormitory(@PathVariable("dormitoryid") String dormitoryid) {
+    public Result<List<Floor>> getFloorsByDormitory(
+        @PathVariable("dormitoryid") String dormitoryid) {
         log.info("get floors by dormitory");
         List<Floor> floors = searchService.searchFloorByFloor(Long.parseLong(dormitoryid));
 //        List<Floor> floors = null; //TODO: 还哦没改完
@@ -94,11 +112,15 @@ public class RoomController {
     }
 
     @GetMapping("/floors/{floorid}/rooms")
-    public Result<List<Room>> getRoomsByFloor(@PathVariable("floorid") String floorid) {
+    public Result<Object> getRoomsByFloor(@PathVariable("floorid") String floorid) {
         log.info("get rooms by floor");
         List<Room> rooms = searchService.searchRoomByFloor(Long.parseLong(floorid));
+        HashMap<Long, HashMap<String, List<Group>>> map = searchService.searchRoomState(rooms);
+        List<Object> list = new ArrayList<>();
+        list.add(rooms);
+        list.add(map);
 //        List<Room> rooms = null; //TODO: 还哦没改完
-        return Result.success("success", rooms);
+        return Result.success("success", list);
     }
 
     @GetMapping("/rooms/{id}")
@@ -124,7 +146,8 @@ public class RoomController {
     }
 
     @PostMapping("/rooms")
-    public Result<String> addRoom(@RequestBody Room room, @RequestParam("image") MultipartFile image) {
+    public Result<String> addRoom(@RequestBody Room room,
+        @RequestParam("image") MultipartFile image) {
         log.info("add room");
         teacherService.saveRoom(room);
         return Result.success("success", null);
@@ -139,7 +162,8 @@ public class RoomController {
     }
 
     @PostMapping("/rooms/comments")
-    public Result<String> addComment(@RequestBody Comment comment, @RequestHeader("Authorization") String token) {
+    public Result<String> addComment(@RequestBody Comment comment,
+        @RequestHeader("Authorization") String token) {
         Claims claims;
         try {
             claims = JwtUtils.parseJWT(token);
@@ -154,7 +178,8 @@ public class RoomController {
     }
 
     @DeleteMapping("/rooms/comments/{id}")
-    public Result<String> deleteCommentById(@PathVariable("id") String id, @RequestHeader("Authorization") String token) {
+    public Result<String> deleteCommentById(@PathVariable("id") String id,
+        @RequestHeader("Authorization") String token) {
         log.info("delete comment by id");
         Claims claims;
         try {
@@ -166,6 +191,7 @@ public class RoomController {
         boolean delete = studentService.deleteComment(Long.parseLong(id), userId);
         return delete ? Result.success("success", null) : Result.error("fail");
     }
+
 
 
 

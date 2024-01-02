@@ -64,8 +64,7 @@ public class Group {
     private Room room;
 
     @Exclude
-    @JsonIgnore
-    @OneToMany(mappedBy = "group", cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, orphanRemoval = false, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "group", cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, orphanRemoval = false, fetch = FetchType.EAGER)
     private List<Student> memberList;
 
 

@@ -40,17 +40,23 @@ public class MsgService {
      */
     public void sendSystemMsg(List<Student> students, String content){
         students.forEach(t->{
-            Msg msg = new Msg();
-            msg.setSrcId(0L);
-            msg.setDstId(t.getStudentId());
-            msg.setBody(content);
-            msg.setType(MessageType.SYSTEM.typeCode);
-            msg.setStatus(MessageStatus.UNREAD.getStatusCode());
-            msg.setTimestamp(new Timestamp(System.currentTimeMillis()));
-            saveAndForwardMsg(msg);
+            sendSystemMsg(t,content);
         });
 
     }
+
+    public void sendSystemMsg(Student student, String content) {
+        Msg msg = new Msg();
+        msg.setSrcId(0L);
+        msg.setDstId(student.getStudentId());
+        msg.setBody(content);
+        msg.setType(MessageType.SYSTEM.typeCode);
+        msg.setStatus(MessageStatus.UNREAD.getStatusCode());
+        msg.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        saveAndForwardMsg(msg);
+    }
+
+
     /**
      * 保存消息，同时转发消息
      * @param msg 消息

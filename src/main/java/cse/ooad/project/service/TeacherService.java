@@ -460,9 +460,9 @@ public class TeacherService {
                 room.setStatus(Integer.parseInt(strs[9]));
                 room.setFloorId(floor.getFloorId());
                 Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                Comment comment = new Comment(null, strs[6], null, room.getRoomId(), 0L, timestamp, false);
-                comment = commentRepository.save(comment);
-                room.setCommentBaseId(comment.getCommentId());
+//                Comment comment = new Comment(null, strs[6], null, room.getRoomId(), 0L, timestamp, false, new ArrayList<Comment>());
+//                comment = commentRepository.save(comment);
+//                room.setCommentBaseId(comment.getCommentId());
                 rooms.add(room);
             }
             roomRepository.saveAll(rooms);
@@ -490,7 +490,7 @@ public class TeacherService {
                 Region region = regionRepository.getRegionByRegionId(building.getRegionId());
                 List<Student> students = t.getMemberList();
                 students.forEach(e->{
-                    map.put(e, region.getName()+","+building.getName()+","+floor.getName()+","+room.getName());
+                    map.put(e, region.getName()+building.getName()+floor.getName()+room.getName());
                 });
             }
         });

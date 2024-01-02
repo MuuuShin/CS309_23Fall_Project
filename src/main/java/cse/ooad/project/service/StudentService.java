@@ -4,10 +4,12 @@ package cse.ooad.project.service;
 import cse.ooad.project.model.Comment;
 import cse.ooad.project.model.Group;
 import cse.ooad.project.model.Msg;
+import cse.ooad.project.model.Password;
 import cse.ooad.project.model.Student;
 import cse.ooad.project.repository.CommentRepository;
 import cse.ooad.project.repository.GroupRepository;
 import cse.ooad.project.repository.MsgRepository;
+import cse.ooad.project.repository.PasswordRepository;
 import cse.ooad.project.repository.RegionRepository;
 import cse.ooad.project.repository.StudentRepository;
 import cse.ooad.project.utils.MessageStatus;
@@ -43,6 +45,9 @@ public class StudentService {
     MsgRepository msgRepository;
     @Autowired
     private RegionRepository regionRepository;
+
+    @Autowired
+    private PasswordRepository passwordRepository;
 
 
     /**
@@ -98,6 +103,8 @@ public class StudentService {
 
     }
 
+
+
     /**
      * 会判断学生类型、队伍人数来决定能否加入
      *
@@ -143,6 +150,31 @@ public class StudentService {
         return false;
     }
 
+
+    @Transactional
+    public Boolean memberLeave(Long userId, Long kickedId) {
+        Student student = studentRepository.getStudentByStudentId(kickedId);
+        Group group = student.getGroup();
+
+        if (group == null) {
+            return false;
+        }
+
+        Long leaderId = group.getLeader();
+
+        if (Objects.equals(leaderId, userId)) {
+            student.setGroupId(null);
+            group.getMemberList().remove(student);
+            studentRepository.save(student);
+            msgService.sendSystemMsg(student, "你被踢出了队伍!");
+            msgService.sendSystemMsg(group.getMemberList(), student.getName() + "被踢出了队伍!");
+            return true;
+        }
+        return false;
+    }
+
+
+
     /**
      * 学生脱队，队长脱队后顺序继承，是最后一人则解散 会自动给队长发退队消息
      *
@@ -157,7 +189,22 @@ public class StudentService {
             return false;
         }
         if (Objects.equals(group.getLeader(), id)) {
-            return false;
+            //如果是队长
+            if (group.getMemberList().size() == 1) {
+                //如果是最后一个人
+                groupRepository.delete(group);
+                student.setGroupId(null);
+                studentRepository.save(student);
+                return true;
+            }
+            //如果不是最后一个人
+            group.getMemberList().remove(student);
+            group.setLeader(group.getMemberList().get(1).getStudentId());
+            groupRepository.save(group);
+            student.setGroupId(null);
+            studentRepository.save(student);
+            msgService.sendSystemMsg(group.getMemberList(), student.getName() + "离开了队伍");
+            return true;
         }
         student.setGroupId(null);
         studentRepository.save(student);
@@ -234,7 +281,7 @@ public class StudentService {
             return false;
         }
         //如果队伍选了房间且已经满员
-        if (group.getRoom() != null && RoomType.valueOf(group.getRoom().getType() + "").getCapacity()
+        if (group.getRoom() != null && RoomType.valueOf(group.getRoom().getType()).getCapacity()
             == group.getMemberList().size()) {
             return false;
         }
@@ -341,6 +388,15 @@ public class StudentService {
         }
         return false;
     }
+
+    public boolean updatePassword(Long id,Long oldPassword, Long password, boolean isTeacher) {
+        if (!isTeacher&&!passwordRepository.findPasswordByAccount(id.toString()).getPassword().equals(oldPassword.toString())) {
+            return false;
+        }
+        passwordRepository.save(new Password(id.toString(), password.toString()));
+        return true;
+    }
+
 
 
 }

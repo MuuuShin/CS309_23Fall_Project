@@ -29,9 +29,9 @@ public class TimelineService {
 
         Timestamp nowTime = new Timestamp(new Date().getTime());
         //测试的时候用的
-        if (timestamp == 0){
-            return STATUS;
-        }
+//        if (timestamp == 0){
+//            return STATUS;
+//        }
         //Timestamp nowTime = new Timestamp(timestamp);
         //return STATUS;
         if (nowTime.before(timeline.getBeginTime1()))

@@ -28,5 +28,11 @@ public interface GroupRepository extends JpaRepository<Group, Long> {
     @Query("SELECT g FROM Group g JOIN FETCH g.memberList")
     List<Group> findAllWithMembers();
 
+    List<Group> findGroupsByIntroContainingOrNameContaining(String intro, String name);
+
+    List<Group> getGroupsByRoomId(Long id);
+
+
+
 
 }

@@ -10,6 +10,7 @@ import cse.ooad.project.service.StudentService;
 import cse.ooad.project.service.TeacherService;
 import cse.ooad.project.utils.JwtUtils;
 import io.jsonwebtoken.Claims;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -127,10 +128,32 @@ public class TeamController {
     }
 
 
+    @PostMapping("/{teamId}/kick")
+    public Result<String> Teamkick(@PathVariable("teamId") String teamId, @RequestHeader("Authorization") String token, @RequestBody Map<String, Object> JsonData) {
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("fail");
+        }
+
+        Long memberId = Long.parseLong((String) JsonData.get("memberId"));
+
+
+        boolean success = studentService.memberLeave(Long.parseLong(claims.get("id").toString()), memberId);
+        if (success) {
+            return Result.success("success", null);
+        } else {
+            return Result.error("fail");
+        }
+    }
+
+
     @PostMapping("/join")
     public Result<String> joinTeam(@RequestHeader("Authorization") String token, @RequestBody Map<String, Object> JsonData) {
-        String leaderId = (String) JsonData.get("leaderId");
-        String message = (String) JsonData.get("message");
+        System.out.println(JsonData);
+        String leaderId = JsonData.get("leaderId").toString();
+        String message = JsonData.get("message").toString();
 
         Claims claims;
         try {
@@ -238,8 +261,6 @@ public class TeamController {
     public Result<List<Group>> getAllTeamInfo(@RequestParam(name = "offset", required = false, defaultValue = "-1") Integer offset,
                                               @RequestParam(name = "size", required = false, defaultValue = "-1") Integer size,
                                               @RequestHeader("Authorization") String token) {
-//        Integer offset = (Integer) JsonData.get("offset");
-//        Integer size = (Integer) JsonData.get("size");
         log.info(offset + " " + size);
         if (offset == null || size == null) {
             return Result.error("fail");
@@ -260,6 +281,7 @@ public class TeamController {
     @PostMapping("")
     public Result<String> createTeam(@RequestBody Map<String, Object> JsonData, @RequestHeader("Authorization") String token) {
         String teamName = (String) JsonData.get("name");
+        String introduction = (String) JsonData.get("intro");
         Claims claims;
         try {
             claims = JwtUtils.parseJWT(token);
@@ -267,7 +289,7 @@ public class TeamController {
             return Result.error("fail");
         }
 
-        Group group = studentService.createGroup(Long.parseLong(claims.get("id").toString()), teamName);
+        Group group = studentService.createGroup(Long.parseLong(claims.get("id").toString()), teamName, introduction);
         if (group != null) {
             return Result.success("success", null);
         } else {
@@ -275,9 +297,16 @@ public class TeamController {
         }
     }
 
-    @GetMapping("/teams/finduser/{sleeptime}/{awaketime}/{query}")
+
+    @GetMapping("/teams/findteam/{sleeptime}/{awaketime}/{query}")
     public Result<List<Group>> findTeam(@PathVariable("sleeptime") String sleeptime, @PathVariable("awaketime") String awaketime, @PathVariable("query") String query, @RequestHeader("Authorization") String token) {
         log.info("find team");
+        System.out.println(sleeptime);
+        System.out.println(awaketime);
+        System.out.println(query);
+        if (Objects.equals(query, " ")){
+            query="";
+        }
         Time awakeTime = Time.valueOf(awaketime);
         Time sleepTime = Time.valueOf(sleeptime);
         Claims claims;
@@ -314,13 +343,34 @@ public class TeamController {
         String msgId = (String) JsonData.get("msgId");
         String isAccepted = (String) JsonData.get("isAccepted");
         boolean success = studentService.handleApply(Long.parseLong(msgId), isAccepted.equals("1"), Long.parseLong(userId));
-//        log.warn("hhhhhh");
         if (success) {
             return Result.success("success", null);
         } else {
             return Result.error("fail");
         }
     }
+    @PutMapping("/{teamId}")
+    public Result<String> updateTeam(@RequestBody Map<String, Object> JsonData, @RequestHeader("Authorization") String token) {
+        String introduction = (String) JsonData.get("intro");
+        String teamId = (String) JsonData.get("teamId");
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("not login");
+        }
+        boolean isLeader = groupService.isLeader(Long.parseLong(teamId), Long.parseLong(claims.get("id").toString()));
+        if (!isLeader) {
+            return Result.error("not leader");
+        }
+        boolean success = groupService.updateGroupIntro(Long.parseLong(teamId), introduction);
+        if (success) {
+            return Result.success("success", null);
+        } else {
+            return Result.error("fail");
+        }
+    }
+
 
 
 }

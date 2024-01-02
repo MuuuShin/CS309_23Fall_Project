@@ -12,11 +12,20 @@ import cse.ooad.project.repository.RoomRepository;
 import cse.ooad.project.repository.StudentRepository;
 import cse.ooad.project.repository.TeacherRepository;
 import cse.ooad.project.repository.TimelineRepository;
+import cse.ooad.project.utils.RoomType;
 import cse.ooad.project.utils.StudentTimeMatch;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import org.hibernate.Hibernate;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -51,6 +60,8 @@ public class SearchService {
     @Autowired
     private TimelineRepository timelineRepository;
 
+    @Autowired
+    private RoomService roomService;
 
     /**
      * 搜索学生，先根据性别、类型、介绍进行筛选，然后根据早起时间、睡觉时间的重合度进行排序返回
@@ -64,17 +75,30 @@ public class SearchService {
 
     public List<Student> searchStudents(Long gender, Time awakeTime, Time sleepTime, Long type,
         String intro) {
-        //首先获取所有的符合介绍匹配的上、类型相同的学生
+        //啥都不填，啥都不反回
+        if (Objects.equals(awakeTime, Time.valueOf("00:00:00"))&&Objects.equals(sleepTime, Time.valueOf("00:00:00"))&&intro.equals("")){
+            return new ArrayList<>();
+        }
+
+
+        //首先获取所有的符合介绍匹配的上、类型相同的学
         List<Student> students = studentRepository.getStudentsByIntroContainingAndGenderAndType(intro, gender, type);
+
+        Set<Student> studentSet = new HashSet<>();
+        if (!Objects.equals(intro, "")){
+            studentSet.addAll(new HashSet<>(studentRepository.getStudentsByIntroContainingOrAccountContainingOrNameContaining(intro, intro, intro)));
+        }
         //然后调用StudentTimeMatch内的方法获取匹配程度排序返还要求的学生
         students = students.stream().filter(t -> t.getAwakeTime() != null && t.getSleepTime() != null).
             filter(t ->
-            StudentTimeMatch.TimeMatch(t.getAwakeTime(), t.getSleepTime(), awakeTime, sleepTime) != 0).
-            sorted((o1, o2) -> {
-                long o1Long = StudentTimeMatch.TimeMatch(o1.getAwakeTime(), o1.getSleepTime(), awakeTime, sleepTime);
-                long o2Long = StudentTimeMatch.TimeMatch(o2.getAwakeTime(), o2.getSleepTime(), awakeTime, sleepTime);
+                StudentTimeMatch.TimeMatch(t.getAwakeTime(), t.getSleepTime(), awakeTime, sleepTime) != 0).toList();
+        studentSet.addAll(students);
+        students = studentSet.stream().sorted((o1, o2) -> {
+            long o1Long = StudentTimeMatch.TimeMatch(o1.getAwakeTime(), o1.getSleepTime(), awakeTime, sleepTime);
+            long o2Long = StudentTimeMatch.TimeMatch(o2.getAwakeTime(), o2.getSleepTime(), awakeTime, sleepTime);
             return Long.compare(o1Long, o2Long);
-            }).collect(Collectors.toList());
+        }).collect(Collectors.toList());
+        System.out.println(students.size());
         return students;
     }
 
@@ -92,29 +116,76 @@ public class SearchService {
     @Transactional
     public List<Group> searchGroups(Long gender, Time awakeTime, Time sleepTime,
         Long type, String intro) {
+        if (Objects.equals(awakeTime, Time.valueOf("00:00:00"))&&Objects.equals(sleepTime, Time.valueOf("00:00:00"))&&intro.equals("")){
+            return new ArrayList<>();
+        }
+
+
         List<Student> students = searchStudents(gender, awakeTime, sleepTime, type, intro);
-        List<Group> groupList = new ArrayList<>();
+        List<Group> groupsSet = groupRepository.findGroupsByIntroContainingOrNameContaining(intro, intro);
+        System.out.println(students.size());
+        Set<Group> groupList = new HashSet<>();
         students.forEach(t -> {
             if (t.getGroup() != null&&!groupList.contains(t.getGroup())&&t.getGroup().getMemberList().size()<4){
                 groupList.add(t.getGroup());
             }});
-        return groupList;
+        groupList.addAll(groupsSet);
+        //选出名字或者介绍中包含关键字的队伍
+        List<Group> containIntro = groupList.stream().filter(t -> t.getIntro().contains(intro) || t.getName().contains(intro)).toList();
+        List<Group> noContainIntro = groupList.stream().filter(t -> !t.getIntro().contains(intro) && !t.getName().contains(intro)).toList();
+        containIntro = getGroupsSortByTime(awakeTime, sleepTime, containIntro);
+        noContainIntro = getGroupsSortByTime(awakeTime, sleepTime, noContainIntro);
+        ArrayList<Group> groups = new ArrayList<>(containIntro);
+        groups.addAll(noContainIntro);
+        return groups;
+    }
+
+    private List<Group> getGroupsSortByTime(Time awakeTime, Time sleepTime,
+        List<Group> containIntro) {
+        containIntro = containIntro.stream().sorted((o1, o2) -> {
+            long o1Long;
+            long o2Long;
+            o1Long = o1.getMemberList().stream().mapToLong(t -> StudentTimeMatch.TimeMatch(t.getAwakeTime(), t.getSleepTime(), awakeTime, sleepTime)).sum()/o1.getMemberList().size();
+            o2Long = o2.getMemberList().stream().mapToLong(t -> StudentTimeMatch.TimeMatch(t.getAwakeTime(), t.getSleepTime(), awakeTime, sleepTime)).sum()/o2.getMemberList().size();
+            return Long.compare(o2Long, o1Long);
+        }).toList();
+        return containIntro;
     }
 
     public List<Region> searchAllRegion() {
         return regionRepository.findAll();
     }
 
+
+    @Transactional
     public List<Building> searchBuildingByRegion(Long id) {
         return buildingRepository.getBuildingsByRegionId(id);
     }
 
+
+//    @Cacheable(value = "floors", key = "#id")
     public List<Floor> searchFloorByFloor(Long id) {
         return floorRepository.getFloorsByBuildingId(id);
     }
 
+    @Transactional
+//    @Cacheable(value = "rooms", key = "#id")
     public List<Room> searchRoomByFloor(Long id) {
         return roomRepository.getRoomsByFloorId(id);
+    }
+
+    @Transactional
+    public HashMap<Long, HashMap<String, List<Group>>> searchRoomState(List<Room> rooms){
+        HashMap<Long, HashMap<String, List<Group>>> roomState = new HashMap<>();
+        rooms.forEach(t -> {
+            HashMap<String, List<Group>> temp = new HashMap<>();
+            List<Group> group = new ArrayList<>();
+            group.add(t.getGroup());
+            temp.put("chose", group);
+            temp.put("starList", roomService.getGroupStarList(t.getRoomId()));
+            roomState.put(t.getRoomId(), temp);
+        });
+        return roomState;
     }
 
     public List<Room> searchRoomByBuildingId(Long id) {
@@ -182,6 +253,18 @@ public class SearchService {
     public Timeline searchTimelineById(Long id){
         return timelineRepository.findById(id).orElse(null);
     }
+
+    @Transactional
+    public List<Building> searchBuildByRegionIdAndDeleteRoom(Long regionId, Long studentType){
+        List<Building> buildings = searchBuildingByRegion(regionId);
+        buildings.forEach(t -> {
+            t.getFloorList().forEach(f -> {
+                f.setRoomList(f.getRoomList().stream().toList());
+            });
+        });
+        return buildings;
+    }
+
 
 
 

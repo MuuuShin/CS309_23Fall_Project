@@ -45,6 +45,7 @@ public class Building {
     /* 映射实体 */
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "region_id", insertable = false, updatable = false)
     private Region region;
 

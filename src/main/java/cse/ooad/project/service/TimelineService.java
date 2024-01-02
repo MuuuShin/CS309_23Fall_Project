@@ -17,7 +17,7 @@ public class TimelineService {
 
     //测试用的
     public static int STATUS = 3;
-    public static int timestamp = 0;
+    public static int timestamp = 1;
 
     /**
      * 根据学生类型获取当前阶段

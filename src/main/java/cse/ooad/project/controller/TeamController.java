@@ -149,6 +149,32 @@ public class TeamController {
     }
 
 
+    @PostMapping("/exchange")
+    public Result<String> exchangeRoom(@RequestHeader("Authorization") String token, @RequestBody Map<String, Object> JsonData) {
+        System.out.println(JsonData);
+        String leaderId = JsonData.get("leaderId").toString();
+        String message = JsonData.get("message").toString();
+
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            System.out.println("jwt error");
+            return Result.error("fail");
+        }
+//        boolean success = studentService.joinGroup(Long.parseLong(claims.get("id").toString()), Long.parseLong(teamId));
+
+        boolean success = studentService.transRoomApply(Long.parseLong(claims.get("id").toString()), Long.parseLong(leaderId), message);
+        System.out.println(success);
+        if (success) {
+            return Result.success("success", null);
+        } else {
+            return Result.error("fail");
+        }
+    }
+
+
+
     @PostMapping("/join")
     public Result<String> joinTeam(@RequestHeader("Authorization") String token, @RequestBody Map<String, Object> JsonData) {
         System.out.println(JsonData);

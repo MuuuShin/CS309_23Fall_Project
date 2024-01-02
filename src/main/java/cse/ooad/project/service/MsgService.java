@@ -70,7 +70,7 @@ public class MsgService {
                 if (webSocketSession != null) {
                     System.out.println("转发信息"+msg.getBody()+"给"+msg.getDstId());
                     webSocketSession.sendMessage(new TextMessage(gson.toJson(msg)));
-                    msg.setStatus(MessageStatus.READ.getStatusCode());
+                    msg.setStatus(MessageStatus.UNREAD.getStatusCode());
                 }
                 msgRepository.save(msg);
             }

@@ -57,6 +57,7 @@ public class TeamController {
     public Result<String> selectRoom(@RequestBody Map<String, Object> JsonData, @RequestHeader("Authorization") String token) {
         String teamId = (String) JsonData.get("teamId");
         String roomId = (String) JsonData.get("roomId");
+        log.info("select room");
         Claims claims;
         try {
             claims = JwtUtils.parseJWT(token);
@@ -223,6 +224,7 @@ public class TeamController {
 
     @GetMapping("/{teamId}/favorites")
     public Result<List<Room>> getFavorites(@PathVariable("teamId") String teamId) {
+        log.info("add favorite");
         List<Room> favorites = groupService.getStarList(Long.parseLong(teamId));
         if (favorites != null) {
             return Result.success("success", favorites);

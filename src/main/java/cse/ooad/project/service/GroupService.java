@@ -9,6 +9,8 @@ import cse.ooad.project.repository.RoomRepository;
 import cse.ooad.project.repository.StudentRepository;
 import cse.ooad.project.utils.RoomStatus;
 import jakarta.transaction.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -166,7 +168,7 @@ public class GroupService {
             roomRepository.save(room);
             groupRepository.save(group);
             log.info("choose room success");
-
+            return true;
         }
         if (stage == 3) {
             Group roomMaster = groupRepository.getGroupByRoomId(room.getRoomId());
@@ -291,9 +293,9 @@ public class GroupService {
     @Transactional
     public List<Room> getStarList(Long id) {
         Group group = groupRepository.getGroupByGroupId(id);
-        if (group == null) {
-            return null;
-        }
+//        if (group == null) {
+//            return new ArrayList<>() ;
+//        }
         List<Room> rooms = group.getRoomStarList();
         Hibernate.initialize(rooms);
         return rooms;

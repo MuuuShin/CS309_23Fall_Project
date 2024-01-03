@@ -204,11 +204,33 @@ public class RoomController {
         } catch (Exception e) {
             return Result.error("token error");
         }
-        Long userId = Long.parseLong(claims.get("id").toString());
+//        Long userId = Long.parseLong(claims.get("id").toString());
         List<Group> favorite = roomService.getGroupStarList(Long.parseLong(roomId));
 //        return favorite ? Result.success("success", null) : Result.error("fail");
         return Result.success("success", favorite);
     }
+
+    @GetMapping("/rooms/favorite/{roomId}/size")
+    public Result<Integer> favoriteRoomSize(@PathVariable("roomId") String roomId, @RequestHeader("Authorization") String token) {
+        log.info("favorite room");
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("token error");
+        }
+//        Long userId = Long.parseLong(claims.get("id").toString());
+        List<Group> favorite = roomService.getGroupStarList(Long.parseLong(roomId));
+        int size = favorite.size();
+//        return favorite ? Result.success("success", null) : Result.error("fail");
+        return Result.success("success", size);
+    }
+
+
+
+
+
+
 
     @GetMapping("/rooms/info/{roomId}")
     public Result<Object> getRoomInfo(@PathVariable("roomId") String roomId, @RequestHeader("Authorization") String token) {

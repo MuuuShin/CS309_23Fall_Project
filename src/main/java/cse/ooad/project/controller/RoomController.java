@@ -1,16 +1,9 @@
 package cse.ooad.project.controller;
 
 
-import cse.ooad.project.model.Building;
-import cse.ooad.project.model.Comment;
-import cse.ooad.project.model.Floor;
-import cse.ooad.project.model.Group;
-import cse.ooad.project.model.Region;
-import cse.ooad.project.model.Room;
-import cse.ooad.project.service.RoomService;
-import cse.ooad.project.service.SearchService;
-import cse.ooad.project.service.StudentService;
-import cse.ooad.project.service.TeacherService;
+import cse.ooad.project.model.*;
+import cse.ooad.project.repository.StudentRepository;
+import cse.ooad.project.service.*;
 import cse.ooad.project.utils.JwtUtils;
 import cse.ooad.project.utils.RoomType;
 import cse.ooad.project.utils.RoomType;
@@ -42,6 +35,8 @@ import java.util.List;
 @CrossOrigin("*")
 //@RequestMapping("/rooms")
 public class RoomController {
+    @Autowired
+    private StudentRepository studentRepository;
 
     @Autowired
     private RoomService roomService;
@@ -53,6 +48,9 @@ public class RoomController {
     @Autowired
     private StudentService studentService;
 
+    @Autowired
+    private TimelineService timelineService;
+
 //    @GetMapping("/rooms")
 //    public Result<List<Room>> getAllRoomsInfo() {
 //        log.info("get all rooms info");
@@ -61,13 +59,6 @@ public class RoomController {
 //        //TODO: get all rooms info
 //        return Result.success("success", rooms);
 //    }
-
-    @GetMapping("/rooms/{roomId}")
-    public Result<Room> getRoomInfo(@PathVariable("roomId") String roomId) {
-        log.info("get room info");
-        Room room = searchService.searchRoomByRoomId(Long.parseLong(roomId));
-        return Result.success("success", room);
-    }
 
 //    @GetMapping("/regions/{region}/dormitories/{dormitory}/floors/{floor}/rooms")
 //    public Result<List<Room>> getRoomsByRegionAndDormitoryAndFloor(@PathVariable("region") String region, @PathVariable("dormitory") String dormitory, @PathVariable("floor") String floor) {
@@ -89,6 +80,22 @@ public class RoomController {
 //        List<String> dormitories = roomService.getDormitoriesByRegion(region);
 //        return Result.success("success", dormitories);
 //    }
+
+    @GetMapping("/timestage")
+    public Result<Integer> getTimeStage(@RequestHeader("Authorization") String token) {
+        Claims claims;
+        try {
+            claims = JwtUtils.parseJWT(token);
+        } catch (Exception e) {
+            return Result.error("token error");
+        }
+        Student student = studentRepository.getStudentByStudentId(Long.parseLong(claims.get("id").toString()));
+        log.info("get time stage");
+        int stage = timelineService.getStage(student.getType());
+        return Result.success("success", stage);
+    }
+
+
 
     @GetMapping("/regions")
     public Result<List<Region>> getRegions() {
